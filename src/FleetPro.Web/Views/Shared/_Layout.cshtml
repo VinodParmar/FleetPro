@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="@ViewData["Lang"]">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@(ViewData["Title"] ?? "FleetPro") | FleetPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+    <style>
+        .brand-link { background: #1a2980 !important; }
+        .brand-text { color:#fff!important;font-weight:700; }
+        .main-sidebar { background: #1e2a4a !important; }
+        .sidebar .nav-sidebar .nav-link { color:#c9d1e0 !important; }
+        .sidebar .nav-sidebar .nav-link:hover, .sidebar .nav-sidebar .nav-link.active { background:rgba(255,255,255,0.1)!important;color:#fff!important; }
+        .action-btn { white-space: nowrap; }
+        .table thead th { background: #f8f9fa; font-size: 12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+        .expiry-ok  { color:#00a65a; }
+        .expiry-warn{ color:#f39c12; }
+        .expiry-bad { color:#dd4b39; font-weight:600; }
+        .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active { background:rgba(255,255,255,.15)!important; }
+        .badge-purple { background-color: #7b2ff7; color: #fff; }
+        body { font-family:'Segoe UI',sans-serif; }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- ── NAVBAR ─────────────────────────── -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a></li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a asp-controller="Dashboard" asp-action="Index" class="nav-link">@Html.Raw(ViewData["Lang"]=="hi"?"गृह":"Home")</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <!-- Language Toggle -->
+            <li class="nav-item mr-2 d-flex align-items-center" style="gap:4px;">
+                <a href="?lang=hi" class="btn btn-sm @(ViewData["Lang"]?.ToString()=="hi" ? "btn-primary" : "btn-outline-secondary") py-1" style="font-size:12px;">हि</a>
+                <a href="?lang=en" class="btn btn-sm @(ViewData["Lang"]?.ToString()!="hi" ? "btn-primary" : "btn-outline-secondary") py-1" style="font-size:12px;">En</a>
+            </li>
+
+            <!-- Alerts Bell -->
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-bell"></i>
+                    @{
+                        var alertCount = ViewBag.AlertCount as int? ?? 0;
+                        if (alertCount > 0) { <span class="badge badge-danger navbar-badge">@alertCount</span> }
+                    }
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">@alertCount Alerts</span>
+                    <div class="dropdown-divider"></div>
+                    <a asp-controller="Alert" asp-action="Index" class="dropdown-item dropdown-footer">View All Alerts</a>
+                </div>
+            </li>
+
+            <!-- User Menu -->
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <span class="d-none d-md-inline" style="font-size:13px;">@User.Identity?.Name</span>
+                    <i class="fas fa-user-circle ml-1"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <span class="dropdown-item-text text-muted" style="font-size:12px;">@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</span>
+                    <div class="dropdown-divider"></div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- ── SIDEBAR ─────────────────────────── -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a asp-controller="Dashboard" asp-action="Index" class="brand-link">
+            <i class="fas fa-truck-moving mx-3" style="color:#26d0ce;font-size:20px;"></i>
+            <span class="brand-text">FleetPro</span>
+        </a>
+        <div class="sidebar">
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    <span style="width:34px;height:34px;border-radius:50%;background:#7b2ff7;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;">
+                        @(User.Identity?.Name?.Substring(0,1).ToUpper())
+                    </span>
+                </div>
+                <div class="info ml-2">
+                    <a href="#" class="d-block" style="color:#fff;font-size:13px;">@User.Identity?.Name</a>
+                    <small style="color:#aaa;font-size:10px;">
+                        @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                    </small>
+                </div>
+            </div>
+            @await Html.PartialAsync("_Sidebar")
+        </div>
+    </aside>
+
+    <!-- ── CONTENT WRAPPER ─────────────────── -->
+    <div class="content-wrapper">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show m-3 mb-0" role="alert">
+                <i class="fas fa-check-circle mr-2"></i>@TempData["Success"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show m-3 mb-0" role="alert">
+                <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        }
+        @RenderBody()
+    </div>
+
+    <footer class="main-footer text-sm">
+        <strong>© @DateTime.Now.Year FleetPro</strong> — Multi-Tenant Fleet Management
+        <div class="float-right d-none d-sm-inline-block"><b>v2.5.0</b> · ASP.NET Core 10 MVC</div>
+    </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+    // Auto-dismiss alerts after 4s
+    setTimeout(() => { $('.alert-dismissible').alert('close'); }, 4000);
+
+    // Confirm delete
+    $('[data-confirm]').on('click', function (e) {
+        if (!confirm($(this).data('confirm'))) e.preventDefault();
+    });
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/FleetPro.Web/.vs
+/src/FleetPro.Web/bin/Debug/net10.0
+/src/FleetPro.Web/obj
+/src/FleetPro.Web/Properties
+/src/FleetPro.Web/appsettings.Development.json
+/src/FleetPro.Web/appsettings.json
+/README.md

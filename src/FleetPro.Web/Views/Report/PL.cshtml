@@ -1,0 +1,121 @@
+@* ══════════════════ Views/Report/PL.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.PLReportViewModel
+@{ ViewData["Title"] = "Profit & Loss Report"; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Profit &amp; Loss Report</h1></div>
+        <div class="col-sm-6 text-right">
+            <a asp-action="Index" class="btn btn-secondary btn-sm mr-2"><i class="fas fa-arrow-left mr-1"></i>Back</a>
+            <button onclick="window.print()" class="btn btn-info btn-sm"><i class="fas fa-print mr-1"></i>Print</button>
+            <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-success btn-sm"><i class="fas fa-file-excel mr-1"></i>Export Excel</a>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="row">
+        <!-- Revenue Summary -->
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-success text-white"><h3 class="card-title"><i class="fas fa-arrow-up mr-2"></i>Revenue</h3></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr><td>Trip Revenue</td><td class="text-right font-weight-bold">₹@Model.TripRevenue.ToString("N2")</td></tr>
+                        <tr><td class="text-muted pl-3">Other Revenue</td><td class="text-right text-muted">₹@Model.OtherRevenue.ToString("N2")</td></tr>
+                        <tr class="table-success"><td><strong>Total Revenue</strong></td><td class="text-right"><strong>₹@Model.TotalRevenue.ToString("N2")</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Summary -->
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white"><h3 class="card-title"><i class="fas fa-arrow-down mr-2"></i>Expenses</h3></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr><td>Fuel</td><td class="text-right">₹@Model.FuelExpenses.ToString("N2")</td></tr>
+                        <tr><td>Maintenance</td><td class="text-right">₹@Model.MaintenanceExpenses.ToString("N2")</td></tr>
+                        <tr><td>Toll</td><td class="text-right">₹@Model.TollExpenses.ToString("N2")</td></tr>
+                        <tr><td>Wages</td><td class="text-right">₹@Model.WagesExpenses.ToString("N2")</td></tr>
+                        <tr><td>Other</td><td class="text-right">₹@Model.OtherExpenses.ToString("N2")</td></tr>
+                        <tr class="table-danger"><td><strong>Total Expenses</strong></td><td class="text-right"><strong>₹@Model.TotalExpenses.ToString("N2")</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Net P&L -->
+        <div class="col-md-4 mb-3">
+            <div class="card @(Model.NetProfit >= 0 ? "border-primary" : "border-warning")">
+                <div class="card-header @(Model.NetProfit >= 0 ? "bg-primary" : "bg-warning") text-white">
+                    <h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Net Profit / Loss</h3>
+                </div>
+                <div class="card-body text-center py-4">
+                    <div style="font-size:36px;font-weight:700;" class="@(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">
+                        ₹@Model.NetProfit.ToString("N2")
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge @(Model.NetProfit >= 0 ? "badge-primary" : "badge-warning")" style="font-size:16px;">
+                            @Model.ProfitMarginPct% Margin
+                        </span>
+                    </div>
+                    <div class="mt-3 text-muted small">
+                        Revenue: ₹@Model.TotalRevenue.ToString("N0") | Expenses: ₹@Model.TotalExpenses.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip-wise Breakdown -->
+    <div class="card">
+        <div class="card-header"><h3 class="card-title"><i class="fas fa-list mr-2"></i>Trip-wise Breakdown</h3></div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Trip #</th><th>Route</th><th>Revenue</th><th>Expenses</th>
+                        <th>Profit</th><th>Margin %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.TripBreakdown.OrderByDescending(x => x.Profit))
+                    {
+                        <tr>
+                            <td><strong>@t.TripNumber</strong></td>
+                            <td>@t.Route</td>
+                            <td class="text-success">₹@t.Revenue.ToString("N0")</td>
+                            <td class="text-danger">₹@t.Expenses.ToString("N0")</td>
+                            <td class="@(t.Profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@t.Profit.ToString("N0")</td>
+                            <td>
+                                <div class="d-flex align-items-center" style="gap:8px;">
+                                    <div class="progress flex-grow-1" style="height:6px;">
+                                        <div class="progress-bar @(t.MarginPct >= 30 ? "bg-success" : t.MarginPct >= 10 ? "bg-warning" : "bg-danger")"
+                                             style="width:@Math.Max(0, Math.Min(100, (double)t.MarginPct))%"></div>
+                                    </div>
+                                    <small class="font-weight-bold">@t.MarginPct%</small>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.TripBreakdown.Any())
+                    { <tr><td colspan="6" class="text-center text-muted py-3">No trips in selected period.</td></tr> }
+                </tbody>
+                @if (Model.TripBreakdown.Any())
+                {
+                    <tfoot class="bg-light font-weight-bold">
+                        <tr>
+                            <td colspan="2" class="text-right">Totals:</td>
+                            <td class="text-success">₹@Model.TripBreakdown.Sum(t => t.Revenue).ToString("N0")</td>
+                            <td class="text-danger">₹@Model.TripBreakdown.Sum(t => t.Expenses).ToString("N0")</td>
+                            <td class="text-primary">₹@Model.TripBreakdown.Sum(t => t.Profit).ToString("N0")</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+    </div>
+</div></section>

@@ -1,0 +1,146 @@
+@* ══════════════════ Views/Alert/Index.cshtml ══════════════════ *@
+@model List<FleetPro.Models.Entities.Alert>
+@{ ViewData["Title"] = "Alerts & Notifications"; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Alerts &amp; Notifications</h1></div>
+        <div class="col-sm-6 text-right">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
+            {
+                <form asp-action="Refresh" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-sync-alt mr-1"></i>Refresh Alerts</button>
+                </form>
+            }
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-danger"><i class="fas fa-exclamation-triangle"></i></span><div class="info-box-content"><span class="info-box-text">Critical (0-7 days)</span><span class="info-box-number">@Model.Count(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Critical)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span><div class="info-box-content"><span class="info-box-text">Warning (8-30 days)</span><span class="info-box-number">@Model.Count(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Warning)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-info-circle"></i></span><div class="info-box-content"><span class="info-box-text">Upcoming (31-60 days)</span><span class="info-box-number">@Model.Count(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Info)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check-circle"></i></span><div class="info-box-content"><span class="info-box-text">Unread</span><span class="info-box-number">@Model.Count(a => !a.IsRead)</span></div></div></div>
+    </div>
+
+    <div class="row">
+        <!-- Critical -->
+        <div class="col-md-6 mb-3">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title"><i class="fas fa-exclamation-triangle mr-2"></i>Critical Alerts</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th style="width:80px;">Action</th><th>Alert</th><th>Type</th><th>Expires</th></tr></thead>
+                        <tbody>
+                            @foreach (var a in Model.Where(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Critical).OrderBy(a => a.DaysRemaining))
+                            {
+                                <tr class="@(!a.IsRead ? "" : "text-muted")">
+                                    <td>
+                                        <form asp-action="MarkRead" asp-route-id="@a.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-xs btn-outline-secondary" title="Mark Read"><i class="fas fa-check"></i></button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <strong>@a.Title</strong>
+                                        @if (!a.IsRead) { <span class="badge badge-danger ml-1">New</span> }
+                                    </td>
+                                    <td>
+                                        @switch (a.Type)
+                                        {
+                                            case FleetPro.Models.Entities.AlertType.DriverLicenseExpiry: <span class="badge badge-info"><i class="fas fa-id-card"></i> License</span> break;
+                                            case FleetPro.Models.Entities.AlertType.TruckInsuranceExpiry: <span class="badge badge-warning"><i class="fas fa-shield-alt"></i> Insurance</span> break;
+                                            case FleetPro.Models.Entities.AlertType.TruckFitnessExpiry: <span class="badge badge-primary"><i class="fas fa-clipboard-check"></i> Fitness</span> break;
+                                            default: <span class="badge badge-secondary">@a.Type</span> break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="@(a.DaysRemaining < 0 ? "expiry-bad" : "expiry-warn") font-weight-bold">
+                                            @(a.DaysRemaining < 0 ? "EXPIRED " + Math.Abs(a.DaysRemaining) + "d ago" : a.DaysRemaining + " days")
+                                        </span>
+                                        <br><small class="text-muted">@a.ExpiryDate.ToString("dd MMM yyyy")</small>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.Any(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Critical))
+                            { <tr><td colspan="4" class="text-center text-muted py-3"><i class="fas fa-check-circle text-success mr-1"></i>No critical alerts</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="col-md-6 mb-3">
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h3 class="card-title"><i class="fas fa-clock mr-2"></i>Warning Alerts</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th style="width:80px;">Action</th><th>Alert</th><th>Type</th><th>Expires</th></tr></thead>
+                        <tbody>
+                            @foreach (var a in Model.Where(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Warning).OrderBy(a => a.DaysRemaining))
+                            {
+                                <tr class="@(!a.IsRead ? "" : "text-muted")">
+                                    <td>
+                                        <form asp-action="MarkRead" asp-route-id="@a.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-xs btn-outline-secondary" title="Mark Read"><i class="fas fa-check"></i></button>
+                                        </form>
+                                    </td>
+                                    <td><strong>@a.Title</strong></td>
+                                    <td>
+                                        @switch (a.Type)
+                                        {
+                                            case FleetPro.Models.Entities.AlertType.DriverLicenseExpiry: <span class="badge badge-info"><i class="fas fa-id-card"></i> License</span> break;
+                                            case FleetPro.Models.Entities.AlertType.TruckInsuranceExpiry: <span class="badge badge-warning"><i class="fas fa-shield-alt"></i> Insurance</span> break;
+                                            case FleetPro.Models.Entities.AlertType.TruckFitnessExpiry: <span class="badge badge-primary"><i class="fas fa-clipboard-check"></i> Fitness</span> break;
+                                            default: <span class="badge badge-secondary">@a.Type</span> break;
+                                        }
+                                    </td>
+                                    <td class="expiry-warn font-weight-bold">@a.DaysRemaining days<br><small class="text-muted">@a.ExpiryDate.ToString("dd MMM yyyy")</small></td>
+                                </tr>
+                            }
+                            @if (!Model.Any(a => a.Severity == FleetPro.Models.Entities.AlertSeverity.Warning))
+                            { <tr><td colspan="4" class="text-center text-muted py-3"><i class="fas fa-check-circle text-success mr-1"></i>No warnings</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="card">
+        <div class="card-header"><h3 class="card-title"><i class="fas fa-bell-slash mr-2"></i>Notification Settings</h3></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6 class="font-weight-bold">Notification Channels</h6>
+                    <div class="custom-control custom-checkbox mb-2"><input type="checkbox" class="custom-control-input" id="notifEmail" checked><label class="custom-control-label" for="notifEmail">Email Alerts</label></div>
+                    <div class="custom-control custom-checkbox mb-2"><input type="checkbox" class="custom-control-input" id="notifSms" checked><label class="custom-control-label" for="notifSms">SMS Alerts</label></div>
+                    <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="notifPush"><label class="custom-control-label" for="notifPush">Push Notifications</label></div>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="font-weight-bold">Alert Thresholds</h6>
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-6 col-form-label col-form-label-sm">Critical (days):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control form-control-sm" value="7"></div>
+                    </div>
+                    <div class="form-group row mb-0">
+                        <label class="col-sm-6 col-form-label col-form-label-sm">Warning (days):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control form-control-sm" value="30"></div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary"><i class="fas fa-save mr-1"></i>Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></section>

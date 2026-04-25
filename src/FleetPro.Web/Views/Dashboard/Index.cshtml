@@ -1,0 +1,169 @@
+@model FleetPro.Services.DashboardStats
+@{
+    ViewData["Title"] = "Dashboard";
+    bool isSA = User.IsInRole("SuperAdmin");
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6"><h1 class="m-0">Dashboard</h1></div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right"><li class="breadcrumb-item active">Dashboard</li></ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- ── STAT CARDS ── -->
+        <div class="row">
+            @if (isSA)
+            {
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner"><h3>@Model.TotalTenants</h3><p>Total Tenants</p></div>
+                        <div class="icon"><i class="fas fa-building"></i></div>
+                        <a asp-controller="Tenant" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            }
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner"><h3>@Model.ActiveTrucks <small style="font-size:50%">/ @Model.TotalTrucks</small></h3><p>Active Trucks</p></div>
+                    <div class="icon"><i class="fas fa-truck"></i></div>
+                    <a asp-controller="Truck" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner"><h3>@Model.ActiveTrips</h3><p>Active Trips</p></div>
+                    <div class="icon"><i class="fas fa-route"></i></div>
+                    <a asp-controller="Trip" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner"><h3>@Model.TotalDrivers</h3><p>Total Drivers</p></div>
+                    <div class="icon"><i class="fas fa-user-tie"></i></div>
+                    <a asp-controller="Driver" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── FINANCIAL CARDS ── -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-success"><i class="fas fa-rupee-sign"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Monthly Revenue</span>
+                        <span class="info-box-number">₹@Model.MonthlyRevenue.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-money-bill-wave"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Monthly Expenses</span>
+                        <span class="info-box-number">₹@Model.MonthlyExpenses.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <span class="info-box-icon @(Model.NetProfit >= 0 ? "bg-primary" : "bg-warning")"><i class="fas fa-chart-line"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Net Profit</span>
+                        <span class="info-box-number @(Model.NetProfit < 0 ? "text-danger" : "")">₹@Model.NetProfit.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Recent Trips -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Trips</h3>
+                        <div class="card-tools">
+                            <a asp-controller="Trip" asp-action="Create" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus mr-1"></i>New Trip
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:90px;">Actions</th>
+                                    <th>Trip #</th><th>Route</th><th>Driver</th><th>Revenue</th><th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var t in Model.RecentTrips)
+                                {
+                                    <tr>
+                                        <td class="action-btn">
+                                            <a asp-controller="Trip" asp-action="Details" asp-route-id="@t.Id" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
+                                            <a asp-controller="Trip" asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                        </td>
+                                        <td><strong>@t.TripNumber</strong></td>
+                                        <td>@t.FromLocation → @t.ToLocation</td>
+                                        <td>@t.Driver?.FullName</td>
+                                        <td>₹@t.Revenue.ToString("N0")</td>
+                                        <td>
+                                            @switch (t.Status)
+                                            {
+                                                case FleetPro.Models.Entities.TripStatus.Completed: <span class="badge badge-success">Completed</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">Scheduled</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">Cancelled</span> break;
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a asp-controller="Trip" asp-action="Index">View All Trips →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent Alerts -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Urgent Alerts</h3>
+                        <div class="card-tools">
+                            <span class="badge badge-danger">@Model.CriticalAlerts Critical</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var a in Model.UrgentAlerts)
+                            {
+                                <li class="list-group-item d-flex align-items-start py-2">
+                                    <span class="badge @(a.Severity == FleetPro.Models.Entities.AlertSeverity.Critical ? "badge-danger" : "badge-warning") mr-2 mt-1">
+                                        @(a.DaysRemaining <= 0 ? "Expired" : a.DaysRemaining + "d")
+                                    </span>
+                                    <small><strong>@a.Title</strong></small>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="card-footer text-right">
+                        <a asp-controller="Alert" asp-action="Index">View All Alerts →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

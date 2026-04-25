@@ -1,0 +1,80 @@
+@* ══════════════════ Views/User/Index.cshtml ══════════════════ *@
+@model List<FleetPro.Models.Entities.ApplicationUser>
+@{ ViewData["Title"] = "Users"; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">User Management</h1></div>
+        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-user-plus mr-1"></i>Add User</a></div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:130px;">Actions</th>
+                        <th>Name</th><th>Email</th>
+                        @if (User.IsInRole("SuperAdmin")) { <th>Tenant</th> }
+                        <th>Role</th><th>Status</th><th>Last Login</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td class="action-btn">
+                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                @if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
+                                {
+                                    <a asp-action="Permissions" asp-route-id="@u.Id" class="btn btn-xs btn-info" title="Permissions"><i class="fas fa-key"></i></a>
+                                }
+                                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete user @u.FullName?" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span style="width:30px;height:30px;border-radius:50%;background:#3c8dbc;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;margin-right:8px;flex-shrink:0;">
+                                        @(u.FullName.Length >= 2 ? u.FullName.Substring(0, 2).ToUpper() : u.FullName.ToUpper())
+                                    </span>
+                                    @u.FullName
+                                </div>
+                            </td>
+                            <td>@u.Email</td>
+                            @if (User.IsInRole("SuperAdmin"))
+                            { <td>@(u.Tenant?.CompanyName ?? "<span class='badge badge-dark'>Super Admin</span>")</td> }
+                            <td>
+                                @foreach (var ur in u.UserRoles)
+                                {
+                                    @switch (ur.Role?.Name)
+                                    {
+                                        case "SuperAdmin":       <span class="badge badge-dark">Super Admin</span>       break;
+                                        case "TenantAdmin":      <span class="badge badge-primary">Tenant Admin</span>   break;
+                                        case "DataEntryOperator":<span class="badge badge-info">Data Entry</span>        break;
+                                        case "Viewer":           <span class="badge badge-secondary">Viewer</span>       break;
+                                        default:                 <span class="badge badge-light">@ur.Role?.Name</span>   break;
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @switch (u.Status)
+                                {
+                                    case FleetPro.Models.Entities.UserStatus.Active:   <span class="badge badge-success">Active</span>   break;
+                                    case FleetPro.Models.Entities.UserStatus.Inactive: <span class="badge badge-secondary">Inactive</span> break;
+                                    case FleetPro.Models.Entities.UserStatus.Locked:   <span class="badge badge-danger">Locked</span>    break;
+                                }
+                            </td>
+                            <td>@(u.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? "Never")</td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    { <tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div></section>

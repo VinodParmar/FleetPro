@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Error";
+    int code = ViewBag.Code ?? 500;
+    var (icon, title, desc) = code switch {
+        403 => ("fa-ban",              "Access Denied",  "You don't have permission to view this page."),
+        404 => ("fa-search",           "Page Not Found", "The page you're looking for doesn't exist."),
+        _   => ("fa-exclamation-triangle","Server Error","Something went wrong. Please try again later.")
+    };
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2"><div class="col-sm-6"><h1 class="m-0">Error @code</h1></div></div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="error-page" style="padding:40px 0;">
+            <h2 class="headline text-warning">@code</h2>
+            <div class="error-content">
+                <h3><i class="fas @icon text-warning mr-2"></i>@title</h3>
+                <p>@desc</p>
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-home mr-1"></i>Go to Dashboard
+                </a>
+                <button onclick="history.back()" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left mr-1"></i>Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

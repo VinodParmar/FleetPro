@@ -1,0 +1,166 @@
+@* ══════════════════ Views/Tenant/Create.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.TenantViewModel
+@{ ViewData["Title"] = Model.Id == 0 ? "Add Tenant" : "Edit Tenant"; bool isCreate = Model.Id == 0; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
+        <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a asp-action="Index">Tenants</a></li>
+            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+        </ol></div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <div class="row">
+        <!-- Company Info -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white"><h3 class="card-title"><i class="fas fa-building mr-2"></i>Company Information</h3></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8 form-group">
+                            <label asp-for="CompanyName" class="font-weight-bold">Company Name *</label>
+                            <input asp-for="CompanyName" class="form-control" placeholder="Sharma Transport Pvt. Ltd.">
+                            <span asp-validation-for="CompanyName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label asp-for="Subdomain" class="font-weight-bold">Subdomain *</label>
+                            <div class="input-group">
+                                @if (!isCreate)
+                                {
+                                    <input asp-for="Subdomain" class="form-control" placeholder="sharma-transport" readonly>
+                                }
+                                else
+                                {
+                                    <input asp-for="Subdomain" class="form-control" placeholder="sharma-transport">
+                                }
+                                <div class="input-group-append"><span class="input-group-text" style="font-size:11px;">.fleetpro.in</span></div>
+                            </div>
+                            <span asp-validation-for="Subdomain" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="ContactPerson" class="font-weight-bold">Contact Person</label>
+                            <input asp-for="ContactPerson" class="form-control" placeholder="Ravi Kumar Sharma">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="Phone">Phone</label>
+                            <input asp-for="Phone" class="form-control" placeholder="+91 98765 43210">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="Email">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="contact@company.com">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="GstNumber">GST Number</label>
+                            <input asp-for="GstNumber" class="form-control" placeholder="27AAAAA0000A1Z5" style="text-transform:uppercase;">
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <label asp-for="Address">Address</label>
+                            <input asp-for="Address" class="form-control">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="City">City</label>
+                            <input asp-for="City" class="form-control">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label asp-for="State">State</label>
+                            <input asp-for="State" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan & Limits -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white"><h3 class="card-title"><i class="fas fa-cog mr-2"></i>Plan & Limits</h3></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Plan" class="font-weight-bold">Subscription Plan</label>
+                        <select asp-for="Plan" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TenantPlan>()" class="form-control" id="planSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Status" class="font-weight-bold">Status</label>
+                        <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TenantStatus>()" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaxTrucks">Max Trucks</label>
+                        <input asp-for="MaxTrucks" type="number" class="form-control" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaxUsers">Max Users</label>
+                        <input asp-for="MaxUsers" type="number" class="form-control" min="1">
+                    </div>
+                    <div class="alert alert-info p-2" style="font-size:12px;">
+                        <strong>Plans:</strong><br>
+                        🥉 Starter — 10 trucks, 5 users<br>
+                        🥈 Business — 25 trucks, 10 users<br>
+                        🥇 Premium — Unlimited
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tenant Owner (Create only) -->
+        @if (isCreate)
+        {
+            <div class="col-md-8">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-user-shield mr-2"></i>Tenant Admin Account</h3></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label asp-for="OwnerName" class="font-weight-bold">Admin Name *</label>
+                                <input asp-for="OwnerName" class="form-control" placeholder="Ravi Kumar Sharma">
+                                <span asp-validation-for="OwnerName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="OwnerEmail" class="font-weight-bold">Admin Email *</label>
+                                <input asp-for="OwnerEmail" type="email" class="form-control" placeholder="ravi@sharmatransport.in">
+                                <span asp-validation-for="OwnerEmail" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="OwnerPassword" class="font-weight-bold">Password *</label>
+                                <input asp-for="OwnerPassword" type="password" class="form-control" placeholder="Min 8 characters">
+                                <span asp-validation-for="OwnerPassword" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="OwnerPhone">Admin Phone</label>
+                                <input asp-for="OwnerPhone" class="form-control" placeholder="+91 98765 43210">
+                            </div>
+                        </div>
+                        <div class="alert alert-info p-2 mb-0" style="font-size:12px;">
+                            <i class="fas fa-info-circle mr-1"></i>This creates the Tenant Admin account. The admin can create additional users from their dashboard.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-right mb-3">
+        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? "Create Tenant" : "Save Changes")</button>
+    </div>
+</form>
+</div></section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('planSelect')?.addEventListener('change', function () {
+            const plans = { '1': [10, 5], '2': [25, 10], '3': [999, 999] };
+            const vals = plans[this.value] || [10, 5];
+            const maxTrucks = document.querySelector('[name="MaxTrucks"]');
+            const maxUsers = document.querySelector('[name="MaxUsers"]');
+            if (maxTrucks) maxTrucks.value = vals[0];
+            if (maxUsers) maxUsers.value = vals[1];
+        });
+    </script>
+}

@@ -1,0 +1,94 @@
+@* ══════════════════ Views/Report/Index.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.ReportFilterViewModel
+@{ ViewData["Title"] = "Reports"; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Reports</h1></div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Profit &amp; Loss Report</h3></div>
+                <div class="card-body">
+                    <form asp-action="PL" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label>From Date</label>
+                            <input asp-for="FromDate" type="date" class="form-control" value="@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="form-group">
+                            <label>To Date</label>
+                            <input asp-for="ToDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                        </div>
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <div class="form-group">
+                                <label>Tenant</label>
+                                <select asp-for="TenantId" class="form-control">
+                                    <option value="">All Tenants</option>
+                                </select>
+                            </div>
+                        }
+                        <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-file-alt mr-1"></i>Generate P&amp;L Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white"><h3 class="card-title"><i class="fas fa-file-excel mr-2"></i>Trip Report (Excel)</h3></div>
+                <div class="card-body">
+                    <form asp-action="ExportTripsExcel" method="get">
+                        <div class="form-group">
+                            <label>From Date</label>
+                            <input name="from" type="date" class="form-control" value="@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="form-group">
+                            <label>To Date</label>
+                            <input name="to" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="">All</option>
+                                @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TripStatus>())
+                                { <option value="@s">@s</option> }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block"><i class="fas fa-download mr-1"></i>Download Excel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white"><h3 class="card-title"><i class="fas fa-file-pdf mr-2"></i>Expense Report</h3></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>From Date</label>
+                        <input type="date" class="form-control" value="@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control">
+                            <option value="">All Categories</option>
+                            @foreach (var c in Enum.GetValues<FleetPro.Models.Entities.ExpenseCategory>())
+                            { <option value="@c">@c</option> }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Format</label>
+                        <select class="form-control"><option>Excel (.xlsx)</option><option>PDF</option></select>
+                    </div>
+                    <button class="btn btn-danger btn-block" disabled><i class="fas fa-download mr-1"></i>Download (Coming Soon)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></section>

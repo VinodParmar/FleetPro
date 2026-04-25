@@ -1,0 +1,102 @@
+@* ══════════════════ Views/Trip/Index.cshtml ══════════════════ *@
+@model List<FleetPro.Models.Entities.Trip>
+@{ ViewData["Title"] = "Trips"; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Trip Management</h1></div>
+        <div class="col-sm-6 text-right">
+            <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>New Trip</a>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+
+    <div class="row mb-3">
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-route"></i></span><div class="info-box-content"><span class="info-box-text">Total</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-spinner"></i></span><div class="info-box-content"><span class="info-box-text">In Progress</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.InProgress)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check-double"></i></span><div class="info-box-content"><span class="info-box-text">Completed</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.Completed)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-primary"><i class="fas fa-rupee-sign"></i></span><div class="info-box-content"><span class="info-box-text">Total Revenue</span><span class="info-box-number">₹@Model.Sum(t => t.Revenue).ToString("N0")</span></div></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <form method="get" class="form-inline flex-wrap" style="gap:6px;">
+                <input name="from" type="date" value="@Context.Request.Query["from"]" class="form-control form-control-sm">
+                <input name="to"   type="date" value="@Context.Request.Query["to"]"   class="form-control form-control-sm">
+                <select name="status" class="form-control form-control-sm">
+                    <option value="">All Status</option>
+                    @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TripStatus>())
+                    { <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString() ? "selected" : null)">@s</option> }
+                </select>
+                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="Trip# / location…">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-filter mr-1"></i>Filter</button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Clear</a>
+                <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-sm btn-success ml-auto"><i class="fas fa-file-excel mr-1"></i>Export Excel</a>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:110px;">Actions</th>
+                        <th>Trip #</th><th>From</th><th>To</th><th>Driver</th><th>Truck</th>
+                        <th>Start</th><th>End</th><th>Revenue</th><th>Expenses</th><th>Profit</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        var profit = t.Revenue - t.TotalExpenses;
+                        <tr>
+                            <td class="action-btn">
+                                <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
+                                <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete trip @t.TripNumber?" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                            <td><strong>@t.TripNumber</strong></td>
+                            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@t.FromLocation</td>
+                            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@t.ToLocation</td>
+                            <td>@t.Driver?.FullName</td>
+                            <td>@t.Truck?.NumberPlate</td>
+                            <td>@t.StartDate.ToString("dd/MM/yy")</td>
+                            <td>@(t.EndDate?.ToString("dd/MM/yy") ?? "—")</td>
+                            <td class="text-success font-weight-bold">₹@t.Revenue.ToString("N0")</td>
+                            <td class="text-danger">₹@t.TotalExpenses.ToString("N0")</td>
+                            <td class="@(profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@profit.ToString("N0")</td>
+                            <td>
+                                @switch (t.Status)
+                                {
+                                    case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">Completed</span>  break;
+                                    case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
+                                    case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">Scheduled</span>    break;
+                                    case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">Cancelled</span>   break;
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="12" class="text-center text-muted py-4">No trips found. <a asp-action="Create">Create first trip →</a></td></tr>
+                    }
+                </tbody>
+                @if (Model.Any())
+                {
+                    <tfoot class="bg-light font-weight-bold">
+                        <tr>
+                            <td colspan="8" class="text-right">Totals:</td>
+                            <td class="text-success">₹@Model.Sum(t => t.Revenue).ToString("N0")</td>
+                            <td class="text-danger">₹@Model.Sum(t => t.TotalExpenses).ToString("N0")</td>
+                            <td class="text-primary">₹@Model.Sum(t => t.NetProfit).ToString("N0")</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+    </div>
+</div></section>

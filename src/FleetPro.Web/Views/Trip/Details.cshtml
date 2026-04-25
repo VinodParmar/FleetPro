@@ -1,0 +1,198 @@
+@* ══════════════════ Views/Trip/Details.cshtml ══════════════════ *@
+@model FleetPro.Models.Entities.Trip
+@{ ViewData["Title"] = "Trip — " + Model.TripNumber; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Trip @Model.TripNumber</h1></div>
+        <div class="col-sm-6 text-right">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>Edit</a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>Back</a>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="row">
+
+        <!-- Left: Trip Info + P&L -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>Trip Information</h3>
+                    <div class="card-tools">
+                        @switch (Model.Status)
+                        {
+                            case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">Completed</span>  break;
+                            case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
+                            case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">Scheduled</span>    break;
+                            case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">Cancelled</span>   break;
+                        }
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr><th class="text-muted" style="width:40%">Trip Number</th><td><strong>@Model.TripNumber</strong></td></tr>
+                        <tr><th class="text-muted">Truck</th><td>@Model.Truck?.NumberPlate (@Model.Truck?.Model)</td></tr>
+                        <tr><th class="text-muted">Driver</th><td>@Model.Driver?.FullName</td></tr>
+                        <tr><th class="text-muted">From</th><td>@Model.FromLocation</td></tr>
+                        <tr><th class="text-muted">To</th><td>@Model.ToLocation</td></tr>
+                        <tr><th class="text-muted">Start Date</th><td>@Model.StartDate.ToString("dd MMM yyyy")</td></tr>
+                        <tr><th class="text-muted">End Date</th><td>@(Model.EndDate?.ToString("dd MMM yyyy") ?? "—")</td></tr>
+                        <tr><th class="text-muted">Distance</th><td>@(Model.DistanceKm?.ToString("N0") ?? "—") km</td></tr>
+                        <tr><th class="text-muted">Cargo</th><td>@(Model.CargoDescription ?? "—")</td></tr>
+                        <tr><th class="text-muted">Weight</th><td>@(Model.CargoWeightTons?.ToString("N1") ?? "—") tons</td></tr>
+                        <tr><th class="text-muted">Client</th><td>@(Model.ClientName ?? "—")</td></tr>
+                        <tr><th class="text-muted">LR Number</th><td>@(Model.LRNumber ?? "—")</td></tr>
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        { <tr><th class="text-muted">Notes</th><td>@Model.Notes</td></tr> }
+                    </table>
+                </div>
+            </div>
+
+            <!-- P&L Card -->
+            <div class="card">
+                <div class="card-header bg-dark text-white"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Profit & Loss</h3></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr class="table-success"><td class="font-weight-bold">Revenue</td><td class="text-right font-weight-bold text-success">₹@Model.Revenue.ToString("N2")</td></tr>
+                        @foreach (var grp in Model.Expenses.Where(e=>!e.IsDeleted).GroupBy(e => e.Category).OrderBy(g => g.Key.ToString()))
+                        {
+                            <tr><td class="text-muted pl-3">@grp.Key</td><td class="text-right text-danger">−₹@grp.Sum(e => e.Amount).ToString("N2")</td></tr>
+                        }
+                        <tr class="table-danger"><td class="font-weight-bold">Total Expenses</td><td class="text-right font-weight-bold text-danger">₹@Model.TotalExpenses.ToString("N2")</td></tr>
+                        <tr class="@(Model.NetProfit >= 0 ? "table-primary" : "table-warning")">
+                            <td class="font-weight-bold">Net Profit</td>
+                            <td class="text-right font-weight-bold @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">
+                                ₹@Model.NetProfit.ToString("N2")
+                                @if (Model.Revenue > 0)
+                                { <small class="badge @(Model.NetProfit >= 0 ? "badge-primary" : "badge-warning")">@((Model.NetProfit/Model.Revenue*100).ToString("N1"))%</small> }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Expenses + Documents -->
+        <div class="col-md-7">
+
+            <!-- Expenses -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-receipt mr-2"></i>Expenses</h3>
+                    <div class="card-tools">
+                        <a asp-controller="Expense" asp-action="Create" asp-route-tripId="@Model.Id" class="btn btn-sm btn-danger">
+                            <i class="fas fa-plus mr-1"></i>Add Expense
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:80px;">Actions</th>
+                                <th>Category</th><th>Amount</th><th>Date</th><th>Description</th><th>Bill</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in Model.Expenses.Where(x => !x.IsDeleted).OrderByDescending(x => x.ExpenseDate))
+                            {
+                                <tr>
+                                    <td class="action-btn">
+                                        <a asp-controller="Expense" asp-action="Edit" asp-route-id="@e.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                        <form asp-controller="Expense" asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete this expense?" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var catColor = e.Category switch {
+                                                FleetPro.Models.Entities.ExpenseCategory.Fuel => "primary",
+                                                FleetPro.Models.Entities.ExpenseCategory.Maintenance => "danger",
+                                                FleetPro.Models.Entities.ExpenseCategory.Toll => "warning",
+                                                FleetPro.Models.Entities.ExpenseCategory.Wages => "purple",
+                                                _ => "secondary"
+                                            };
+                                        }
+                                        <span class="badge badge-@catColor">@e.Category</span>
+                                    </td>
+                                    <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N0")</td>
+                                    <td>@e.ExpenseDate.ToString("dd MMM")</td>
+                                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="@e.Description">@e.Description</td>
+                                    <td>
+                                        @if (e.HasReceipt && !string.IsNullOrEmpty(e.ReceiptPath))
+                                        { <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file-pdf"></i></a> }
+                                        else { <span class="text-muted">—</span> }
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.Expenses.Any(e => !e.IsDeleted))
+                            { <tr><td colspan="6" class="text-center text-muted py-3">No expenses added yet.</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-paperclip mr-2"></i>Documents</h3>
+                    <div class="card-tools">
+                        <button class="btn btn-sm btn-info" data-toggle="collapse" data-target="#uploadForm">
+                            <i class="fas fa-upload mr-1"></i>Upload
+                        </button>
+                    </div>
+                </div>
+                <div id="uploadForm" class="collapse">
+                    <div class="card-body border-bottom">
+                        <form asp-action="UploadDocument" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="tripId" value="@Model.Id">
+                            <div class="row align-items-end">
+                                <div class="col-md-5 form-group mb-0">
+                                    <label>Document Type</label>
+                                    <select name="documentType" class="form-control form-control-sm">
+                                        <option>LR (Lorry Receipt)</option><option>Invoice</option>
+                                        <option>POD (Proof of Delivery)</option><option>Toll Receipt</option>
+                                        <option>Fuel Bill</option><option>Weighment Slip</option><option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5 form-group mb-0">
+                                    <label>File</label>
+                                    <input type="file" name="file" class="form-control-file pt-1" accept=".pdf,.jpg,.jpeg,.png">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-info btn-sm w-100">Upload</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th style="width:80px;">Actions</th><th>Type</th><th>File</th><th>Size</th><th>Uploaded</th></tr></thead>
+                        <tbody>
+                            @foreach (var doc in Model.Documents.Where(d => !d.IsDeleted))
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@doc.FilePath" target="_blank" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
+                                        <a href="@doc.FilePath" download class="btn btn-xs btn-secondary" title="Download"><i class="fas fa-download"></i></a>
+                                    </td>
+                                    <td><span class="badge badge-info">@doc.DocumentType</span></td>
+                                    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@doc.FileName</td>
+                                    <td>@(doc.FileSizeBytes / 1024) KB</td>
+                                    <td>@doc.CreatedAt.ToString("dd MMM")</td>
+                                </tr>
+                            }
+                            @if (!Model.Documents.Any(d => !d.IsDeleted))
+                            { <tr><td colspan="5" class="text-center text-muted py-3">No documents uploaded.</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></section>

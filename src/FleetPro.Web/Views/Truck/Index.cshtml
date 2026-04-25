@@ -1,0 +1,93 @@
+@* ══════════════════ Views/Truck/Index.cshtml ══════════════════ *@
+@model List<FleetPro.Models.Entities.Truck>
+@{
+    ViewData["Title"] = "Trucks";
+    string ExpiryClass(DateTime? d) => d == null ? "" : (d < DateTime.Today ? "expiry-bad" : d < DateTime.Today.AddDays(30) ? "expiry-warn" : "expiry-ok");
+    string ExpiryLabel(DateTime? d) => d == null ? "—" : (d < DateTime.Today ? "EXPIRED" : ((d.Value - DateTime.Today).Days + " days"));
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6"><h1 class="m-0">Truck Management</h1></div>
+            <div class="col-sm-6 text-right">
+                <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>Add Truck</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content"><div class="container-fluid">
+
+    <!-- Summary boxes -->
+    <div class="row mb-3">
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-truck"></i></span><div class="info-box-content"><span class="info-box-text">Total</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">Active</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.Active)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-wrench"></i></span><div class="info-box-content"><span class="info-box-text">Maintenance</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.InMaintenance)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-danger"><i class="fas fa-exclamation"></i></span><div class="info-box-content"><span class="info-box-text">Expiry Alerts</span><span class="info-box-number">@Model.Count(t => (t.InsuranceExpiry < DateTime.Today.AddDays(30)) || (t.FitnessExpiry < DateTime.Today.AddDays(30)))</span></div></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <form method="get" class="form-inline">
+                <select name="status" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+                    <option value="">All Status</option>
+                    @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TruckStatus>())
+                    { <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString() ? "selected" : null)">@s</option> }
+                </select>
+                <input name="search" value="@ViewBag.Search" class="form-control form-control-sm mr-2" placeholder="Search plate / model…">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:100px;">Actions</th>
+                        <th>Plate</th><th>Model</th><th>Year</th>
+                        @if (User.IsInRole("SuperAdmin")) { <th>Tenant</th> }
+                        <th>Fitness Expiry</th><th>Insurance Expiry</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td class="action-btn">
+                                <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete truck @t.NumberPlate?" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                            <td><strong>@t.NumberPlate</strong></td>
+                            <td>@t.Model</td>
+                            <td>@t.ManufacturingYear</td>
+                            @if (User.IsInRole("SuperAdmin")) { <td>@t.Tenant?.CompanyName</td> }
+                            <td class="@ExpiryClass(t.FitnessExpiry)">
+                                <i class="fas @(t.FitnessExpiry < DateTime.Today.AddDays(30) ? "fa-exclamation-triangle" : "fa-check-circle") mr-1"></i>
+                                @(t.FitnessExpiry?.ToString("dd MMM yyyy") ?? "—") <small>(@ExpiryLabel(t.FitnessExpiry))</small>
+                            </td>
+                            <td class="@ExpiryClass(t.InsuranceExpiry)">
+                                <i class="fas @(t.InsuranceExpiry < DateTime.Today.AddDays(30) ? "fa-exclamation-triangle" : "fa-check-circle") mr-1"></i>
+                                @(t.InsuranceExpiry?.ToString("dd MMM yyyy") ?? "—") <small>(@ExpiryLabel(t.InsuranceExpiry))</small>
+                            </td>
+                            <td>
+                                @switch (t.Status)
+                                {
+                                    case FleetPro.Models.Entities.TruckStatus.Active: <span class="badge badge-success">Active</span> break;
+                                    case FleetPro.Models.Entities.TruckStatus.InMaintenance: <span class="badge badge-warning">Maintenance</span> break;
+                                    case FleetPro.Models.Entities.TruckStatus.Inactive: <span class="badge badge-secondary">Inactive</span> break;
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4">No trucks found.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div></section>

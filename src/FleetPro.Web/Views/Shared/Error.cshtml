@@ -1,0 +1,27 @@
+@* This file should be saved to Views/Shared/Error.cshtml *@
+@{
+    ViewData["Title"] = "Error";
+    int code = ViewBag.Code ?? 500;
+}
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2"><div class="col-sm-6"><h1 class="m-0">Error @code</h1></div></div>
+</div></div>
+<section class="content"><div class="container-fluid">
+    <div class="error-page">
+        <h2 class="headline text-@(code == 404 ? "warning" : "danger")">@code</h2>
+        <div class="error-content">
+            <h3>
+                <i class="fas fa-exclamation-triangle text-@(code == 404 ? "warning" : "danger") mr-2"></i>
+                @(code == 404 ? "Page not found." : code == 403 ? "Access denied." : "An error occurred.")
+            </h3>
+            <p>
+                @(code == 404 ? "The page you are looking for does not exist." :
+                  code == 403 ? "You do not have permission to view this page." :
+                  "Something went wrong. Please try again or contact support.")
+            </p>
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">
+                <i class="fas fa-home mr-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div></section>

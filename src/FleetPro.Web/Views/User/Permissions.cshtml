@@ -1,0 +1,103 @@
+@* ══════════════════ Views/User/Permissions.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.UserPermissionViewModel
+@{ ViewData["Title"] = "Permissions — " + Model.UserName; }
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">Permissions — @Model.UserName</h1></div>
+        <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a asp-action="Index">Users</a></li>
+            <li class="breadcrumb-item active">Permissions</li>
+        </ol></div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+<form asp-action="Permissions" asp-route-id="@Model.UserId" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle mr-2"></i>
+        <strong>How permissions work:</strong> Role permissions are the baseline. User overrides take precedence — you can <span class="badge badge-success">Grant</span> or <span class="badge badge-danger">Deny</span> individual permissions for this user.
+    </div>
+
+    @foreach (var group in Model.Groups)
+    {
+        <div class="card">
+            <div class="card-header bg-light">
+                <h3 class="card-title"><i class="fas fa-layer-group mr-2"></i>@group.Module</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'grant')">Grant All</button>
+                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'deny')">Deny All</button>
+                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'inherit')">Inherit All</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var perm in group.Permissions)
+                    {
+                        <div class="col-md-4 mb-3" data-group="@group.Module">
+                            <label class="font-weight-bold d-block" style="font-size:13px;">@perm.Action</label>
+                            <small class="text-muted d-block mb-1">Role: @(perm.IsGrantedByRole ? "✓ Granted" : "✗ Denied")</small>
+                            <div class="btn-group btn-group-sm perm-group" data-perm="@perm.PermissionId">
+                                <button type="button"
+                                        class="btn @(perm.IsOverriddenByUser == true ? "btn-success" : "btn-outline-success") perm-btn"
+                                        data-val="grant" data-perm="@perm.PermissionId"
+                                        onclick="setPerm(this, '@perm.PermissionId', 'grant')">
+                                    <i class="fas fa-check mr-1"></i>Grant
+                                </button>
+                                <button type="button"
+                                        class="btn @(perm.IsOverriddenByUser == null ? "btn-secondary" : "btn-outline-secondary") perm-btn"
+                                        data-val="inherit" data-perm="@perm.PermissionId"
+                                        onclick="setPerm(this, '@perm.PermissionId', 'inherit')">
+                                    <i class="fas fa-minus mr-1"></i>Inherit
+                                </button>
+                                <button type="button"
+                                        class="btn @(perm.IsOverriddenByUser == false ? "btn-danger" : "btn-outline-danger") perm-btn"
+                                        data-val="deny" data-perm="@perm.PermissionId"
+                                        onclick="setPerm(this, '@perm.PermissionId', 'deny')">
+                                    <i class="fas fa-times mr-1"></i>Deny
+                                </button>
+                            </div>
+                            <input type="hidden" name="permissionValues[perm_@perm.PermissionId]"
+                                   id="perm_@perm.PermissionId"
+                                   value="@(perm.IsOverriddenByUser == true ? "grant" : perm.IsOverriddenByUser == false ? "deny" : "inherit")">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="text-right mb-3">
+        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Save Permissions</button>
+    </div>
+</form>
+</div></section>
+
+@section Scripts {
+<script>
+function setPerm(btn, permId, val) {
+    const group = btn.closest('.btn-group');
+    group.querySelectorAll('.perm-btn').forEach(b => {
+        b.className = b.className.replace('btn-success','btn-outline-success')
+                                  .replace('btn-secondary','btn-outline-secondary')
+                                  .replace('btn-danger','btn-outline-danger');
+    });
+    if (val === 'grant') btn.className = btn.className.replace('btn-outline-success','btn-success');
+    if (val === 'inherit') btn.className = btn.className.replace('btn-outline-secondary','btn-secondary');
+    if (val === 'deny') btn.className = btn.className.replace('btn-outline-danger','btn-danger');
+    document.getElementById('perm_' + permId).value = val;
+}
+
+function setGroupAll(module, val) {
+    document.querySelectorAll('[data-group="' + module + '"]').forEach(div => {
+        const permId = div.querySelector('.perm-btn')?.dataset.perm;
+        if (!permId) return;
+        const btn = div.querySelector('.perm-btn[data-val="' + val + '"]');
+        if (btn) setPerm(btn, permId, val);
+    });
+}
+</script>
+}
