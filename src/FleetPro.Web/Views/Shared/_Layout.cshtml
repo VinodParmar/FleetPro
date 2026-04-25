@@ -53,9 +53,9 @@
                     }
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">@alertCount Alerts</span>
+                    <span class="dropdown-item dropdown-header">@alertCount @(ViewData["Lang"]?.ToString()=="hi" ? "अलर्ट" : "Alerts")</span>
                     <div class="dropdown-divider"></div>
-                    <a asp-controller="Alert" asp-action="Index" class="dropdown-item dropdown-footer">View All Alerts</a>
+                    <a asp-controller="Alert" asp-action="Index" class="dropdown-item dropdown-footer">@(ViewData["Lang"]?.ToString()=="hi" ? "सभी अलर्ट देखें" : "View All Alerts")</a>
                 </div>
             </li>
 
@@ -70,7 +70,7 @@
                     <div class="dropdown-divider"></div>
                     <form asp-controller="Account" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i>@(ViewData["Lang"]?.ToString()=="hi" ? "लॉग आउट" : "Logout")</button>
                     </form>
                 </div>
             </li>

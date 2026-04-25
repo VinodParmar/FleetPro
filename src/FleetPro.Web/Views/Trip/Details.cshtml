@@ -1,13 +1,16 @@
 @* ══════════════════ Views/Trip/Details.cshtml ══════════════════ *@
 @model FleetPro.Models.Entities.Trip
-@{ ViewData["Title"] = "Trip — " + Model.TripNumber; }
+@{
+    ViewData["Title"] = "Trip — " + Model.TripNumber;
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+}
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">Trip @Model.TripNumber</h1></div>
+        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "यात्रा" : "Trip") @Model.TripNumber</h1></div>
         <div class="col-sm-6 text-right">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>Edit</a>
-            <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>Back</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>@(isHi ? "संपादित करें" : "Edit")</a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>@(isHi ? "वापस" : "Back")</a>
         </div>
     </div>
 </div></div>
@@ -19,50 +22,50 @@
         <div class="col-md-5">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>Trip Information</h3>
+                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>@(isHi ? "यात्रा की जानकारी" : "Trip Information")</h3>
                     <div class="card-tools">
                         @switch (Model.Status)
                         {
-                            case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">Completed</span>  break;
-                            case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
-                            case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">Scheduled</span>    break;
-                            case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">Cancelled</span>   break;
+                            case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">@(isHi ? "पूर्ण" : "Completed")</span>  break;
+                            case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">@(isHi ? "प्रगति में" : "In Progress")</span> break;
+                            case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">@(isHi ? "निर्धारित" : "Scheduled")</span>    break;
+                            case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">@(isHi ? "रद्द" : "Cancelled")</span>   break;
                         }
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-sm table-borderless mb-0">
-                        <tr><th class="text-muted" style="width:40%">Trip Number</th><td><strong>@Model.TripNumber</strong></td></tr>
-                        <tr><th class="text-muted">Truck</th><td>@Model.Truck?.NumberPlate (@Model.Truck?.Model)</td></tr>
-                        <tr><th class="text-muted">Driver</th><td>@Model.Driver?.FullName</td></tr>
-                        <tr><th class="text-muted">From</th><td>@Model.FromLocation</td></tr>
-                        <tr><th class="text-muted">To</th><td>@Model.ToLocation</td></tr>
-                        <tr><th class="text-muted">Start Date</th><td>@Model.StartDate.ToString("dd MMM yyyy")</td></tr>
-                        <tr><th class="text-muted">End Date</th><td>@(Model.EndDate?.ToString("dd MMM yyyy") ?? "—")</td></tr>
-                        <tr><th class="text-muted">Distance</th><td>@(Model.DistanceKm?.ToString("N0") ?? "—") km</td></tr>
-                        <tr><th class="text-muted">Cargo</th><td>@(Model.CargoDescription ?? "—")</td></tr>
-                        <tr><th class="text-muted">Weight</th><td>@(Model.CargoWeightTons?.ToString("N1") ?? "—") tons</td></tr>
-                        <tr><th class="text-muted">Client</th><td>@(Model.ClientName ?? "—")</td></tr>
-                        <tr><th class="text-muted">LR Number</th><td>@(Model.LRNumber ?? "—")</td></tr>
+                        <tr><th class="text-muted" style="width:40%">@(isHi ? "यात्रा नंबर" : "Trip Number")</th><td><strong>@Model.TripNumber</strong></td></tr>
+                        <tr><th class="text-muted">@(isHi ? "ट्रक" : "Truck")</th><td>@Model.Truck?.NumberPlate (@Model.Truck?.Model)</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "चालक" : "Driver")</th><td>@Model.Driver?.FullName</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "से" : "From")</th><td>@Model.FromLocation</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "तक" : "To")</th><td>@Model.ToLocation</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "प्रारंभ तिथि" : "Start Date")</th><td>@Model.StartDate.ToString("dd MMM yyyy")</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "समाप्ति तिथि" : "End Date")</th><td>@(Model.EndDate?.ToString("dd MMM yyyy") ?? "—")</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "दूरी" : "Distance")</th><td>@(Model.DistanceKm?.ToString("N0") ?? "—") km</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "माल" : "Cargo")</th><td>@(Model.CargoDescription ?? "—")</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "वजन" : "Weight")</th><td>@(Model.CargoWeightTons?.ToString("N1") ?? "—") tons</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "ग्राहक" : "Client")</th><td>@(Model.ClientName ?? "—")</td></tr>
+                        <tr><th class="text-muted">@(isHi ? "LR नंबर" : "LR Number")</th><td>@(Model.LRNumber ?? "—")</td></tr>
                         @if (!string.IsNullOrEmpty(Model.Notes))
-                        { <tr><th class="text-muted">Notes</th><td>@Model.Notes</td></tr> }
+                        { <tr><th class="text-muted">@(isHi ? "नोट्स" : "Notes")</th><td>@Model.Notes</td></tr> }
                     </table>
                 </div>
             </div>
 
             <!-- P&L Card -->
             <div class="card">
-                <div class="card-header bg-dark text-white"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>Profit & Loss</h3></div>
+                <div class="card-header bg-dark text-white"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>@(isHi ? "लाभ और हानि" : "Profit & Loss")</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
-                        <tr class="table-success"><td class="font-weight-bold">Revenue</td><td class="text-right font-weight-bold text-success">₹@Model.Revenue.ToString("N2")</td></tr>
+                        <tr class="table-success"><td class="font-weight-bold">@(isHi ? "आय" : "Revenue")</td><td class="text-right font-weight-bold text-success">₹@Model.Revenue.ToString("N2")</td></tr>
                         @foreach (var grp in Model.Expenses.Where(e=>!e.IsDeleted).GroupBy(e => e.Category).OrderBy(g => g.Key.ToString()))
                         {
                             <tr><td class="text-muted pl-3">@grp.Key</td><td class="text-right text-danger">−₹@grp.Sum(e => e.Amount).ToString("N2")</td></tr>
                         }
-                        <tr class="table-danger"><td class="font-weight-bold">Total Expenses</td><td class="text-right font-weight-bold text-danger">₹@Model.TotalExpenses.ToString("N2")</td></tr>
+                        <tr class="table-danger"><td class="font-weight-bold">@(isHi ? "कुल व्यय" : "Total Expenses")</td><td class="text-right font-weight-bold text-danger">₹@Model.TotalExpenses.ToString("N2")</td></tr>
                         <tr class="@(Model.NetProfit >= 0 ? "table-primary" : "table-warning")">
-                            <td class="font-weight-bold">Net Profit</td>
+                            <td class="font-weight-bold">@(isHi ? "शुद्ध लाभ" : "Net Profit")</td>
                             <td class="text-right font-weight-bold @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">
                                 ₹@Model.NetProfit.ToString("N2")
                                 @if (Model.Revenue > 0)
@@ -80,10 +83,10 @@
             <!-- Expenses -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-receipt mr-2"></i>Expenses</h3>
+                    <h3 class="card-title"><i class="fas fa-receipt mr-2"></i>@(isHi ? "व्यय" : "Expenses")</h3>
                     <div class="card-tools">
                         <a asp-controller="Expense" asp-action="Create" asp-route-tripId="@Model.Id" class="btn btn-sm btn-danger">
-                            <i class="fas fa-plus mr-1"></i>Add Expense
+                            <i class="fas fa-plus mr-1"></i>@(isHi ? "व्यय जोड़ें" : "Add Expense")
                         </a>
                     </div>
                 </div>
@@ -91,8 +94,8 @@
                     <table class="table table-sm mb-0">
                         <thead>
                             <tr>
-                                <th style="width:80px;">Actions</th>
-                                <th>Category</th><th>Amount</th><th>Date</th><th>Description</th><th>Bill</th>
+                                <th style="width:80px;">@(isHi ? "कार्रवाई" : "Actions")</th>
+                                <th>@(isHi ? "श्रेणी" : "Category")</th><th>@(isHi ? "राशि" : "Amount")</th><th>@(isHi ? "तारीख" : "Date")</th><th>@(isHi ? "विवरण" : "Description")</th><th>@(isHi ? "बिल" : "Bill")</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -103,7 +106,7 @@
                                         <a asp-controller="Expense" asp-action="Edit" asp-route-id="@e.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                         <form asp-controller="Expense" asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete this expense?" title="Delete"><i class="fas fa-trash"></i></button>
+                                            <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "यह व्यय हटाएं?" : "Delete this expense?")" title="Delete"><i class="fas fa-trash"></i></button>
                                         </form>
                                     </td>
                                     <td>
@@ -129,7 +132,7 @@
                                 </tr>
                             }
                             @if (!Model.Expenses.Any(e => !e.IsDeleted))
-                            { <tr><td colspan="6" class="text-center text-muted py-3">No expenses added yet.</td></tr> }
+                            { <tr><td colspan="6" class="text-center text-muted py-3">@(isHi ? "अभी तक कोई व्यय नहीं जोड़ा।" : "No expenses added yet.")</td></tr> }
                         </tbody>
                     </table>
                 </div>
@@ -138,10 +141,10 @@
             <!-- Documents -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-paperclip mr-2"></i>Documents</h3>
+                    <h3 class="card-title"><i class="fas fa-paperclip mr-2"></i>@(isHi ? "दस्तावेज़" : "Documents")</h3>
                     <div class="card-tools">
                         <button class="btn btn-sm btn-info" data-toggle="collapse" data-target="#uploadForm">
-                            <i class="fas fa-upload mr-1"></i>Upload
+                            <i class="fas fa-upload mr-1"></i>@(isHi ? "अपलोड" : "Upload")
                         </button>
                     </div>
                 </div>
@@ -152,7 +155,7 @@
                             <input type="hidden" name="tripId" value="@Model.Id">
                             <div class="row align-items-end">
                                 <div class="col-md-5 form-group mb-0">
-                                    <label>Document Type</label>
+                                    <label>@(isHi ? "दस्तावेज़ प्रकार" : "Document Type")</label>
                                     <select name="documentType" class="form-control form-control-sm">
                                         <option>LR (Lorry Receipt)</option><option>Invoice</option>
                                         <option>POD (Proof of Delivery)</option><option>Toll Receipt</option>
@@ -160,11 +163,11 @@
                                     </select>
                                 </div>
                                 <div class="col-md-5 form-group mb-0">
-                                    <label>File</label>
+                                    <label>@(isHi ? "फ़ाइल" : "File")</label>
                                     <input type="file" name="file" class="form-control-file pt-1" accept=".pdf,.jpg,.jpeg,.png">
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn btn-info btn-sm w-100">Upload</button>
+                                    <button type="submit" class="btn btn-info btn-sm w-100">@(isHi ? "अपलोड" : "Upload")</button>
                                 </div>
                             </div>
                         </form>
@@ -172,7 +175,7 @@
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
-                        <thead><tr><th style="width:80px;">Actions</th><th>Type</th><th>File</th><th>Size</th><th>Uploaded</th></tr></thead>
+                        <thead><tr><th style="width:80px;">@(isHi ? "कार्रवाई" : "Actions")</th><th>@(isHi ? "प्रकार" : "Type")</th><th>@(isHi ? "फ़ाइल" : "File")</th><th>@(isHi ? "आकार" : "Size")</th><th>@(isHi ? "अपलोड" : "Uploaded")</th></tr></thead>
                         <tbody>
                             @foreach (var doc in Model.Documents.Where(d => !d.IsDeleted))
                             {
@@ -188,7 +191,7 @@
                                 </tr>
                             }
                             @if (!Model.Documents.Any(d => !d.IsDeleted))
-                            { <tr><td colspan="5" class="text-center text-muted py-3">No documents uploaded.</td></tr> }
+                            { <tr><td colspan="5" class="text-center text-muted py-3">@(isHi ? "कोई दस्तावेज़ अपलोड नहीं किया।" : "No documents uploaded.")</td></tr> }
                         </tbody>
                     </table>
                 </div>

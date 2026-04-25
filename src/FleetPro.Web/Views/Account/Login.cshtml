@@ -5,7 +5,7 @@
     ViewData["Title"] = "Login";
 }
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="@ViewData["Lang"]">
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>FleetPro — Login</title>
@@ -24,11 +24,11 @@
 <div class="login-box">
     <div class="login-logo text-center mb-3">
         <a href="#"><i class="fas fa-truck-moving mr-2"></i>FleetPro</a>
-        <small>बहु-किरायेदार वाहन प्रबंधन प्रणाली</small>
+        <small>@(ViewData["Lang"]?.ToString()=="hi" ? "बहु-किरायेदार वाहन प्रबंधन प्रणाली" : "Multi-tenant Fleet Management System")</small>
     </div>
     <div class="card shadow-lg">
         <div class="card-body login-card-body">
-            <p class="login-box-msg">Sign in to continue</p>
+            <p class="login-box-msg">@(ViewData["Lang"]?.ToString()=="hi" ? "जारी रखने के लिए साइन इन करें" : "Sign in to continue")</p>
             <form asp-action="Login" asp-controller="Account" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="ReturnUrl" />
@@ -50,13 +50,13 @@
                     <div class="col-8">
                         <div class="icheck-primary">
                             <input asp-for="RememberMe" type="checkbox" id="remember">
-                            <label for="remember"> Remember Me</label>
+                            <label for="remember"> @(ViewData["Lang"]?.ToString()=="hi" ? "मुझे याद रखें" : "Remember Me")</label>
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block" style="background:linear-gradient(135deg,#1a2980,#26d0ce);border:none;">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    <i class="fas fa-sign-in-alt mr-2"></i>@(ViewData["Lang"]?.ToString()=="hi" ? "साइन इन" : "Sign In")
                 </button>
             </form>
 

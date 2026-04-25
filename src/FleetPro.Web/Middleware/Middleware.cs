@@ -112,9 +112,12 @@ public class LanguageMiddleware
                         SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict
                     });
 
-                // Redirect to remove query parameter
-                var redirectUrl = context.Request.Path + context.Request.QueryString.Value?
-                    .Replace($"?lang={lang}", "").Replace($"&lang={lang}", "") ?? context.Request.Path;
+                // Redirect to remove the lang query parameter
+                var qs = context.Request.QueryString.Value ?? "";
+                qs = qs.Replace($"?lang={lang}&", "?")
+                       .Replace($"?lang={lang}", "")
+                       .Replace($"&lang={lang}", "");
+                var redirectUrl = context.Request.Path + qs;
                 context.Response.Redirect(redirectUrl);
                 return;
             }

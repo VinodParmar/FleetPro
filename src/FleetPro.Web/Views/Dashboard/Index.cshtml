@@ -2,14 +2,15 @@
 @{
     ViewData["Title"] = "Dashboard";
     bool isSA = User.IsInRole("SuperAdmin");
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
 }
 
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6"><h1 class="m-0">Dashboard</h1></div>
+            <div class="col-sm-6"><h1 class="m-0">@(isHi ? "डैशबोर्ड" : "Dashboard")</h1></div>
             <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right"><li class="breadcrumb-item active">Dashboard</li></ol>
+                <ol class="breadcrumb float-sm-right"><li class="breadcrumb-item active">@(isHi ? "डैशबोर्ड" : "Dashboard")</li></ol>
             </div>
         </div>
     </div>
@@ -24,31 +25,31 @@
             {
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-info">
-                        <div class="inner"><h3>@Model.TotalTenants</h3><p>Total Tenants</p></div>
+                        <div class="inner"><h3>@Model.TotalTenants</h3><p>@(isHi ? "कुल किरायेदार" : "Total Tenants")</p></div>
                         <div class="icon"><i class="fas fa-building"></i></div>
-                        <a asp-controller="Tenant" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                        <a asp-controller="Tenant" asp-action="Index" class="small-box-footer">@(isHi ? "प्रबंधित करें" : "Manage") <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
             }
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-success">
-                    <div class="inner"><h3>@Model.ActiveTrucks <small style="font-size:50%">/ @Model.TotalTrucks</small></h3><p>Active Trucks</p></div>
+                    <div class="inner"><h3>@Model.ActiveTrucks <small style="font-size:50%">/ @Model.TotalTrucks</small></h3><p>@(isHi ? "सक्रिय ट्रक" : "Active Trucks")</p></div>
                     <div class="icon"><i class="fas fa-truck"></i></div>
-                    <a asp-controller="Truck" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Truck" asp-action="Index" class="small-box-footer">@(isHi ? "प्रबंधित करें" : "Manage") <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-warning">
-                    <div class="inner"><h3>@Model.ActiveTrips</h3><p>Active Trips</p></div>
+                    <div class="inner"><h3>@Model.ActiveTrips</h3><p>@(isHi ? "सक्रिय यात्राएं" : "Active Trips")</p></div>
                     <div class="icon"><i class="fas fa-route"></i></div>
-                    <a asp-controller="Trip" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Trip" asp-action="Index" class="small-box-footer">@(isHi ? "प्रबंधित करें" : "Manage") <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-danger">
-                    <div class="inner"><h3>@Model.TotalDrivers</h3><p>Total Drivers</p></div>
+                    <div class="inner"><h3>@Model.TotalDrivers</h3><p>@(isHi ? "कुल चालक" : "Total Drivers")</p></div>
                     <div class="icon"><i class="fas fa-user-tie"></i></div>
-                    <a asp-controller="Driver" asp-action="Index" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Driver" asp-action="Index" class="small-box-footer">@(isHi ? "प्रबंधित करें" : "Manage") <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div>
@@ -59,7 +60,7 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-success"><i class="fas fa-rupee-sign"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">Monthly Revenue</span>
+                        <span class="info-box-text">@(isHi ? "मासिक आय" : "Monthly Revenue")</span>
                         <span class="info-box-number">₹@Model.MonthlyRevenue.ToString("N0")</span>
                     </div>
                 </div>
@@ -68,7 +69,7 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-danger"><i class="fas fa-money-bill-wave"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">Monthly Expenses</span>
+                        <span class="info-box-text">@(isHi ? "मासिक व्यय" : "Monthly Expenses")</span>
                         <span class="info-box-number">₹@Model.MonthlyExpenses.ToString("N0")</span>
                     </div>
                 </div>
@@ -77,7 +78,7 @@
                 <div class="info-box">
                     <span class="info-box-icon @(Model.NetProfit >= 0 ? "bg-primary" : "bg-warning")"><i class="fas fa-chart-line"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">Net Profit</span>
+                        <span class="info-box-text">@(isHi ? "शुद्ध लाभ" : "Net Profit")</span>
                         <span class="info-box-number @(Model.NetProfit < 0 ? "text-danger" : "")">₹@Model.NetProfit.ToString("N0")</span>
                     </div>
                 </div>
@@ -89,10 +90,10 @@
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Recent Trips</h3>
+                        <h3 class="card-title">@(isHi ? "हालिया यात्राएं" : "Recent Trips")</h3>
                         <div class="card-tools">
                             <a asp-controller="Trip" asp-action="Create" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus mr-1"></i>New Trip
+                                <i class="fas fa-plus mr-1"></i>@(isHi ? "नई यात्रा" : "New Trip")
                             </a>
                         </div>
                     </div>
@@ -100,8 +101,8 @@
                         <table class="table table-sm table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th style="width:90px;">Actions</th>
-                                    <th>Trip #</th><th>Route</th><th>Driver</th><th>Revenue</th><th>Status</th>
+                                    <th style="width:90px;">@(isHi ? "कार्रवाई" : "Actions")</th>
+                                    <th>@(isHi ? "यात्रा #" : "Trip #")</th><th>@(isHi ? "मार्ग" : "Route")</th><th>@(isHi ? "चालक" : "Driver")</th><th>@(isHi ? "आय" : "Revenue")</th><th>@(isHi ? "स्थिति" : "Status")</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -119,10 +120,10 @@
                                         <td>
                                             @switch (t.Status)
                                             {
-                                                case FleetPro.Models.Entities.TripStatus.Completed: <span class="badge badge-success">Completed</span> break;
-                                                case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
-                                                case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">Scheduled</span> break;
-                                                case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">Cancelled</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.Completed: <span class="badge badge-success">@(isHi ? "पूर्ण" : "Completed")</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">@(isHi ? "प्रगति में" : "In Progress")</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">@(isHi ? "निर्धारित" : "Scheduled")</span> break;
+                                                case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">@(isHi ? "रद्द" : "Cancelled")</span> break;
                                             }
                                         </td>
                                     </tr>
@@ -131,7 +132,7 @@
                         </table>
                     </div>
                     <div class="card-footer text-right">
-                        <a asp-controller="Trip" asp-action="Index">View All Trips →</a>
+                        <a asp-controller="Trip" asp-action="Index">@(isHi ? "सभी यात्राएं देखें →" : "View All Trips →")</a>
                     </div>
                 </div>
             </div>
@@ -140,9 +141,9 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Urgent Alerts</h3>
+                        <h3 class="card-title">@(isHi ? "तत्काल अलर्ट" : "Urgent Alerts")</h3>
                         <div class="card-tools">
-                            <span class="badge badge-danger">@Model.CriticalAlerts Critical</span>
+                            <span class="badge badge-danger">@Model.CriticalAlerts @(isHi ? "गंभीर" : "Critical")</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -151,7 +152,7 @@
                             {
                                 <li class="list-group-item d-flex align-items-start py-2">
                                     <span class="badge @(a.Severity == FleetPro.Models.Entities.AlertSeverity.Critical ? "badge-danger" : "badge-warning") mr-2 mt-1">
-                                        @(a.DaysRemaining <= 0 ? "Expired" : a.DaysRemaining + "d")
+                                        @(a.DaysRemaining <= 0 ? (isHi ? "समाप्त" : "Expired") : a.DaysRemaining + "d")
                                     </span>
                                     <small><strong>@a.Title</strong></small>
                                 </li>
@@ -159,7 +160,7 @@
                         </ul>
                     </div>
                     <div class="card-footer text-right">
-                        <a asp-controller="Alert" asp-action="Index">View All Alerts →</a>
+                        <a asp-controller="Alert" asp-action="Index">@(isHi ? "सभी अलर्ट देखें →" : "View All Alerts →")</a>
                     </div>
                 </div>
             </div>

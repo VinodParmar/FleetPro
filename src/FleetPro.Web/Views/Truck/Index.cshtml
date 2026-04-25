@@ -2,16 +2,17 @@
 @model List<FleetPro.Models.Entities.Truck>
 @{
     ViewData["Title"] = "Trucks";
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
     string ExpiryClass(DateTime? d) => d == null ? "" : (d < DateTime.Today ? "expiry-bad" : d < DateTime.Today.AddDays(30) ? "expiry-warn" : "expiry-ok");
-    string ExpiryLabel(DateTime? d) => d == null ? "—" : (d < DateTime.Today ? "EXPIRED" : ((d.Value - DateTime.Today).Days + " days"));
+    string ExpiryLabel(DateTime? d) => d == null ? "—" : (d < DateTime.Today ? (isHi ? "समाप्त" : "EXPIRED") : ((d.Value - DateTime.Today).Days + "d"));
 }
 
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6"><h1 class="m-0">Truck Management</h1></div>
+            <div class="col-sm-6"><h1 class="m-0">@(isHi ? "ट्रक प्रबंधन" : "Truck Management")</h1></div>
             <div class="col-sm-6 text-right">
-                <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>Add Truck</a>
+                <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "ट्रक जोड़ें" : "Add Truck")</a>
             </div>
         </div>
     </div>
@@ -21,21 +22,21 @@
 
     <!-- Summary boxes -->
     <div class="row mb-3">
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-truck"></i></span><div class="info-box-content"><span class="info-box-text">Total</span><span class="info-box-number">@Model.Count</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">Active</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.Active)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-wrench"></i></span><div class="info-box-content"><span class="info-box-text">Maintenance</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.InMaintenance)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-danger"><i class="fas fa-exclamation"></i></span><div class="info-box-content"><span class="info-box-text">Expiry Alerts</span><span class="info-box-number">@Model.Count(t => (t.InsuranceExpiry < DateTime.Today.AddDays(30)) || (t.FitnessExpiry < DateTime.Today.AddDays(30)))</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-truck"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल" : "Total")</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "सक्रिय" : "Active")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.Active)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-wrench"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "रखरखाव" : "Maintenance")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TruckStatus.InMaintenance)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-danger"><i class="fas fa-exclamation"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "समाप्ति अलर्ट" : "Expiry Alerts")</span><span class="info-box-number">@Model.Count(t => (t.InsuranceExpiry < DateTime.Today.AddDays(30)) || (t.FitnessExpiry < DateTime.Today.AddDays(30)))</span></div></div></div>
     </div>
 
     <div class="card">
         <div class="card-header">
             <form method="get" class="form-inline">
                 <select name="status" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
-                    <option value="">All Status</option>
+                    <option value="">@(isHi ? "सभी स्थिति" : "All Status")</option>
                     @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TruckStatus>())
                     { <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString() ? "selected" : null)">@s</option> }
                 </select>
-                <input name="search" value="@ViewBag.Search" class="form-control form-control-sm mr-2" placeholder="Search plate / model…">
+                <input name="search" value="@ViewBag.Search" class="form-control form-control-sm mr-2" placeholder="@(isHi ? "नंबर प्लेट / मॉडल खोजें…" : "Search plate / model…")">
                 <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
             </form>
         </div>
@@ -43,10 +44,10 @@
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:100px;">Actions</th>
-                        <th>Plate</th><th>Model</th><th>Year</th>
-                        @if (User.IsInRole("SuperAdmin")) { <th>Tenant</th> }
-                        <th>Fitness Expiry</th><th>Insurance Expiry</th><th>Status</th>
+                        <th style="width:100px;">@(isHi ? "कार्रवाई" : "Actions")</th>
+                        <th>@(isHi ? "नंबर प्लेट" : "Plate")</th><th>@(isHi ? "मॉडल" : "Model")</th><th>@(isHi ? "वर्ष" : "Year")</th>
+                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "किरायेदार" : "Tenant")</th> }
+                        <th>@(isHi ? "फिटनेस समाप्ति" : "Fitness Expiry")</th><th>@(isHi ? "बीमा समाप्ति" : "Insurance Expiry")</th><th>@(isHi ? "स्थिति" : "Status")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,7 +58,7 @@
                                 <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete truck @t.NumberPlate?" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "ट्रक " + t.NumberPlate + " हटाएं?" : "Delete truck " + t.NumberPlate + "?")" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td><strong>@t.NumberPlate</strong></td>
@@ -75,16 +76,16 @@
                             <td>
                                 @switch (t.Status)
                                 {
-                                    case FleetPro.Models.Entities.TruckStatus.Active: <span class="badge badge-success">Active</span> break;
-                                    case FleetPro.Models.Entities.TruckStatus.InMaintenance: <span class="badge badge-warning">Maintenance</span> break;
-                                    case FleetPro.Models.Entities.TruckStatus.Inactive: <span class="badge badge-secondary">Inactive</span> break;
+                                    case FleetPro.Models.Entities.TruckStatus.Active: <span class="badge badge-success">@(isHi ? "सक्रिय" : "Active")</span> break;
+                                    case FleetPro.Models.Entities.TruckStatus.InMaintenance: <span class="badge badge-warning">@(isHi ? "रखरखाव" : "Maintenance")</span> break;
+                                    case FleetPro.Models.Entities.TruckStatus.Inactive: <span class="badge badge-secondary">@(isHi ? "निष्क्रिय" : "Inactive")</span> break;
                                 }
                             </td>
                         </tr>
                     }
                     @if (!Model.Any())
                     {
-                        <tr><td colspan="8" class="text-center text-muted py-4">No trucks found.</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted py-4">@(isHi ? "कोई ट्रक नहीं मिला।" : "No trucks found.")</td></tr>
                     }
                 </tbody>
             </table>

@@ -1,21 +1,24 @@
 @* ══════════════════ Views/Tenant/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.ViewModels.TenantViewModel>
-@{ ViewData["Title"] = "Tenants"; }
+@{
+    ViewData["Title"] = "Tenants";
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+}
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">Tenant Management</h1></div>
-        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>Add Tenant</a></div>
+        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "किरायेदार प्रबंधन" : "Tenant Management")</h1></div>
+        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "किरायेदार जोड़ें" : "Add Tenant")</a></div>
     </div>
 </div></div>
 
 <section class="content"><div class="container-fluid">
 
     <div class="row mb-3">
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-building"></i></span><div class="info-box-content"><span class="info-box-text">Total</span><span class="info-box-number">@Model.Count</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">Active</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Active)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span><div class="info-box-content"><span class="info-box-text">Trial</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Trial)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-secondary"><i class="fas fa-pause"></i></span><div class="info-box-content"><span class="info-box-text">Inactive</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Inactive)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-building"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल" : "Total")</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "सक्रिय" : "Active")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Active)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "परीक्षण" : "Trial")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Trial)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-secondary"><i class="fas fa-pause"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "निष्क्रिय" : "Inactive")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Inactive)</span></div></div></div>
     </div>
 
     <div class="card">
@@ -23,9 +26,9 @@
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:110px;">Actions</th>
-                        <th>Company</th><th>Subdomain</th><th>Contact</th><th>Plan</th>
-                        <th>Trucks</th><th>Drivers</th><th>Users</th><th>Status</th><th>City</th>
+                        <th style="width:110px;">@(isHi ? "कार्रवाई" : "Actions")</th>
+                        <th>@(isHi ? "कंपनी" : "Company")</th><th>@(isHi ? "सबडोमेन" : "Subdomain")</th><th>@(isHi ? "संपर्क" : "Contact")</th><th>@(isHi ? "योजना" : "Plan")</th>
+                        <th>@(isHi ? "ट्रक" : "Trucks")</th><th>@(isHi ? "चालक" : "Drivers")</th><th>@(isHi ? "उपयोगकर्ता" : "Users")</th><th>@(isHi ? "स्थिति" : "Status")</th><th>@(isHi ? "शहर" : "City")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,7 +39,7 @@
                                 <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete tenant @t.CompanyName? This cannot be undone." title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "किरायेदार " + t.CompanyName + " हटाएं? यह पूर्ववत नहीं होगा।" : "Delete tenant " + t.CompanyName + "? This cannot be undone.")" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -71,17 +74,17 @@
                             <td>
                                 @switch (t.Status)
                                 {
-                                    case FleetPro.Models.Entities.TenantStatus.Active:   <span class="badge badge-success">Active</span>   break;
-                                    case FleetPro.Models.Entities.TenantStatus.Trial:    <span class="badge badge-warning">Trial</span>    break;
-                                    case FleetPro.Models.Entities.TenantStatus.Inactive: <span class="badge badge-secondary">Inactive</span> break;
-                                    case FleetPro.Models.Entities.TenantStatus.Suspended:<span class="badge badge-danger">Suspended</span> break;
+                                    case FleetPro.Models.Entities.TenantStatus.Active:   <span class="badge badge-success">@(isHi ? "सक्रिय" : "Active")</span>   break;
+                                    case FleetPro.Models.Entities.TenantStatus.Trial:    <span class="badge badge-warning">@(isHi ? "परीक्षण" : "Trial")</span>    break;
+                                    case FleetPro.Models.Entities.TenantStatus.Inactive: <span class="badge badge-secondary">@(isHi ? "निष्क्रिय" : "Inactive")</span> break;
+                                    case FleetPro.Models.Entities.TenantStatus.Suspended:<span class="badge badge-danger">@(isHi ? "निलंबित" : "Suspended")</span> break;
                                 }
                             </td>
                             <td>@t.City, @t.State</td>
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="10" class="text-center text-muted py-4">No tenants found.</td></tr> }
+                    { <tr><td colspan="10" class="text-center text-muted py-4">@(isHi ? "कोई किरायेदार नहीं मिला।" : "No tenants found.")</td></tr> }
                 </tbody>
             </table>
         </div>

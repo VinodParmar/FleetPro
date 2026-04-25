@@ -1,19 +1,23 @@
 @* ══════════════════ Views/Trip/Create.cshtml ══════════════════ *@
 @model FleetPro.Models.ViewModels.TripViewModel
-@{ ViewData["Title"] = Model.Id == 0 ? "New Trip" : "Edit Trip — " + Model.TripNumber; }
+@{
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    bool isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? (isHi ? "नई यात्रा" : "New Trip") : (isHi ? "यात्रा संपादित करें — " + Model.TripNumber : "Edit Trip — " + Model.TripNumber);
+}
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a asp-action="Index">Trips</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "यात्राएं" : "Trips")</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
     </div>
 </div></div>
 
 <section class="content"><div class="container-fluid">
-<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
@@ -21,69 +25,69 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>Trip Details</h3>
+                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>@(isHi ? "यात्रा विवरण" : "Trip Details")</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label asp-for="TruckId" class="font-weight-bold">Truck *</label>
+                            <label asp-for="TruckId" class="font-weight-bold">@(isHi ? "ट्रक *" : "Truck *")</label>
                             <select asp-for="TruckId" asp-items="ViewBag.Trucks" class="form-control">
-                                <option value="">— Select Truck —</option>
+                                <option value="">@(isHi ? "— ट्रक चुनें —" : "— Select Truck —")</option>
                             </select>
                             <span asp-validation-for="TruckId" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="DriverId" class="font-weight-bold">Driver *</label>
+                            <label asp-for="DriverId" class="font-weight-bold">@(isHi ? "चालक *" : "Driver *")</label>
                             <select asp-for="DriverId" asp-items="ViewBag.Drivers" class="form-control">
-                                <option value="">— Select Driver —</option>
+                                <option value="">@(isHi ? "— चालक चुनें —" : "— Select Driver —")</option>
                             </select>
                             <span asp-validation-for="DriverId" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="FromLocation" class="font-weight-bold">From Location *</label>
+                            <label asp-for="FromLocation" class="font-weight-bold">@(isHi ? "प्रस्थान स्थान *" : "From Location *")</label>
                             <input asp-for="FromLocation" class="form-control" placeholder="Mumbai, Maharashtra">
                             <span asp-validation-for="FromLocation" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="ToLocation" class="font-weight-bold">To Location *</label>
+                            <label asp-for="ToLocation" class="font-weight-bold">@(isHi ? "गंतव्य स्थान *" : "To Location *")</label>
                             <input asp-for="ToLocation" class="form-control" placeholder="Delhi, NCR">
                             <span asp-validation-for="ToLocation" class="text-danger small"></span>
                         </div>
                         <div class="col-md-4 form-group">
-                            <label asp-for="StartDate" class="font-weight-bold">Start Date *</label>
+                            <label asp-for="StartDate" class="font-weight-bold">@(isHi ? "प्रारंभ तिथि *" : "Start Date *")</label>
                             <input asp-for="StartDate" type="date" class="form-control">
                             <span asp-validation-for="StartDate" class="text-danger small"></span>
                         </div>
                         <div class="col-md-4 form-group">
-                            <label asp-for="EndDate">End Date</label>
+                            <label asp-for="EndDate">@(isHi ? "समाप्ति तिथि" : "End Date")</label>
                             <input asp-for="EndDate" type="date" class="form-control">
                         </div>
                         <div class="col-md-4 form-group">
-                            <label asp-for="DistanceKm">Distance (km)</label>
+                            <label asp-for="DistanceKm">@(isHi ? "दूरी (km)" : "Distance (km)")</label>
                             <input asp-for="DistanceKm" type="number" step="0.1" class="form-control" placeholder="1421">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="CargoDescription">Cargo Description</label>
+                            <label asp-for="CargoDescription">@(isHi ? "माल विवरण" : "Cargo Description")</label>
                             <input asp-for="CargoDescription" class="form-control" placeholder="FMCG Goods">
                         </div>
                         <div class="col-md-3 form-group">
-                            <label asp-for="CargoWeightTons">Cargo Weight (Tons)</label>
+                            <label asp-for="CargoWeightTons">@(isHi ? "माल वजन (टन)" : "Cargo Weight (Tons)")</label>
                             <input asp-for="CargoWeightTons" type="number" step="0.5" class="form-control">
                         </div>
                         <div class="col-md-3 form-group">
-                            <label asp-for="Status" class="font-weight-bold">Status</label>
+                            <label asp-for="Status" class="font-weight-bold">@(isHi ? "स्थिति" : "Status")</label>
                             <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TripStatus>()" class="form-control"></select>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="ClientName">Client Name</label>
+                            <label asp-for="ClientName">@(isHi ? "ग्राहक नाम" : "Client Name")</label>
                             <input asp-for="ClientName" class="form-control" placeholder="Reliance Retail">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="LRNumber">LR Number (Lorry Receipt)</label>
+                            <label asp-for="LRNumber">@(isHi ? "LR नंबर (लॉरी रसीद)" : "LR Number (Lorry Receipt)")</label>
                             <input asp-for="LRNumber" class="form-control" placeholder="LR-2025-001">
                         </div>
                         <div class="col-md-12 form-group">
-                            <label asp-for="Notes">Notes</label>
+                            <label asp-for="Notes">@(isHi ? "नोट्स" : "Notes")</label>
                             <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
@@ -94,11 +98,11 @@
         <div class="col-md-4">
             <div class="card border-success">
                 <div class="card-header bg-success text-white">
-                    <h3 class="card-title"><i class="fas fa-rupee-sign mr-2"></i>Revenue</h3>
+                    <h3 class="card-title"><i class="fas fa-rupee-sign mr-2"></i>@(isHi ? "आय" : "Revenue")</h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label asp-for="Revenue" class="font-weight-bold">Revenue Amount (₹) *</label>
+                        <label asp-for="Revenue" class="font-weight-bold">@(isHi ? "आय राशि (₹) *" : "Revenue Amount (₹) *")</label>
                         <div class="input-group">
                             <div class="input-group-prepend"><span class="input-group-text">₹</span></div>
                             <input asp-for="Revenue" type="number" step="0.01" min="0" class="form-control form-control-lg" placeholder="45000">
@@ -109,12 +113,12 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>Quick Tips</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>@(isHi ? "त्वरित सुझाव" : "Quick Tips")</h3></div>
                 <div class="card-body text-muted small">
                     <ul class="pl-3 mb-0">
-                        <li>Add expenses after creating the trip</li>
-                        <li>Upload documents (LR, Invoice) in trip details</li>
-                        <li>P&L is auto-calculated from Revenue − Expenses</li>
+                        <li>@(isHi ? "यात्रा बनाने के बाद व्यय जोड़ें" : "Add expenses after creating the trip")</li>
+                        <li>@(isHi ? "यात्रा विवरण में दस्तावेज़ अपलोड करें" : "Upload documents (LR, Invoice) in trip details")</li>
+                        <li>@(isHi ? "P&L आय − व्यय से स्वतः गणित होता है" : "P&L is auto-calculated from Revenue − Expenses")</li>
                     </ul>
                 </div>
             </div>
@@ -122,8 +126,8 @@
     </div>
 
     <div class="text-right mb-3">
-        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>Cancel</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(Model.Id == 0 ? "Create Trip" : "Save Changes")</button>
+        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@(isHi ? "रद्द करें" : "Cancel")</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "यात्रा बनाएं" : "Create Trip") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
     </div>
 </form>
 </div></section>

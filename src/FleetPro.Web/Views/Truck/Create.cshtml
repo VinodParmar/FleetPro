@@ -1,70 +1,74 @@
 @* ══════════════════ Views/Truck/Create.cshtml ══════════════════ *@
 @model FleetPro.Models.ViewModels.TruckViewModel
-@{ ViewData["Title"] = Model.Id == 0 ? "Add Truck" : "Edit Truck"; }
+@{
+    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    bool isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? (isHi ? "ट्रक जोड़ें" : "Add Truck") : (isHi ? "ट्रक संपादित करें" : "Edit Truck");
+}
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a asp-action="Index">Trucks</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "ट्रक" : "Trucks")</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
     </div>
 </div></div>
 
 <section class="content"><div class="container-fluid">
-<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
     @Html.AntiForgeryToken()
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-success text-white"><h3 class="card-title"><i class="fas fa-truck mr-2"></i>Truck Information</h3></div>
+                <div class="card-header bg-success text-white"><h3 class="card-title"><i class="fas fa-truck mr-2"></i>@(isHi ? "ट्रक की जानकारी" : "Truck Information")</h3></div>
                 <div class="card-body">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label asp-for="NumberPlate" class="font-weight-bold">Number Plate *</label>
+                            <label asp-for="NumberPlate" class="font-weight-bold">@(isHi ? "नंबर प्लेट *" : "Number Plate *")</label>
                             <input asp-for="NumberPlate" class="form-control" placeholder="MH12AB1234" style="text-transform:uppercase;">
                             <span asp-validation-for="NumberPlate" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Model" class="font-weight-bold">Model *</label>
+                            <label asp-for="Model" class="font-weight-bold">@(isHi ? "मॉडल *" : "Model *")</label>
                             <input asp-for="Model" class="form-control" placeholder="Tata Prima 4928S">
                             <span asp-validation-for="Model" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Make">Make / Brand</label>
+                            <label asp-for="Make">@(isHi ? "ब्रांड" : "Make / Brand")</label>
                             <input asp-for="Make" class="form-control" placeholder="Tata, Ashok Leyland…">
                         </div>
                         <div class="col-md-3 form-group">
-                            <label asp-for="ManufacturingYear">Year</label>
+                            <label asp-for="ManufacturingYear">@(isHi ? "वर्ष" : "Year")</label>
                             <input asp-for="ManufacturingYear" type="number" class="form-control" min="2000" max="@DateTime.Now.Year">
                         </div>
                         <div class="col-md-3 form-group">
-                            <label asp-for="LoadCapacityTons">Capacity (Tons)</label>
+                            <label asp-for="LoadCapacityTons">@(isHi ? "क्षमता (टन)" : "Capacity (Tons)")</label>
                             <input asp-for="LoadCapacityTons" type="number" step="0.5" class="form-control">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="EngineNumber">Engine Number</label>
+                            <label asp-for="EngineNumber">@(isHi ? "इंजन नंबर" : "Engine Number")</label>
                             <input asp-for="EngineNumber" class="form-control">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="ChassisNumber">Chassis Number</label>
+                            <label asp-for="ChassisNumber">@(isHi ? "चेसिस नंबर" : "Chassis Number")</label>
                             <input asp-for="ChassisNumber" class="form-control">
                         </div>
                         @if (User.IsInRole("SuperAdmin") && ViewBag.Tenants != null)
                         {
                             <div class="col-md-12 form-group">
-                                <label asp-for="TenantId" class="font-weight-bold">Tenant *</label>
-                                <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control"><option value="">— Select Tenant —</option></select>
+                                <label asp-for="TenantId" class="font-weight-bold">@(isHi ? "किरायेदार *" : "Tenant *")</label>
+                                <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control"><option value="">@(isHi ? "— किरायेदार चुनें —" : "— Select Tenant —")</option></select>
                             </div>
                         }
                         <div class="col-md-12 form-group">
-                            <label asp-for="Status" class="font-weight-bold">Status</label>
+                            <label asp-for="Status" class="font-weight-bold">@(isHi ? "स्थिति" : "Status")</label>
                             <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TruckStatus>()" class="form-control"></select>
                         </div>
                         <div class="col-md-12 form-group">
-                            <label asp-for="Notes">Notes</label>
+                            <label asp-for="Notes">@(isHi ? "नोट्स" : "Notes")</label>
                             <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
@@ -74,28 +78,28 @@
 
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-calendar-times mr-2"></i>Expiry Dates</h3></div>
+                <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-calendar-times mr-2"></i>@(isHi ? "समाप्ति तिथियां" : "Expiry Dates")</h3></div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label asp-for="FitnessExpiry" class="font-weight-bold">Fitness Certificate Expiry</label>
+                        <label asp-for="FitnessExpiry" class="font-weight-bold">@(isHi ? "फिटनेस प्रमाणपत्र समाप्ति" : "Fitness Certificate Expiry")</label>
                         <input asp-for="FitnessExpiry" type="date" class="form-control">
                         <span asp-validation-for="FitnessExpiry" class="text-danger small"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="InsuranceExpiry" class="font-weight-bold">Insurance Expiry</label>
+                        <label asp-for="InsuranceExpiry" class="font-weight-bold">@(isHi ? "बीमा समाप्ति" : "Insurance Expiry")</label>
                         <input asp-for="InsuranceExpiry" type="date" class="form-control">
                         <span asp-validation-for="InsuranceExpiry" class="text-danger small"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="InsurancePolicyNumber">Policy Number</label>
+                        <label asp-for="InsurancePolicyNumber">@(isHi ? "पॉलिसी नंबर" : "Policy Number")</label>
                         <input asp-for="InsurancePolicyNumber" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label asp-for="TaxExpiry">Road Tax Expiry</label>
+                        <label asp-for="TaxExpiry">@(isHi ? "रोड टैक्स समाप्ति" : "Road Tax Expiry")</label>
                         <input asp-for="TaxExpiry" type="date" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label asp-for="PermitExpiry">Permit Expiry</label>
+                        <label asp-for="PermitExpiry">@(isHi ? "परमिट समाप्ति" : "Permit Expiry")</label>
                         <input asp-for="PermitExpiry" type="date" class="form-control">
                     </div>
                 </div>
@@ -105,8 +109,8 @@
 
     <div class="row">
         <div class="col-12 text-right">
-            <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>Cancel</a>
-            <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i>@(Model.Id == 0 ? "Add Truck" : "Save Changes")</button>
+            <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@(isHi ? "रद्द करें" : "Cancel")</a>
+            <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "ट्रक जोड़ें" : "Add Truck") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
         </div>
     </div>
 </form>
