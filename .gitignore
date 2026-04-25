@@ -9,3 +9,4 @@
 /src/FleetPro.Web/appsettings.Development.json
 /src/FleetPro.Web/appsettings.json
 /README.md
+src/FleetPro.Web/logs/fleetpro*.log

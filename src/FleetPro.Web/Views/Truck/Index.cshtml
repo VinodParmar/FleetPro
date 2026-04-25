@@ -10,10 +10,17 @@
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6"><h1 class="m-0">@(isHi ? "ट्रक प्रबंधन" : "Truck Management")</h1></div>
-            <div class="col-sm-6 text-right">
-                <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "ट्रक जोड़ें" : "Add Truck")</a>
-            </div>
+            <div class="col-sm-6">
+            <h1 class="m-0">@(isHi ? "ट्रक प्रबंधन" : "Truck Management")
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "ट्रक जोड़ें" : "Add Truck")</a>
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "ट्रक प्रबंधन" : "Truck Management")</li>
+            </ol>
+        </div>
         </div>
     </div>
 </div>
@@ -46,7 +53,7 @@
                     <tr>
                         <th style="width:100px;">@(isHi ? "कार्रवाई" : "Actions")</th>
                         <th>@(isHi ? "नंबर प्लेट" : "Plate")</th><th>@(isHi ? "मॉडल" : "Model")</th><th>@(isHi ? "वर्ष" : "Year")</th>
-                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "किरायेदार" : "Tenant")</th> }
+                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "कंपनी" : "Company")</th> }
                         <th>@(isHi ? "फिटनेस समाप्ति" : "Fitness Expiry")</th><th>@(isHi ? "बीमा समाप्ति" : "Insurance Expiry")</th><th>@(isHi ? "स्थिति" : "Status")</th>
                     </tr>
                 </thead>

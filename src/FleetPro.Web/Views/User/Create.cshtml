@@ -10,6 +10,7 @@
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
             <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "उपयोगकर्ता" : "Users")</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
@@ -54,7 +55,7 @@
                         @if (User.IsInRole("SuperAdmin") && ViewBag.Tenants != null)
                         {
                             <div class="col-md-12 form-group">
-                                <label asp-for="TenantId" class="font-weight-bold">@(isHi ? "किरायेदार" : "Tenant")</label>
+                                <label asp-for="TenantId" class="font-weight-bold">@(isHi ? "कंपनी" : "Company")</label>
                                 <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control">
                                     <option value="">@(isHi ? "— वैश्विक (सुपर व्यवस्थापक) —" : "— Global (Super Admin) —")</option>
                                 </select>
@@ -84,8 +85,8 @@
                     <table class="table table-sm table-borderless mb-0" style="font-size:12px;">
                         <thead><tr><th>@(isHi ? "भूमिका" : "Role")</th><th>@(isHi ? "पहुंच स्तर" : "Access Level")</th></tr></thead>
                         <tbody>
-                            <tr><td><span class="badge badge-dark">@(isHi ? "सुपर व्यवस्थापक" : "Super Admin")</span></td><td>@(isHi ? "पूर्ण सिस्टम पहुंच, सभी किरायेदार" : "Full system access, all tenants")</td></tr>
-                            <tr><td><span class="badge badge-primary">@(isHi ? "किरायेदार व्यवस्थापक" : "Tenant Admin")</span></td><td>@(isHi ? "अपने किरायेदार में पूर्ण पहुंच" : "Full access within their tenant")</td></tr>
+                            <tr><td><span class="badge badge-dark">@(isHi ? "सुपर व्यवस्थापक" : "Super Admin")</span></td><td>@(isHi ? "पूर्ण सिस्टम पहुंच, सभी कंपनियां" : "Full system access, all companies")</td></tr>
+                            <tr><td><span class="badge badge-primary">@(isHi ? "कंपनी व्यवस्थापक" : "Company Admin")</span></td><td>@(isHi ? "अपनी कंपनी में पूर्ण पहुंच" : "Full access within their company")</td></tr>
                             <tr><td><span class="badge badge-info">@(isHi ? "डेटा प्रवेश" : "Data Entry")</span></td><td>@(isHi ? "देखें, बनाएं, संपादित करें — हटाएं नहीं" : "View, Create, Edit — no Delete")</td></tr>
                             <tr><td><span class="badge badge-secondary">@(isHi ? "दर्शक" : "Viewer")</span></td><td>@(isHi ? "केवल पढ़ने की पहुंच" : "Read-only access")</td></tr>
                         </tbody>

@@ -3,12 +3,22 @@
 @{
     ViewData["Title"] = "Expenses";
     bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    int? tripFilterId = ViewBag.TripFilter as int?;
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "व्यय प्रबंधन" : "Expense Management")</h1></div>
-        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-danger btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "व्यय जोड़ें" : "Add Expense")</a></div>
+        <div class="col-sm-6">
+            <h1 class="m-0">@(isHi ? "व्यय प्रबंधन" : "Expense Management")
+                <a asp-action="Create" class="btn btn-danger btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "व्यय जोड़ें" : "Add Expense")</a>
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "व्यय प्रबंधन" : "Expense Management")</li>
+            </ol>
+        </div>
     </div>
 </div></div>
 
@@ -44,7 +54,19 @@
 
     <div class="card">
         <div class="card-header">
+            @if (tripFilterId != null)
+            {
+                var tripNum = Model.FirstOrDefault()?.Trip?.TripNumber ?? $"#{tripFilterId}";
+                <div class="mb-2">
+                    <span class="badge badge-info p-2"><i class="fas fa-filter mr-1"></i>@(isHi ? "यात्रा फ़िल्टर:" : "Trip filter:") @tripNum</span>
+                    <a asp-action="Index" class="btn btn-xs btn-outline-secondary ml-1">@(isHi ? "फ़िल्टर हटाएं" : "Remove filter")</a>
+                </div>
+            }
             <form method="get" class="form-inline" style="gap:6px;">
+                @if (tripFilterId != null)
+                {
+                    <input type="hidden" name="tripId" value="@tripFilterId">
+                }
                 <select name="category" class="form-control form-control-sm" onchange="this.form.submit()">
                     <option value="">@(isHi ? "सभी श्रेणियां" : "All Categories")</option>
                     @foreach (var c in Enum.GetValues<FleetPro.Models.Entities.ExpenseCategory>())

@@ -8,13 +8,19 @@
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@(isHi ? "अलर्ट और सूचनाएं" : "Alerts & Notifications")</h1></div>
-        <div class="col-sm-6 text-right">
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "अलर्ट" : "Alerts")</li>
+            </ol>
             @if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
             {
-                <form asp-action="Refresh" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-sync-alt mr-1"></i>@(isHi ? "अलर्ट ताज़ा करें" : "Refresh Alerts")</button>
-                </form>
+                <div class="text-right mt-1">
+                    <form asp-action="Refresh" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-sync-alt mr-1"></i>@(isHi ? "अलर्ट ताज़ा करें" : "Refresh Alerts")</button>
+                    </form>
+                </div>
             }
         </div>
     </div>

@@ -20,17 +20,17 @@
             <li class="nav-item @(ctrl == "Tenant" ? "menu-open" : "")">
                 <a href="#" class="nav-link @(ctrl == "Tenant" ? "active" : "")">
                     <i class="nav-icon fas fa-building"></i>
-                    <p>@(isHi ? "किरायेदार प्रबंधन" : "Tenant Management") <i class="right fas fa-angle-left"></i></p>
+                    <p>@(isHi ? "कंपनी प्रबंधन" : "Company Management") <i class="right fas fa-angle-left"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a asp-controller="Tenant" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "किरायेदार सूची" : "Tenant List")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "कंपनी सूची" : "Company List")</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a asp-controller="Tenant" asp-action="Create" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "किरायेदार जोड़ें" : "Add Tenant")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "कंपनी जोड़ें" : "Add Company")</p>
                         </a>
                     </li>
                 </ul>

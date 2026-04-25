@@ -1,14 +1,23 @@
 @* ══════════════════ Views/Tenant/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.ViewModels.TenantViewModel>
 @{
-    ViewData["Title"] = "Tenants";
+    ViewData["Title"] = "Companies";
     bool isHi = ViewData["Lang"]?.ToString() == "hi";
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "किरायेदार प्रबंधन" : "Tenant Management")</h1></div>
-        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "किरायेदार जोड़ें" : "Add Tenant")</a></div>
+        <div class="col-sm-6">
+            <h1 class="m-0">@(isHi ? "कंपनी प्रबंधन" : "Company Management")
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "कंपनी जोड़ें" : "Add Company")</a>
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "कंपनी प्रबंधन" : "Company Management")</li>
+            </ol>
+        </div>
     </div>
 </div></div>
 
@@ -39,7 +48,7 @@
                                 <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "किरायेदार " + t.CompanyName + " हटाएं? यह पूर्ववत नहीं होगा।" : "Delete tenant " + t.CompanyName + "? This cannot be undone.")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "कंपनी " + t.CompanyName + " हटाएं? यह पूर्ववत नहीं होगा।" : "Delete company " + t.CompanyName + "? This cannot be undone.")" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -84,7 +93,7 @@
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="10" class="text-center text-muted py-4">@(isHi ? "कोई किरायेदार नहीं मिला।" : "No tenants found.")</td></tr> }
+                    { <tr><td colspan="10" class="text-center text-muted py-4">@(isHi ? "कोई कंपनी नहीं मिली।" : "No companies found.")</td></tr> }
                 </tbody>
             </table>
         </div>

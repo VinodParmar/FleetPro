@@ -8,9 +8,16 @@
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@(isHi ? "यात्रा" : "Trip") @Model.TripNumber</h1></div>
-        <div class="col-sm-6 text-right">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>@(isHi ? "संपादित करें" : "Edit")</a>
-            <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>@(isHi ? "वापस" : "Back")</a>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "यात्राएं" : "Trips")</a></li>
+                <li class="breadcrumb-item active">@Model.TripNumber</li>
+            </ol>
+            <div class="text-right mt-1">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>@(isHi ? "संपादित करें" : "Edit")</a>
+                <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>@(isHi ? "वापस" : "Back")</a>
+            </div>
         </div>
     </div>
 </div></div>

@@ -3,14 +3,15 @@
 @{
     bool isHi = ViewData["Lang"]?.ToString() == "hi";
     bool isCreate = Model.Id == 0;
-    ViewData["Title"] = isCreate ? (isHi ? "किरायेदार जोड़ें" : "Add Tenant") : (isHi ? "किरायेदार संपादित करें" : "Edit Tenant");
+    ViewData["Title"] = isCreate ? (isHi ? "कंपनी जोड़ें" : "Add Company") : (isHi ? "कंपनी संपादित करें" : "Edit Company");
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "किरायेदार" : "Tenants")</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "कंपनियां" : "Companies")</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
     </div>
@@ -116,7 +117,7 @@
         {
             <div class="col-md-8">
                 <div class="card border-warning">
-                    <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-user-shield mr-2"></i>@(isHi ? "किरायेदार व्यवस्थापक खाता" : "Tenant Admin Account")</h3></div>
+                    <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-user-shield mr-2"></i>@(isHi ? "कंपनी व्यवस्थापक खाता" : "Company Admin Account")</h3></div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 form-group">
@@ -140,7 +141,7 @@
                             </div>
                         </div>
                         <div class="alert alert-info p-2 mb-0" style="font-size:12px;">
-                            <i class="fas fa-info-circle mr-1"></i>@(isHi ? "यह किरायेदार व्यवस्थापक खाता बनाता है। व्यवस्थापक अपने डैशबोर्ड से अतिरिक्त उपयोगकर्ता बना सकते हैं।" : "This creates the Tenant Admin account. The admin can create additional users from their dashboard.")
+                            <i class="fas fa-info-circle mr-1"></i>@(isHi ? "यह कंपनी व्यवस्थापक खाता बनाता है। व्यवस्थापक अपने डैशबोर्ड से अतिरिक्त उपयोगकर्ता बना सकते हैं।" : "This creates the Company Admin account. The admin can create additional users from their dashboard.")
                         </div>
                     </div>
                 </div>
@@ -150,7 +151,7 @@
 
     <div class="text-right mb-3">
         <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@(isHi ? "रद्द करें" : "Cancel")</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "किरायेदार बनाएं" : "Create Tenant") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "कंपनी बनाएं" : "Create Company") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
     </div>
 </form>
 </div></section>

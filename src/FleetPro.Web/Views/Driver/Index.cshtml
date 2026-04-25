@@ -8,8 +8,17 @@
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "चालक प्रबंधन" : "Driver Management")</h1></div>
-        <div class="col-sm-6 text-right"><a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "चालक जोड़ें" : "Add Driver")</a></div>
+        <div class="col-sm-6">
+            <h1 class="m-0">@(isHi ? "चालक प्रबंधन" : "Driver Management")
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "चालक जोड़ें" : "Add Driver")</a>
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "चालक प्रबंधन" : "Driver Management")</li>
+            </ol>
+        </div>
     </div>
 </div></div>
 
@@ -32,7 +41,7 @@
                     <tr>
                         <th style="width:100px;">@(isHi ? "कार्रवाई" : "Actions")</th>
                         <th>@(isHi ? "नाम" : "Name")</th><th>@(isHi ? "फ़ोन" : "Phone")</th>
-                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "किरायेदार" : "Tenant")</th> }
+                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "कंपनी" : "Company")</th> }
                         <th>@(isHi ? "लाइसेंस #" : "License #")</th><th>@(isHi ? "लाइसेंस प्रकार" : "License Type")</th><th>@(isHi ? "लाइसेंस समाप्ति" : "License Expiry")</th><th>@(isHi ? "वेतन" : "Salary")</th><th>@(isHi ? "स्थिति" : "Status")</th>
                     </tr>
                 </thead>

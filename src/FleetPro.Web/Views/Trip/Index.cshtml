@@ -7,9 +7,16 @@
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">@(isHi ? "यात्रा प्रबंधन" : "Trip Management")</h1></div>
-        <div class="col-sm-6 text-right">
-            <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i>@(isHi ? "नई यात्रा" : "New Trip")</a>
+        <div class="col-sm-6">
+            <h1 class="m-0">@(isHi ? "यात्रा प्रबंधन" : "Trip Management")
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "नई यात्रा" : "New Trip")</a>
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@(isHi ? "यात्रा प्रबंधन" : "Trip Management")</li>
+            </ol>
         </div>
     </div>
 </div></div>
@@ -69,7 +76,7 @@
                             <td>@t.StartDate.ToString("dd/MM/yy")</td>
                             <td>@(t.EndDate?.ToString("dd/MM/yy") ?? "—")</td>
                             <td class="text-success font-weight-bold">₹@t.Revenue.ToString("N0")</td>
-                            <td class="text-danger">₹@t.TotalExpenses.ToString("N0")</td>
+                            <td><a asp-controller="Expense" asp-action="Index" asp-route-tripId="@t.Id" class="text-danger font-weight-bold" title="@(isHi ? "व्यय देखें" : "View expenses")">₹@t.TotalExpenses.ToString("N0")</a></td>
                             <td class="@(profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@profit.ToString("N0")</td>
                             <td>
                                 @switch (t.Status)
