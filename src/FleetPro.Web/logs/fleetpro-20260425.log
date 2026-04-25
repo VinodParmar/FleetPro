@@ -5569,3 +5569,803 @@ WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a]
 2026-04-25 21:11:50 [INF] Executed endpoint 'FleetPro.Controllers.TripController.Create (FleetPro.Web)'
 2026-04-25 21:11:50 [INF] The response could not be cached for this request.
 2026-04-25 21:11:50 [INF] Request finished HTTP/2 GET https://localhost:58789/Trip/Create - 200 null text/html; charset=utf-8 56.1809ms
+2026-04-25 21:19:28 [WRN] Entity 'Role' has a global query filter defined and is the required end of a relationship with the entity 'RolePermission'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-04-25 21:19:28 [WRN] Entity 'ApplicationUser' has a global query filter defined and is the required end of a relationship with the entity 'UserPermission'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-04-25 21:19:28 [WRN] No store type was specified for the decimal property 'MonthlySalary' on entity type 'Driver'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-04-25 21:19:28 [WRN] No store type was specified for the decimal property 'CargoWeightTons' on entity type 'Trip'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-04-25 21:19:28 [WRN] No store type was specified for the decimal property 'DistanceKm' on entity type 'Trip'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-04-25 21:19:28 [WRN] No store type was specified for the decimal property 'LoadCapacityTons' on entity type 'Truck'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-04-25 21:19:28 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-04-25 21:19:28 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-04-25 21:19:28 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-04-25 21:19:28 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-04-25 21:19:28 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-04-25 21:19:28 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-04-25 21:19:28 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-04-25 21:19:29 [INF] Executed DbCommand (40ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Permissions] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-04-25 21:19:29 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Roles] AS [r]
+        WHERE [r].[IsDeleted] = CAST(0 AS bit)) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-04-25 21:19:29 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [u].[Email] = N'superadmin@fleetpro.in') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-04-25 21:19:29 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Tenants] AS [t]
+        WHERE [t].[IsDeleted] = CAST(0 AS bit)) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-04-25 21:19:29 [INF] Database seeded successfully.
+2026-04-25 21:19:29 [INF] User profile is available. Using 'C:\Users\vinno\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-04-25 21:19:29 [WRN] The WebRootPath was not found: C:\Claude-Lab\FleetPro\src\FleetPro.Web\wwwroot. Static files may be unavailable.
+2026-04-25 21:19:29 [INF] Now listening on: https://localhost:58789
+2026-04-25 21:19:29 [INF] Now listening on: http://localhost:58790
+2026-04-25 21:19:29 [INF] Application started. Press Ctrl+C to shut down.
+2026-04-25 21:19:29 [INF] Hosting environment: Development
+2026-04-25 21:19:29 [INF] Content root path: C:\Claude-Lab\FleetPro\src\FleetPro.Web
+2026-04-25 21:19:29 [INF] Request starting HTTP/2 GET https://localhost:58789/ - null null
+2026-04-25 21:19:29 [INF] No cached response available for this request.
+2026-04-25 21:19:29 [INF] Executing endpoint 'FleetPro.Controllers.DashboardController.Index (FleetPro.Web)'
+2026-04-25 21:19:29 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.DashboardController (FleetPro.Web).
+2026-04-25 21:19:29 [INF] Executed DbCommand (41ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy], [t1].[Id], [d0].[Id], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName], [t1].[ChassisNumber], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[EngineNumber], [t1].[FitnessExpiry], [t1].[InsuranceExpiry], [t1].[InsurancePolicyNumber], [t1].[IsDeleted], [t1].[LoadCapacityTons], [t1].[Make], [t1].[ManufacturingYear], [t1].[Model], [t1].[Notes], [t1].[NumberPlate], [t1].[PermitExpiry], [t1].[Status], [t1].[TaxExpiry], [t1].[TenantId], [t1].[UpdatedAt], [t1].[UpdatedBy], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy]
+FROM [Trips] AS [t]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t1] ON [t].[TruckId] = [t1].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t].[DriverId] = [d0].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t].[Id] = [e0].[TripId]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[StartDate] >= @__monthStart_0
+ORDER BY [t].[Id], [t1].[Id], [d0].[Id]
+2026-04-25 21:19:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trucks] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trucks] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[Status] = 1
+2026-04-25 21:19:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trips] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[Status] = 2
+2026-04-25 21:19:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Drivers] AS [d]
+WHERE [d].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[Severity] = 1 AND [a].[IsRead] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executed DbCommand (22ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t1].[Id], [t1].[CargoDescription], [t1].[CargoWeightTons], [t1].[ClientName], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[DistanceKm], [t1].[DriverId], [t1].[EndDate], [t1].[FromLocation], [t1].[IsDeleted], [t1].[LRNumber], [t1].[Notes], [t1].[Revenue], [t1].[StartDate], [t1].[Status], [t1].[TenantId], [t1].[ToLocation], [t1].[TripNumber], [t1].[TruckId], [t1].[UpdatedAt], [t1].[UpdatedBy], [t2].[Id], [d0].[Id], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName], [t2].[ChassisNumber], [t2].[CreatedAt], [t2].[CreatedBy], [t2].[EngineNumber], [t2].[FitnessExpiry], [t2].[InsuranceExpiry], [t2].[InsurancePolicyNumber], [t2].[IsDeleted], [t2].[LoadCapacityTons], [t2].[Make], [t2].[ManufacturingYear], [t2].[Model], [t2].[Notes], [t2].[NumberPlate], [t2].[PermitExpiry], [t2].[Status], [t2].[TaxExpiry], [t2].[TenantId], [t2].[UpdatedAt], [t2].[UpdatedBy], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy]
+FROM (
+    SELECT TOP(@__p_0) [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy]
+    FROM [Trips] AS [t]
+    WHERE [t].[IsDeleted] = CAST(0 AS bit)
+    ORDER BY [t].[StartDate] DESC
+) AS [t1]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t2] ON [t1].[TruckId] = [t2].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t1].[DriverId] = [d0].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t1].[Id] = [e0].[TripId]
+ORDER BY [t1].[StartDate] DESC, [t1].[Id], [t2].[Id], [d0].[Id]
+2026-04-25 21:19:30 [INF] Executed DbCommand (5ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(@__p_0) [a].[Id], [a].[CreatedAt], [a].[CreatedBy], [a].[DaysRemaining], [a].[ExpiryDate], [a].[IsDeleted], [a].[IsNotified], [a].[IsRead], [a].[Message], [a].[NotifiedAt], [a].[ReferenceId], [a].[ReferenceType], [a].[Severity], [a].[TenantId], [a].[Title], [a].[Type], [a].[UpdatedAt], [a].[UpdatedBy]
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit)
+ORDER BY [a].[DaysRemaining]
+2026-04-25 21:19:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:30 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:30 [INF] Executed ViewResult - view Index executed in 166.7661ms.
+2026-04-25 21:19:30 [INF] Executed action FleetPro.Controllers.DashboardController.Index (FleetPro.Web) in 1060.9055ms
+2026-04-25 21:19:30 [INF] Executed endpoint 'FleetPro.Controllers.DashboardController.Index (FleetPro.Web)'
+2026-04-25 21:19:30 [INF] The response could not be cached for this request.
+2026-04-25 21:19:30 [INF] Request finished HTTP/2 GET https://localhost:58789/ - 200 null text/html; charset=utf-8 1175.2222ms
+2026-04-25 21:19:36 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:19:36 [INF] No cached response available for this request.
+2026-04-25 21:19:36 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:36 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:19:36 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:19:36 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:36 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:36 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:36 [INF] Executed ViewResult - view Index executed in 29.5778ms.
+2026-04-25 21:19:36 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 332.7275ms
+2026-04-25 21:19:36 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:36 [INF] The response could not be cached for this request.
+2026-04-25 21:19:36 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 393.3595ms
+2026-04-25 21:19:39 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant/Create - null null
+2026-04-25 21:19:39 [INF] No cached response available for this request.
+2026-04-25 21:19:39 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:19:39 [INF] Route matched with {action = "Create", controller = "Tenant"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:19:39 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:39 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:19:39 [INF] Executed ViewResult - view Create executed in 162.9822ms.
+2026-04-25 21:19:39 [INF] Executed action FleetPro.Controllers.TenantController.Create (FleetPro.Web) in 173.1571ms
+2026-04-25 21:19:39 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:19:39 [INF] The response could not be cached for this request.
+2026-04-25 21:19:39 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant/Create - 200 null text/html; charset=utf-8 235.4894ms
+2026-04-25 21:19:41 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:19:41 [INF] No cached response available for this request.
+2026-04-25 21:19:41 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:41 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:19:41 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:19:41 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:41 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:41 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:41 [INF] Executed ViewResult - view Index executed in 3.5349ms.
+2026-04-25 21:19:41 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 18.0681ms
+2026-04-25 21:19:41 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:41 [INF] The response could not be cached for this request.
+2026-04-25 21:19:41 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 21.6988ms
+2026-04-25 21:19:42 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant/Create - null null
+2026-04-25 21:19:42 [INF] No cached response available for this request.
+2026-04-25 21:19:42 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:19:42 [INF] Route matched with {action = "Create", controller = "Tenant"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:19:42 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:42 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:19:42 [INF] Executed ViewResult - view Create executed in 8.0657ms.
+2026-04-25 21:19:42 [INF] Executed action FleetPro.Controllers.TenantController.Create (FleetPro.Web) in 11.9467ms
+2026-04-25 21:19:42 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:19:42 [INF] The response could not be cached for this request.
+2026-04-25 21:19:42 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant/Create - 200 null text/html; charset=utf-8 16.1698ms
+2026-04-25 21:19:45 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:19:45 [INF] No cached response available for this request.
+2026-04-25 21:19:45 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:45 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:19:45 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:19:45 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:45 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:45 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:45 [INF] Executed ViewResult - view Index executed in 6.3835ms.
+2026-04-25 21:19:45 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 16.9453ms
+2026-04-25 21:19:45 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:19:45 [INF] The response could not be cached for this request.
+2026-04-25 21:19:45 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 20.0245ms
+2026-04-25 21:19:52 [INF] Request starting HTTP/2 GET https://localhost:58789/ - null null
+2026-04-25 21:19:52 [INF] No cached response available for this request.
+2026-04-25 21:19:52 [INF] Executing endpoint 'FleetPro.Controllers.DashboardController.Index (FleetPro.Web)'
+2026-04-25 21:19:52 [INF] Route matched with {action = "Index", controller = "Dashboard"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.DashboardController (FleetPro.Web).
+2026-04-25 21:19:52 [INF] Executed DbCommand (22ms) [Parameters=[@__monthStart_0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy], [t1].[Id], [d0].[Id], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName], [t1].[ChassisNumber], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[EngineNumber], [t1].[FitnessExpiry], [t1].[InsuranceExpiry], [t1].[InsurancePolicyNumber], [t1].[IsDeleted], [t1].[LoadCapacityTons], [t1].[Make], [t1].[ManufacturingYear], [t1].[Model], [t1].[Notes], [t1].[NumberPlate], [t1].[PermitExpiry], [t1].[Status], [t1].[TaxExpiry], [t1].[TenantId], [t1].[UpdatedAt], [t1].[UpdatedBy], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy]
+FROM [Trips] AS [t]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t1] ON [t].[TruckId] = [t1].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t].[DriverId] = [d0].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t].[Id] = [e0].[TripId]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[StartDate] >= @__monthStart_0
+ORDER BY [t].[Id], [t1].[Id], [d0].[Id]
+2026-04-25 21:19:52 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trucks] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trucks] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[Status] = 1
+2026-04-25 21:19:52 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Trips] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit) AND [t].[Status] = 2
+2026-04-25 21:19:52 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Drivers] AS [d]
+WHERE [d].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[Severity] = 1 AND [a].[IsRead] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executed DbCommand (14ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [t1].[Id], [t1].[CargoDescription], [t1].[CargoWeightTons], [t1].[ClientName], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[DistanceKm], [t1].[DriverId], [t1].[EndDate], [t1].[FromLocation], [t1].[IsDeleted], [t1].[LRNumber], [t1].[Notes], [t1].[Revenue], [t1].[StartDate], [t1].[Status], [t1].[TenantId], [t1].[ToLocation], [t1].[TripNumber], [t1].[TruckId], [t1].[UpdatedAt], [t1].[UpdatedBy], [t2].[Id], [d0].[Id], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName], [t2].[ChassisNumber], [t2].[CreatedAt], [t2].[CreatedBy], [t2].[EngineNumber], [t2].[FitnessExpiry], [t2].[InsuranceExpiry], [t2].[InsurancePolicyNumber], [t2].[IsDeleted], [t2].[LoadCapacityTons], [t2].[Make], [t2].[ManufacturingYear], [t2].[Model], [t2].[Notes], [t2].[NumberPlate], [t2].[PermitExpiry], [t2].[Status], [t2].[TaxExpiry], [t2].[TenantId], [t2].[UpdatedAt], [t2].[UpdatedBy], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy]
+FROM (
+    SELECT TOP(@__p_0) [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy]
+    FROM [Trips] AS [t]
+    WHERE [t].[IsDeleted] = CAST(0 AS bit)
+    ORDER BY [t].[StartDate] DESC
+) AS [t1]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t2] ON [t1].[TruckId] = [t2].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t1].[DriverId] = [d0].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t1].[Id] = [e0].[TripId]
+ORDER BY [t1].[StartDate] DESC, [t1].[Id], [t2].[Id], [d0].[Id]
+2026-04-25 21:19:52 [INF] Executed DbCommand (7ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(@__p_0) [a].[Id], [a].[CreatedAt], [a].[CreatedBy], [a].[DaysRemaining], [a].[ExpiryDate], [a].[IsDeleted], [a].[IsNotified], [a].[IsRead], [a].[Message], [a].[NotifiedAt], [a].[ReferenceId], [a].[ReferenceType], [a].[Severity], [a].[TenantId], [a].[Title], [a].[Type], [a].[UpdatedAt], [a].[UpdatedBy]
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit)
+ORDER BY [a].[DaysRemaining]
+2026-04-25 21:19:52 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:52 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:52 [INF] Executed ViewResult - view Index executed in 1.4009ms.
+2026-04-25 21:19:52 [INF] Executed action FleetPro.Controllers.DashboardController.Index (FleetPro.Web) in 153.0767ms
+2026-04-25 21:19:52 [INF] Executed endpoint 'FleetPro.Controllers.DashboardController.Index (FleetPro.Web)'
+2026-04-25 21:19:52 [INF] The response could not be cached for this request.
+2026-04-25 21:19:52 [INF] Request finished HTTP/2 GET https://localhost:58789/ - 200 null text/html; charset=utf-8 155.9031ms
+2026-04-25 21:19:54 [INF] Request starting HTTP/2 GET https://localhost:58789/Truck/Create - null null
+2026-04-25 21:19:54 [INF] No cached response available for this request.
+2026-04-25 21:19:54 [INF] Executing endpoint 'FleetPro.Controllers.TruckController.Create (FleetPro.Web)'
+2026-04-25 21:19:54 [INF] Route matched with {action = "Create", controller = "Truck"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create() on controller FleetPro.Controllers.TruckController (FleetPro.Web).
+2026-04-25 21:19:54 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:19:54 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:54 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:19:55 [INF] Executed ViewResult - view Create executed in 136.9767ms.
+2026-04-25 21:19:55 [INF] Executed action FleetPro.Controllers.TruckController.Create (FleetPro.Web) in 161.3737ms
+2026-04-25 21:19:55 [INF] Executed endpoint 'FleetPro.Controllers.TruckController.Create (FleetPro.Web)'
+2026-04-25 21:19:55 [INF] The response could not be cached for this request.
+2026-04-25 21:19:55 [INF] Request finished HTTP/2 GET https://localhost:58789/Truck/Create - 200 null text/html; charset=utf-8 173.7139ms
+2026-04-25 21:19:57 [INF] Request starting HTTP/2 GET https://localhost:58789/Truck - null null
+2026-04-25 21:19:57 [INF] No cached response available for this request.
+2026-04-25 21:19:57 [INF] Executing endpoint 'FleetPro.Controllers.TruckController.Index (FleetPro.Web)'
+2026-04-25 21:19:57 [INF] Route matched with {action = "Index", controller = "Truck"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.Nullable`1[FleetPro.Models.Entities.TruckStatus], System.String) on controller FleetPro.Controllers.TruckController (FleetPro.Web).
+2026-04-25 21:19:57 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[ChassisNumber], [t].[CreatedAt], [t].[CreatedBy], [t].[EngineNumber], [t].[FitnessExpiry], [t].[InsuranceExpiry], [t].[InsurancePolicyNumber], [t].[IsDeleted], [t].[LoadCapacityTons], [t].[Make], [t].[ManufacturingYear], [t].[Model], [t].[Notes], [t].[NumberPlate], [t].[PermitExpiry], [t].[Status], [t].[TaxExpiry], [t].[TenantId], [t].[UpdatedAt], [t].[UpdatedBy], [t1].[Id], [t1].[Address], [t1].[City], [t1].[CompanyName], [t1].[ContactPerson], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[Email], [t1].[GstNumber], [t1].[IsDeleted], [t1].[MaxTrucks], [t1].[MaxUsers], [t1].[Phone], [t1].[Plan], [t1].[State], [t1].[Status], [t1].[Subdomain], [t1].[SubscriptionEndDate], [t1].[SubscriptionStartDate], [t1].[UpdatedAt], [t1].[UpdatedBy]
+FROM [Trucks] AS [t]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[Address], [t0].[City], [t0].[CompanyName], [t0].[ContactPerson], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[Email], [t0].[GstNumber], [t0].[IsDeleted], [t0].[MaxTrucks], [t0].[MaxUsers], [t0].[Phone], [t0].[Plan], [t0].[State], [t0].[Status], [t0].[Subdomain], [t0].[SubscriptionEndDate], [t0].[SubscriptionStartDate], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Tenants] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t1] ON [t].[TenantId] = [t1].[Id]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[NumberPlate]
+2026-04-25 21:19:57 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:19:57 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:19:57 [INF] Executed ViewResult - view Index executed in 43.0464ms.
+2026-04-25 21:19:57 [INF] Executed action FleetPro.Controllers.TruckController.Index (FleetPro.Web) in 171.7855ms
+2026-04-25 21:19:57 [INF] Executed endpoint 'FleetPro.Controllers.TruckController.Index (FleetPro.Web)'
+2026-04-25 21:19:57 [INF] The response could not be cached for this request.
+2026-04-25 21:19:57 [INF] Request finished HTTP/2 GET https://localhost:58789/Truck - 200 null text/html; charset=utf-8 193.1636ms
+2026-04-25 21:20:04 [INF] Request starting HTTP/2 GET https://localhost:58789/Trip - null null
+2026-04-25 21:20:04 [INF] No cached response available for this request.
+2026-04-25 21:20:04 [INF] Executing endpoint 'FleetPro.Controllers.TripController.Index (FleetPro.Web)'
+2026-04-25 21:20:04 [INF] Route matched with {action = "Index", controller = "Trip"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.Nullable`1[FleetPro.Models.Entities.TripStatus], System.Nullable`1[System.DateTime], System.Nullable`1[System.DateTime], System.String) on controller FleetPro.Controllers.TripController (FleetPro.Web).
+2026-04-25 21:20:04 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy], [t1].[Id], [t1].[ChassisNumber], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[EngineNumber], [t1].[FitnessExpiry], [t1].[InsuranceExpiry], [t1].[InsurancePolicyNumber], [t1].[IsDeleted], [t1].[LoadCapacityTons], [t1].[Make], [t1].[ManufacturingYear], [t1].[Model], [t1].[Notes], [t1].[NumberPlate], [t1].[PermitExpiry], [t1].[Status], [t1].[TaxExpiry], [t1].[TenantId], [t1].[UpdatedAt], [t1].[UpdatedBy], [d0].[Id], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy], [t3].[Id], [t3].[Address], [t3].[City], [t3].[CompanyName], [t3].[ContactPerson], [t3].[CreatedAt], [t3].[CreatedBy], [t3].[Email], [t3].[GstNumber], [t3].[IsDeleted], [t3].[MaxTrucks], [t3].[MaxUsers], [t3].[Phone], [t3].[Plan], [t3].[State], [t3].[Status], [t3].[Subdomain], [t3].[SubscriptionEndDate], [t3].[SubscriptionStartDate], [t3].[UpdatedAt], [t3].[UpdatedBy], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName]
+FROM [Trips] AS [t]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t1] ON [t].[TruckId] = [t1].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t].[DriverId] = [d0].[Id]
+INNER JOIN (
+    SELECT [t2].[Id], [t2].[Address], [t2].[City], [t2].[CompanyName], [t2].[ContactPerson], [t2].[CreatedAt], [t2].[CreatedBy], [t2].[Email], [t2].[GstNumber], [t2].[IsDeleted], [t2].[MaxTrucks], [t2].[MaxUsers], [t2].[Phone], [t2].[Plan], [t2].[State], [t2].[Status], [t2].[Subdomain], [t2].[SubscriptionEndDate], [t2].[SubscriptionStartDate], [t2].[UpdatedAt], [t2].[UpdatedBy]
+    FROM [Tenants] AS [t2]
+    WHERE [t2].[IsDeleted] = CAST(0 AS bit)
+) AS [t3] ON [t].[TenantId] = [t3].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t].[Id] = [e0].[TripId]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[StartDate] DESC, [t].[Id], [t1].[Id], [d0].[Id], [t3].[Id]
+2026-04-25 21:20:05 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:05 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:05 [INF] Executed ViewResult - view Index executed in 22.0868ms.
+2026-04-25 21:20:05 [INF] Executed action FleetPro.Controllers.TripController.Index (FleetPro.Web) in 196.9437ms
+2026-04-25 21:20:05 [INF] Executed endpoint 'FleetPro.Controllers.TripController.Index (FleetPro.Web)'
+2026-04-25 21:20:05 [INF] The response could not be cached for this request.
+2026-04-25 21:20:05 [INF] Request finished HTTP/2 GET https://localhost:58789/Trip - 200 null text/html; charset=utf-8 211.2911ms
+2026-04-25 21:20:14 [INF] Request starting HTTP/2 GET https://localhost:58789/Trip/Create - null null
+2026-04-25 21:20:14 [INF] No cached response available for this request.
+2026-04-25 21:20:14 [INF] Executing endpoint 'FleetPro.Controllers.TripController.Create (FleetPro.Web)'
+2026-04-25 21:20:14 [INF] Route matched with {action = "Create", controller = "Trip"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create() on controller FleetPro.Controllers.TripController (FleetPro.Web).
+2026-04-25 21:20:14 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[NumberPlate] + N' — ' + [t].[Model] AS [Label]
+FROM [Trucks] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:14 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[Id], [d].[FullName]
+FROM [Drivers] AS [d]
+WHERE [d].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:14 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:14 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:20:14 [INF] Executed ViewResult - view Create executed in 83.684ms.
+2026-04-25 21:20:14 [INF] Executed action FleetPro.Controllers.TripController.Create (FleetPro.Web) in 145.8627ms
+2026-04-25 21:20:14 [INF] Executed endpoint 'FleetPro.Controllers.TripController.Create (FleetPro.Web)'
+2026-04-25 21:20:14 [INF] The response could not be cached for this request.
+2026-04-25 21:20:14 [INF] Request finished HTTP/2 GET https://localhost:58789/Trip/Create - 200 null text/html; charset=utf-8 156.083ms
+2026-04-25 21:20:16 [INF] Request starting HTTP/2 GET https://localhost:58789/Trip - null null
+2026-04-25 21:20:16 [INF] No cached response available for this request.
+2026-04-25 21:20:16 [INF] Executing endpoint 'FleetPro.Controllers.TripController.Index (FleetPro.Web)'
+2026-04-25 21:20:16 [INF] Route matched with {action = "Index", controller = "Trip"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.Nullable`1[FleetPro.Models.Entities.TripStatus], System.Nullable`1[System.DateTime], System.Nullable`1[System.DateTime], System.String) on controller FleetPro.Controllers.TripController (FleetPro.Web).
+2026-04-25 21:20:16 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy], [t1].[Id], [t1].[ChassisNumber], [t1].[CreatedAt], [t1].[CreatedBy], [t1].[EngineNumber], [t1].[FitnessExpiry], [t1].[InsuranceExpiry], [t1].[InsurancePolicyNumber], [t1].[IsDeleted], [t1].[LoadCapacityTons], [t1].[Make], [t1].[ManufacturingYear], [t1].[Model], [t1].[Notes], [t1].[NumberPlate], [t1].[PermitExpiry], [t1].[Status], [t1].[TaxExpiry], [t1].[TenantId], [t1].[UpdatedAt], [t1].[UpdatedBy], [d0].[Id], [d0].[AadharNumber], [d0].[Address], [d0].[BankAccountNumber], [d0].[CreatedAt], [d0].[CreatedBy], [d0].[DateOfBirth], [d0].[Email], [d0].[FullName], [d0].[IFSC], [d0].[IsDeleted], [d0].[LicenseExpiry], [d0].[LicenseNumber], [d0].[LicenseType], [d0].[MonthlySalary], [d0].[PanNumber], [d0].[Phone], [d0].[ProfileImage], [d0].[Status], [d0].[TenantId], [d0].[UpdatedAt], [d0].[UpdatedBy], [t3].[Id], [t3].[Address], [t3].[City], [t3].[CompanyName], [t3].[ContactPerson], [t3].[CreatedAt], [t3].[CreatedBy], [t3].[Email], [t3].[GstNumber], [t3].[IsDeleted], [t3].[MaxTrucks], [t3].[MaxUsers], [t3].[Phone], [t3].[Plan], [t3].[State], [t3].[Status], [t3].[Subdomain], [t3].[SubscriptionEndDate], [t3].[SubscriptionStartDate], [t3].[UpdatedAt], [t3].[UpdatedBy], [e0].[Id], [e0].[Amount], [e0].[BillNumber], [e0].[Category], [e0].[CreatedAt], [e0].[CreatedBy], [e0].[Description], [e0].[ExpenseDate], [e0].[HasReceipt], [e0].[IsDeleted], [e0].[ReceiptPath], [e0].[TenantId], [e0].[TripId], [e0].[UpdatedAt], [e0].[UpdatedBy], [e0].[VendorName]
+FROM [Trips] AS [t]
+INNER JOIN (
+    SELECT [t0].[Id], [t0].[ChassisNumber], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[EngineNumber], [t0].[FitnessExpiry], [t0].[InsuranceExpiry], [t0].[InsurancePolicyNumber], [t0].[IsDeleted], [t0].[LoadCapacityTons], [t0].[Make], [t0].[ManufacturingYear], [t0].[Model], [t0].[Notes], [t0].[NumberPlate], [t0].[PermitExpiry], [t0].[Status], [t0].[TaxExpiry], [t0].[TenantId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit)
+) AS [t1] ON [t].[TruckId] = [t1].[Id]
+INNER JOIN (
+    SELECT [d].[Id], [d].[AadharNumber], [d].[Address], [d].[BankAccountNumber], [d].[CreatedAt], [d].[CreatedBy], [d].[DateOfBirth], [d].[Email], [d].[FullName], [d].[IFSC], [d].[IsDeleted], [d].[LicenseExpiry], [d].[LicenseNumber], [d].[LicenseType], [d].[MonthlySalary], [d].[PanNumber], [d].[Phone], [d].[ProfileImage], [d].[Status], [d].[TenantId], [d].[UpdatedAt], [d].[UpdatedBy]
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit)
+) AS [d0] ON [t].[DriverId] = [d0].[Id]
+INNER JOIN (
+    SELECT [t2].[Id], [t2].[Address], [t2].[City], [t2].[CompanyName], [t2].[ContactPerson], [t2].[CreatedAt], [t2].[CreatedBy], [t2].[Email], [t2].[GstNumber], [t2].[IsDeleted], [t2].[MaxTrucks], [t2].[MaxUsers], [t2].[Phone], [t2].[Plan], [t2].[State], [t2].[Status], [t2].[Subdomain], [t2].[SubscriptionEndDate], [t2].[SubscriptionStartDate], [t2].[UpdatedAt], [t2].[UpdatedBy]
+    FROM [Tenants] AS [t2]
+    WHERE [t2].[IsDeleted] = CAST(0 AS bit)
+) AS [t3] ON [t].[TenantId] = [t3].[Id]
+LEFT JOIN (
+    SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName]
+    FROM [Expenses] AS [e]
+    WHERE [e].[IsDeleted] = CAST(0 AS bit)
+) AS [e0] ON [t].[Id] = [e0].[TripId]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[StartDate] DESC, [t].[Id], [t1].[Id], [d0].[Id], [t3].[Id]
+2026-04-25 21:20:16 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:16 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:16 [INF] Executed ViewResult - view Index executed in 2.0304ms.
+2026-04-25 21:20:16 [INF] Executed action FleetPro.Controllers.TripController.Index (FleetPro.Web) in 17.947ms
+2026-04-25 21:20:16 [INF] Executed endpoint 'FleetPro.Controllers.TripController.Index (FleetPro.Web)'
+2026-04-25 21:20:16 [INF] The response could not be cached for this request.
+2026-04-25 21:20:16 [INF] Request finished HTTP/2 GET https://localhost:58789/Trip - 200 null text/html; charset=utf-8 20.2455ms
+2026-04-25 21:20:20 [INF] Request starting HTTP/2 GET https://localhost:58789/Expense - null null
+2026-04-25 21:20:20 [INF] No cached response available for this request.
+2026-04-25 21:20:20 [INF] Executing endpoint 'FleetPro.Controllers.ExpenseController.Index (FleetPro.Web)'
+2026-04-25 21:20:20 [INF] Route matched with {action = "Index", controller = "Expense"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.Nullable`1[System.Int32], System.Nullable`1[FleetPro.Models.Entities.ExpenseCategory]) on controller FleetPro.Controllers.ExpenseController (FleetPro.Web).
+2026-04-25 21:20:20 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[Amount], [e].[BillNumber], [e].[Category], [e].[CreatedAt], [e].[CreatedBy], [e].[Description], [e].[ExpenseDate], [e].[HasReceipt], [e].[IsDeleted], [e].[ReceiptPath], [e].[TenantId], [e].[TripId], [e].[UpdatedAt], [e].[UpdatedBy], [e].[VendorName], [t0].[Id], [t0].[CargoDescription], [t0].[CargoWeightTons], [t0].[ClientName], [t0].[CreatedAt], [t0].[CreatedBy], [t0].[DistanceKm], [t0].[DriverId], [t0].[EndDate], [t0].[FromLocation], [t0].[IsDeleted], [t0].[LRNumber], [t0].[Notes], [t0].[Revenue], [t0].[StartDate], [t0].[Status], [t0].[TenantId], [t0].[ToLocation], [t0].[TripNumber], [t0].[TruckId], [t0].[UpdatedAt], [t0].[UpdatedBy]
+FROM [Expenses] AS [e]
+INNER JOIN (
+    SELECT [t].[Id], [t].[CargoDescription], [t].[CargoWeightTons], [t].[ClientName], [t].[CreatedAt], [t].[CreatedBy], [t].[DistanceKm], [t].[DriverId], [t].[EndDate], [t].[FromLocation], [t].[IsDeleted], [t].[LRNumber], [t].[Notes], [t].[Revenue], [t].[StartDate], [t].[Status], [t].[TenantId], [t].[ToLocation], [t].[TripNumber], [t].[TruckId], [t].[UpdatedAt], [t].[UpdatedBy]
+    FROM [Trips] AS [t]
+    WHERE [t].[IsDeleted] = CAST(0 AS bit)
+) AS [t0] ON [e].[TripId] = [t0].[Id]
+WHERE [e].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [e].[ExpenseDate] DESC
+2026-04-25 21:20:20 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:20 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:20 [INF] Executed ViewResult - view Index executed in 50.5464ms.
+2026-04-25 21:20:20 [INF] Executed action FleetPro.Controllers.ExpenseController.Index (FleetPro.Web) in 119.6175ms
+2026-04-25 21:20:20 [INF] Executed endpoint 'FleetPro.Controllers.ExpenseController.Index (FleetPro.Web)'
+2026-04-25 21:20:20 [INF] The response could not be cached for this request.
+2026-04-25 21:20:20 [INF] Request finished HTTP/2 GET https://localhost:58789/Expense - 200 null text/html; charset=utf-8 131.7594ms
+2026-04-25 21:20:21 [INF] Request starting HTTP/2 GET https://localhost:58789/Alert - null null
+2026-04-25 21:20:21 [INF] No cached response available for this request.
+2026-04-25 21:20:21 [INF] Executing endpoint 'FleetPro.Controllers.AlertController.Index (FleetPro.Web)'
+2026-04-25 21:20:21 [INF] Route matched with {action = "Index", controller = "Alert"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index(System.Nullable`1[FleetPro.Models.Entities.AlertSeverity]) on controller FleetPro.Controllers.AlertController (FleetPro.Web).
+2026-04-25 21:20:21 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[CreatedBy], [a].[DaysRemaining], [a].[ExpiryDate], [a].[IsDeleted], [a].[IsNotified], [a].[IsRead], [a].[Message], [a].[NotifiedAt], [a].[ReferenceId], [a].[ReferenceType], [a].[Severity], [a].[TenantId], [a].[Title], [a].[Type], [a].[UpdatedAt], [a].[UpdatedBy]
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [a].[DaysRemaining]
+2026-04-25 21:20:21 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:21 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:21 [INF] Executed ViewResult - view Index executed in 53.8687ms.
+2026-04-25 21:20:21 [INF] Executed action FleetPro.Controllers.AlertController.Index (FleetPro.Web) in 100.4094ms
+2026-04-25 21:20:21 [INF] Executed endpoint 'FleetPro.Controllers.AlertController.Index (FleetPro.Web)'
+2026-04-25 21:20:21 [INF] The response could not be cached for this request.
+2026-04-25 21:20:21 [INF] Request finished HTTP/2 GET https://localhost:58789/Alert - 200 null text/html; charset=utf-8 112.8375ms
+2026-04-25 21:20:25 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:25 [INF] No cached response available for this request.
+2026-04-25 21:20:25 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:25 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:25 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:25 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:25 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:25 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:25 [INF] Executed ViewResult - view Index executed in 4.5262ms.
+2026-04-25 21:20:25 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 34.3222ms
+2026-04-25 21:20:25 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:25 [INF] The response could not be cached for this request.
+2026-04-25 21:20:25 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 36.8548ms
+2026-04-25 21:20:31 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:31 [INF] No cached response available for this request.
+2026-04-25 21:20:31 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:31 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:31 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:31 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:31 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:31 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:31 [INF] Executed ViewResult - view Index executed in 4.5405ms.
+2026-04-25 21:20:31 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 12.0874ms
+2026-04-25 21:20:31 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:31 [INF] The response could not be cached for this request.
+2026-04-25 21:20:31 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 18.7494ms
+2026-04-25 21:20:32 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant/Create - null null
+2026-04-25 21:20:32 [INF] No cached response available for this request.
+2026-04-25 21:20:32 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:32 [INF] Route matched with {action = "Create", controller = "Tenant"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:32 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:32 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:20:32 [INF] Executed ViewResult - view Create executed in 6.2965ms.
+2026-04-25 21:20:32 [INF] Executed action FleetPro.Controllers.TenantController.Create (FleetPro.Web) in 9.6725ms
+2026-04-25 21:20:32 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:32 [INF] The response could not be cached for this request.
+2026-04-25 21:20:32 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant/Create - 200 null text/html; charset=utf-8 11.8356ms
+2026-04-25 21:20:33 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:33 [INF] No cached response available for this request.
+2026-04-25 21:20:33 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:33 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:33 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:33 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:33 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:33 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:33 [INF] Executed ViewResult - view Index executed in 2.2755ms.
+2026-04-25 21:20:33 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 12.5137ms
+2026-04-25 21:20:33 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:33 [INF] The response could not be cached for this request.
+2026-04-25 21:20:33 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 14.2349ms
+2026-04-25 21:20:36 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant/Create - null null
+2026-04-25 21:20:36 [INF] No cached response available for this request.
+2026-04-25 21:20:36 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:36 [INF] Route matched with {action = "Create", controller = "Tenant"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:36 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:36 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:20:36 [INF] Executed ViewResult - view Create executed in 4.0668ms.
+2026-04-25 21:20:36 [INF] Executed action FleetPro.Controllers.TenantController.Create (FleetPro.Web) in 7.5367ms
+2026-04-25 21:20:36 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:36 [INF] The response could not be cached for this request.
+2026-04-25 21:20:36 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant/Create - 200 null text/html; charset=utf-8 9.4222ms
+2026-04-25 21:20:54 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:54 [INF] No cached response available for this request.
+2026-04-25 21:20:54 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:54 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:54 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:54 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:54 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:54 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:54 [INF] Executed ViewResult - view Index executed in 2.9113ms.
+2026-04-25 21:20:54 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 9.9087ms
+2026-04-25 21:20:54 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:54 [INF] The response could not be cached for this request.
+2026-04-25 21:20:54 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 11.2051ms
+2026-04-25 21:20:55 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant/Create - null null
+2026-04-25 21:20:55 [INF] No cached response available for this request.
+2026-04-25 21:20:55 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:55 [INF] Route matched with {action = "Create", controller = "Tenant"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:55 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:55 [INF] Executing ViewResult, running view Create.
+2026-04-25 21:20:55 [INF] Executed ViewResult - view Create executed in 4.8648ms.
+2026-04-25 21:20:55 [INF] Executed action FleetPro.Controllers.TenantController.Create (FleetPro.Web) in 11.5142ms
+2026-04-25 21:20:55 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Create (FleetPro.Web)'
+2026-04-25 21:20:55 [INF] The response could not be cached for this request.
+2026-04-25 21:20:55 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant/Create - 200 null text/html; charset=utf-8 13.5286ms
+2026-04-25 21:20:56 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:56 [INF] No cached response available for this request.
+2026-04-25 21:20:56 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:56 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:56 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:56 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:56 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:56 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:56 [INF] Executed ViewResult - view Index executed in 1.8211ms.
+2026-04-25 21:20:56 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 37.7751ms
+2026-04-25 21:20:56 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:56 [INF] The response could not be cached for this request.
+2026-04-25 21:20:56 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 39.09ms
+2026-04-25 21:20:58 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant?lang=hi - null null
+2026-04-25 21:20:58 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant?lang=hi - 302 0 null 5.6364ms
+2026-04-25 21:20:58 [INF] Request starting HTTP/2 GET https://localhost:58789/Tenant - null null
+2026-04-25 21:20:58 [INF] No cached response available for this request.
+2026-04-25 21:20:58 [INF] Executing endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:58 [INF] Route matched with {action = "Index", controller = "Tenant"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller FleetPro.Controllers.TenantController (FleetPro.Web).
+2026-04-25 21:20:58 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], [t].[Address], [t].[City], [t].[CompanyName], [t].[ContactPerson], [t].[CreatedAt], [t].[CreatedBy], [t].[Email], [t].[GstNumber], [t].[IsDeleted], [t].[MaxTrucks], [t].[MaxUsers], [t].[Phone], [t].[Plan], [t].[State], [t].[Status], [t].[Subdomain], [t].[SubscriptionEndDate], [t].[SubscriptionStartDate], [t].[UpdatedAt], [t].[UpdatedBy]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+ORDER BY [t].[CompanyName]
+2026-04-25 21:20:58 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [Trucks] AS [t0]
+    WHERE [t0].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [t0].[TenantId] AND [t0].[IsDeleted] = CAST(0 AS bit)) AS [TC], (
+    SELECT COUNT(*)
+    FROM [Drivers] AS [d]
+    WHERE [d].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [d].[TenantId] AND [d].[IsDeleted] = CAST(0 AS bit)) AS [DC], (
+    SELECT COUNT(*)
+    FROM [Users] AS [u]
+    WHERE [u].[IsDeleted] = CAST(0 AS bit) AND [t].[Id] = [u].[TenantId] AND [u].[IsDeleted] = CAST(0 AS bit)) AS [UC]
+FROM [Tenants] AS [t]
+WHERE [t].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:58 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Alerts] AS [a]
+WHERE [a].[IsDeleted] = CAST(0 AS bit) AND [a].[IsRead] = CAST(0 AS bit) AND [a].[IsDeleted] = CAST(0 AS bit)
+2026-04-25 21:20:58 [INF] Executing ViewResult, running view Index.
+2026-04-25 21:20:58 [INF] Executed ViewResult - view Index executed in 2.3899ms.
+2026-04-25 21:20:58 [INF] Executed action FleetPro.Controllers.TenantController.Index (FleetPro.Web) in 27.8219ms
+2026-04-25 21:20:58 [INF] Executed endpoint 'FleetPro.Controllers.TenantController.Index (FleetPro.Web)'
+2026-04-25 21:20:58 [INF] The response could not be cached for this request.
+2026-04-25 21:20:58 [INF] Request finished HTTP/2 GET https://localhost:58789/Tenant - 200 null text/html; charset=utf-8 29.1496ms
