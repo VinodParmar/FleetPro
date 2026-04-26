@@ -1,22 +1,21 @@
 @* ══════════════════ Views/Expense/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.Entities.Expense>
 @{
-    ViewData["Title"] = "Expenses";
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    ViewData["Title"] = L["Expense Management"].Value;
     int? tripFilterId = ViewBag.TripFilter as int?;
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@(isHi ? "व्यय प्रबंधन" : "Expense Management")
-                <a asp-action="Create" class="btn btn-danger btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "व्यय जोड़ें" : "Add Expense")</a>
+            <h1 class="m-0">@L["Expense Management"]
+                <a asp-action="Create" class="btn btn-danger btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@L["Add Expense"]</a>
             </h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item active">@(isHi ? "व्यय प्रबंधन" : "Expense Management")</li>
+                <li class="breadcrumb-item active">@L["Expense Management"]</li>
             </ol>
         </div>
     </div>
@@ -40,7 +39,7 @@
         }
         <div class="col-md-2">
             <div class="info-box mb-0"><span class="info-box-icon bg-dark"><i class="fas fa-receipt"></i></span>
-            <div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल" : "Total")</span><span class="info-box-number">₹@totalExp.ToString("N0")</span></div></div>
+            <div class="info-box-content"><span class="info-box-text">@L["Total"]</span><span class="info-box-number">₹@totalExp.ToString("N0")</span></div></div>
         </div>
         @foreach (var cat in grouped.OrderByDescending(g => g.Value).Take(5))
         {
@@ -58,8 +57,8 @@
             {
                 var tripNum = Model.FirstOrDefault()?.Trip?.TripNumber ?? $"#{tripFilterId}";
                 <div class="mb-2">
-                    <span class="badge badge-info p-2"><i class="fas fa-filter mr-1"></i>@(isHi ? "यात्रा फ़िल्टर:" : "Trip filter:") @tripNum</span>
-                    <a asp-action="Index" class="btn btn-xs btn-outline-secondary ml-1">@(isHi ? "फ़िल्टर हटाएं" : "Remove filter")</a>
+                    <span class="badge badge-info p-2"><i class="fas fa-filter mr-1"></i>@L["Trip filter:"] @tripNum</span>
+                    <a asp-action="Index" class="btn btn-xs btn-outline-secondary ml-1">@L["Remove filter"]</a>
                 </div>
             }
             <form method="get" class="form-inline" style="gap:6px;">
@@ -68,21 +67,21 @@
                     <input type="hidden" name="tripId" value="@tripFilterId">
                 }
                 <select name="category" class="form-control form-control-sm" onchange="this.form.submit()">
-                    <option value="">@(isHi ? "सभी श्रेणियां" : "All Categories")</option>
+                    <option value="">@L["All Categories"]</option>
                     @foreach (var c in Enum.GetValues<FleetPro.Models.Entities.ExpenseCategory>())
                     { <option value="@c" selected="@(Context.Request.Query["category"] == c.ToString() ? "selected" : null)">@c</option> }
                 </select>
-                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@(isHi ? "यात्रा# / विवरण…" : "Trip# / description…")">
+                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / description…"]">
                 <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
-                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@(isHi ? "साफ़ करें" : "Clear")</a>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Clear"]</a>
             </form>
         </div>
         <div class="card-body p-0">
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:90px;">@(isHi ? "कार्रवाई" : "Actions")</th>
-                        <th>@(isHi ? "श्रेणी" : "Category")</th><th>@(isHi ? "यात्रा" : "Trip")</th><th>@(isHi ? "राशि" : "Amount")</th><th>@(isHi ? "तारीख" : "Date")</th><th>@(isHi ? "विवरण" : "Description")</th><th>@(isHi ? "विक्रेता" : "Vendor")</th><th>@(isHi ? "बिल #" : "Bill#")</th><th>@(isHi ? "रसीद" : "Receipt")</th>
+                        <th style="width:90px;">@L["Actions"]</th>
+                        <th>@L["Category"]</th><th>@L["Trip"]</th><th>@L["Amount"]</th><th>@L["Date"]</th><th>@L["Description"]</th><th>@L["Vendor"]</th><th>@L["Bill#"]</th><th>@L["Receipt"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,7 +92,7 @@
                                 <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "यह व्यय हटाएं?" : "Delete this expense?")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete this expense?"]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -117,19 +116,19 @@
                             <td>@e.BillNumber</td>
                             <td>
                                 @if (e.HasReceipt && !string.IsNullOrEmpty(e.ReceiptPath))
-                                { <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file-invoice"></i> @(isHi ? "देखें" : "View")</a> }
+                                { <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file-invoice"></i> @L["View"]</a> }
                                 else { <span class="text-muted small">—</span> }
                             </td>
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="9" class="text-center text-muted py-4">@(isHi ? "कोई व्यय नहीं मिला।" : "No expenses found.")</td></tr> }
+                    { <tr><td colspan="9" class="text-center text-muted py-4">@L["No expenses found."]</td></tr> }
                 </tbody>
                 @if (Model.Any())
                 {
                     <tfoot class="bg-light font-weight-bold">
                         <tr>
-                            <td colspan="3" class="text-right">@(isHi ? "कुल:" : "Total:")</td>
+                            <td colspan="3" class="text-right">@L["Total:"]</td>
                             <td class="text-danger">₹@Model.Sum(e => e.Amount).ToString("N2")</td>
                             <td colspan="5"></td>
                         </tr>

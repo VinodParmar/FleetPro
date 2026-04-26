@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- ── NAVIGATION ── -->
+  <data name="Home" xml:space="preserve"><value>गृह</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>डैशबोर्ड</value></data>
+  <data name="Logout" xml:space="preserve"><value>लॉग आउट</value></data>
+  <data name="Alerts" xml:space="preserve"><value>अलर्ट</value></data>
+  <data name="View All Alerts" xml:space="preserve"><value>सभी अलर्ट देखें</value></data>
+  <data name="View All Alerts →" xml:space="preserve"><value>सभी अलर्ट देखें →</value></data>
+
+  <!-- ── SIDEBAR ── -->
+  <data name="Company Management" xml:space="preserve"><value>कंपनी प्रबंधन</value></data>
+  <data name="Company List" xml:space="preserve"><value>कंपनी सूची</value></data>
+  <data name="Add Company" xml:space="preserve"><value>कंपनी जोड़ें</value></data>
+  <data name="User Management" xml:space="preserve"><value>उपयोगकर्ता प्रबंधन</value></data>
+  <data name="User List" xml:space="preserve"><value>उपयोगकर्ता सूची</value></data>
+  <data name="Add User" xml:space="preserve"><value>उपयोगकर्ता जोड़ें</value></data>
+  <data name="Truck Management" xml:space="preserve"><value>ट्रक प्रबंधन</value></data>
+  <data name="Truck List" xml:space="preserve"><value>ट्रक सूची</value></data>
+  <data name="Add Truck" xml:space="preserve"><value>ट्रक जोड़ें</value></data>
+  <data name="Driver Management" xml:space="preserve"><value>चालक प्रबंधन</value></data>
+  <data name="Driver List" xml:space="preserve"><value>चालक सूची</value></data>
+  <data name="Add Driver" xml:space="preserve"><value>चालक जोड़ें</value></data>
+  <data name="Trip Management" xml:space="preserve"><value>यात्रा प्रबंधन</value></data>
+  <data name="Trip List" xml:space="preserve"><value>यात्रा सूची</value></data>
+  <data name="New Trip" xml:space="preserve"><value>नई यात्रा</value></data>
+  <data name="Expense Management" xml:space="preserve"><value>व्यय प्रबंधन</value></data>
+  <data name="Expense List" xml:space="preserve"><value>व्यय सूची</value></data>
+  <data name="Add Expense" xml:space="preserve"><value>व्यय जोड़ें</value></data>
+  <data name="Reports" xml:space="preserve"><value>रिपोर्ट</value></data>
+  <data name="P&amp;L Report" xml:space="preserve"><value>लाभ-हानि रिपोर्ट</value></data>
+  <data name="Export Trips (Excel)" xml:space="preserve"><value>यात्राएं निर्यात (Excel)</value></data>
+
+  <!-- ── LOGIN ── -->
+  <data name="Multi-tenant Fleet Management System" xml:space="preserve"><value>बहु-किरायेदार वाहन प्रबंधन प्रणाली</value></data>
+  <data name="Sign in to continue" xml:space="preserve"><value>जारी रखने के लिए साइन इन करें</value></data>
+  <data name="Remember Me" xml:space="preserve"><value>मुझे याद रखें</value></data>
+  <data name="Sign In" xml:space="preserve"><value>साइन इन</value></data>
+
+  <!-- ── COMMON WORDS ── -->
+  <data name="Actions" xml:space="preserve"><value>कार्रवाई</value></data>
+  <data name="Action" xml:space="preserve"><value>कार्रवाई</value></data>
+  <data name="Name" xml:space="preserve"><value>नाम</value></data>
+  <data name="Email" xml:space="preserve"><value>ईमेल</value></data>
+  <data name="Phone" xml:space="preserve"><value>फ़ोन</value></data>
+  <data name="Status" xml:space="preserve"><value>स्थिति</value></data>
+  <data name="Company" xml:space="preserve"><value>कंपनी</value></data>
+  <data name="Cancel" xml:space="preserve"><value>रद्द करें</value></data>
+  <data name="Save Changes" xml:space="preserve"><value>परिवर्तन सहेजें</value></data>
+  <data name="Total" xml:space="preserve"><value>कुल</value></data>
+  <data name="Active" xml:space="preserve"><value>सक्रिय</value></data>
+  <data name="Inactive" xml:space="preserve"><value>निष्क्रिय</value></data>
+  <data name="All Status" xml:space="preserve"><value>सभी स्थिति</value></data>
+  <data name="Notes" xml:space="preserve"><value>नोट्स</value></data>
+  <data name="Address" xml:space="preserve"><value>पता</value></data>
+  <data name="City" xml:space="preserve"><value>शहर</value></data>
+  <data name="State" xml:space="preserve"><value>राज्य</value></data>
+  <data name="Year" xml:space="preserve"><value>वर्ष</value></data>
+  <data name="Select" xml:space="preserve"><value>चुनें</value></data>
+  <data name="Role" xml:space="preserve"><value>भूमिका</value></data>
+  <data name="Filter" xml:space="preserve"><value>फ़िल्टर</value></data>
+  <data name="Clear" xml:space="preserve"><value>साफ़ करें</value></data>
+  <data name="Manage" xml:space="preserve"><value>प्रबंधित करें</value></data>
+  <data name="Edit" xml:space="preserve"><value>संपादित करें</value></data>
+  <data name="Back" xml:space="preserve"><value>वापस</value></data>
+  <data name="View" xml:space="preserve"><value>देखें</value></data>
+  <data name="Upload" xml:space="preserve"><value>अपलोड</value></data>
+  <data name="Type" xml:space="preserve"><value>प्रकार</value></data>
+  <data name="Date" xml:space="preserve"><value>तारीख</value></data>
+  <data name="Amount" xml:space="preserve"><value>राशि</value></data>
+  <data name="Category" xml:space="preserve"><value>श्रेणी</value></data>
+  <data name="Description" xml:space="preserve"><value>विवरण</value></data>
+  <data name="New" xml:space="preserve"><value>नया</value></data>
+  <data name="Full Name *" xml:space="preserve"><value>पूरा नाम *</value></data>
+  <data name="Email *" xml:space="preserve"><value>ईमेल *</value></data>
+  <data name="Company *" xml:space="preserve"><value>कंपनी *</value></data>
+  <data name="Password *" xml:space="preserve"><value>पासवर्ड *</value></data>
+  <data name="All" xml:space="preserve"><value>सभी</value></data>
+  <data name="Size" xml:space="preserve"><value>आकार</value></data>
+
+  <!-- ── STATUS BADGES ── -->
+  <data name="Completed" xml:space="preserve"><value>पूर्ण</value></data>
+  <data name="In Progress" xml:space="preserve"><value>प्रगति में</value></data>
+  <data name="Scheduled" xml:space="preserve"><value>निर्धारित</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>रद्द</value></data>
+  <data name="Expired" xml:space="preserve"><value>समाप्त</value></data>
+  <data name="EXPIRED" xml:space="preserve"><value>समाप्त</value></data>
+  <data name="Trial" xml:space="preserve"><value>परीक्षण</value></data>
+  <data name="Suspended" xml:space="preserve"><value>निलंबित</value></data>
+  <data name="Locked" xml:space="preserve"><value>बंद</value></data>
+  <data name="Maintenance" xml:space="preserve"><value>रखरखाव</value></data>
+  <data name="Never" xml:space="preserve"><value>कभी नहीं</value></data>
+  <data name="Unlimited" xml:space="preserve"><value>असीमित</value></data>
+
+  <!-- ── DASHBOARD ── -->
+  <data name="Total Tenants" xml:space="preserve"><value>कुल किरायेदार</value></data>
+  <data name="Active Trucks" xml:space="preserve"><value>सक्रिय ट्रक</value></data>
+  <data name="Active Trips" xml:space="preserve"><value>सक्रिय यात्राएं</value></data>
+  <data name="Total Drivers" xml:space="preserve"><value>कुल चालक</value></data>
+  <data name="Monthly Revenue" xml:space="preserve"><value>मासिक आय</value></data>
+  <data name="Monthly Expenses" xml:space="preserve"><value>मासिक व्यय</value></data>
+  <data name="Net Profit" xml:space="preserve"><value>शुद्ध लाभ</value></data>
+  <data name="Recent Trips" xml:space="preserve"><value>हालिया यात्राएं</value></data>
+  <data name="Trip #" xml:space="preserve"><value>यात्रा #</value></data>
+  <data name="Route" xml:space="preserve"><value>मार्ग</value></data>
+  <data name="Revenue" xml:space="preserve"><value>आय</value></data>
+  <data name="View All Trips →" xml:space="preserve"><value>सभी यात्राएं देखें →</value></data>
+  <data name="Urgent Alerts" xml:space="preserve"><value>तत्काल अलर्ट</value></data>
+  <data name="Critical" xml:space="preserve"><value>गंभीर</value></data>
+
+  <!-- ── DRIVER ── -->
+  <data name="Drivers" xml:space="preserve"><value>चालक</value></data>
+  <data name="Driver" xml:space="preserve"><value>चालक</value></data>
+  <data name="Edit Driver" xml:space="preserve"><value>चालक संपादित करें</value></data>
+  <data name="Name / License #" xml:space="preserve"><value>नाम / लाइसेंस #</value></data>
+  <data name="License #" xml:space="preserve"><value>लाइसेंस #</value></data>
+  <data name="License Type" xml:space="preserve"><value>लाइसेंस प्रकार</value></data>
+  <data name="License Expiry" xml:space="preserve"><value>लाइसेंस समाप्ति</value></data>
+  <data name="Salary" xml:space="preserve"><value>वेतन</value></data>
+  <data name="Driver Profile" xml:space="preserve"><value>चालक प्रोफ़ाइल</value></data>
+  <data name="Date of Birth" xml:space="preserve"><value>जन्म तिथि</value></data>
+  <data name="Aadhaar Number" xml:space="preserve"><value>आधार नंबर</value></data>
+  <data name="PAN Number" xml:space="preserve"><value>PAN नंबर</value></data>
+  <data name="Monthly Salary (₹)" xml:space="preserve"><value>मासिक वेतन (₹)</value></data>
+  <data name="License Details" xml:space="preserve"><value>लाइसेंस विवरण</value></data>
+  <data name="License Number *" xml:space="preserve"><value>लाइसेंस नंबर *</value></data>
+  <data name="License Expiry *" xml:space="preserve"><value>लाइसेंस समाप्ति *</value></data>
+  <data name="Bank Details" xml:space="preserve"><value>बैंक विवरण</value></data>
+  <data name="Account Number" xml:space="preserve"><value>खाता नंबर</value></data>
+  <data name="IFSC Code" xml:space="preserve"><value>IFSC कोड</value></data>
+  <data name="On Leave" xml:space="preserve"><value>छुट्टी पर</value></data>
+  <data name="No drivers found." xml:space="preserve"><value>कोई चालक नहीं मिला।</value></data>
+  <data name="Delete driver {0}?" xml:space="preserve"><value>चालक {0} हटाएं?</value></data>
+
+  <!-- ── TRUCK ── -->
+  <data name="Trucks" xml:space="preserve"><value>ट्रक</value></data>
+  <data name="Truck" xml:space="preserve"><value>ट्रक</value></data>
+  <data name="Edit Truck" xml:space="preserve"><value>ट्रक संपादित करें</value></data>
+  <data name="Expiry Alerts" xml:space="preserve"><value>समाप्ति अलर्ट</value></data>
+  <data name="Plate" xml:space="preserve"><value>नंबर प्लेट</value></data>
+  <data name="Model" xml:space="preserve"><value>मॉडल</value></data>
+  <data name="Fitness Expiry" xml:space="preserve"><value>फिटनेस समाप्ति</value></data>
+  <data name="Insurance Expiry" xml:space="preserve"><value>बीमा समाप्ति</value></data>
+  <data name="No trucks found." xml:space="preserve"><value>कोई ट्रक नहीं मिला।</value></data>
+  <data name="Truck Information" xml:space="preserve"><value>ट्रक की जानकारी</value></data>
+  <data name="Number Plate *" xml:space="preserve"><value>नंबर प्लेट *</value></data>
+  <data name="Model *" xml:space="preserve"><value>मॉडल *</value></data>
+  <data name="Make / Brand" xml:space="preserve"><value>ब्रांड</value></data>
+  <data name="Capacity (Tons)" xml:space="preserve"><value>क्षमता (टन)</value></data>
+  <data name="Engine Number" xml:space="preserve"><value>इंजन नंबर</value></data>
+  <data name="Chassis Number" xml:space="preserve"><value>चेसिस नंबर</value></data>
+  <data name="— Select Company —" xml:space="preserve"><value>— कंपनी चुनें —</value></data>
+  <data name="Expiry Dates" xml:space="preserve"><value>समाप्ति तिथियां</value></data>
+  <data name="Fitness Certificate Expiry" xml:space="preserve"><value>फिटनेस प्रमाणपत्र समाप्ति</value></data>
+  <data name="Policy Number" xml:space="preserve"><value>पॉलिसी नंबर</value></data>
+  <data name="Road Tax Expiry" xml:space="preserve"><value>रोड टैक्स समाप्ति</value></data>
+  <data name="Permit Expiry" xml:space="preserve"><value>परमिट समाप्ति</value></data>
+  <data name="Search plate / model…" xml:space="preserve"><value>नंबर प्लेट / मॉडल खोजें…</value></data>
+  <data name="Delete truck {0}?" xml:space="preserve"><value>ट्रक {0} हटाएं?</value></data>
+
+  <!-- ── TRIP ── -->
+  <data name="Trips" xml:space="preserve"><value>यात्राएं</value></data>
+  <data name="Trip" xml:space="preserve"><value>यात्रा</value></data>
+  <data name="Edit Trip" xml:space="preserve"><value>यात्रा संपादित करें</value></data>
+  <data name="Total Revenue" xml:space="preserve"><value>कुल आय</value></data>
+  <data name="From" xml:space="preserve"><value>से</value></data>
+  <data name="To" xml:space="preserve"><value>तक</value></data>
+  <data name="Start" xml:space="preserve"><value>शुरू</value></data>
+  <data name="End" xml:space="preserve"><value>समाप्त</value></data>
+  <data name="Expenses" xml:space="preserve"><value>व्यय</value></data>
+  <data name="Profit" xml:space="preserve"><value>लाभ</value></data>
+  <data name="View expenses" xml:space="preserve"><value>व्यय देखें</value></data>
+  <data name="No trips found." xml:space="preserve"><value>कोई यात्रा नहीं मिली।</value></data>
+  <data name="Create first trip →" xml:space="preserve"><value>पहली यात्रा बनाएं →</value></data>
+  <data name="Totals:" xml:space="preserve"><value>कुल:</value></data>
+  <data name="Trip Details" xml:space="preserve"><value>यात्रा विवरण</value></data>
+  <data name="— Select Truck —" xml:space="preserve"><value>— ट्रक चुनें —</value></data>
+  <data name="— Select Driver —" xml:space="preserve"><value>— चालक चुनें —</value></data>
+  <data name="From Location *" xml:space="preserve"><value>प्रस्थान स्थान *</value></data>
+  <data name="To Location *" xml:space="preserve"><value>गंतव्य स्थान *</value></data>
+  <data name="Start Date *" xml:space="preserve"><value>प्रारंभ तिथि *</value></data>
+  <data name="End Date" xml:space="preserve"><value>समाप्ति तिथि</value></data>
+  <data name="Distance (km)" xml:space="preserve"><value>दूरी (km)</value></data>
+  <data name="Cargo Description" xml:space="preserve"><value>माल विवरण</value></data>
+  <data name="Cargo Weight (Tons)" xml:space="preserve"><value>माल वजन (टन)</value></data>
+  <data name="Client Name" xml:space="preserve"><value>ग्राहक नाम</value></data>
+  <data name="LR Number (Lorry Receipt)" xml:space="preserve"><value>LR नंबर (लॉरी रसीद)</value></data>
+  <data name="Revenue Amount (₹) *" xml:space="preserve"><value>आय राशि (₹) *</value></data>
+  <data name="Quick Tips" xml:space="preserve"><value>त्वरित सुझाव</value></data>
+  <data name="Add expenses after creating the trip" xml:space="preserve"><value>यात्रा बनाने के बाद व्यय जोड़ें</value></data>
+  <data name="Upload documents (LR, Invoice) in trip details" xml:space="preserve"><value>यात्रा विवरण में दस्तावेज़ अपलोड करें</value></data>
+  <data name="P&amp;L is auto-calculated from Revenue − Expenses" xml:space="preserve"><value>P&amp;L आय − व्यय से स्वतः गणित होता है</value></data>
+  <data name="Create Trip" xml:space="preserve"><value>यात्रा बनाएं</value></data>
+  <data name="Trip Number" xml:space="preserve"><value>यात्रा नंबर</value></data>
+  <data name="Start Date" xml:space="preserve"><value>प्रारंभ तिथि</value></data>
+  <data name="Distance" xml:space="preserve"><value>दूरी</value></data>
+  <data name="Cargo" xml:space="preserve"><value>माल</value></data>
+  <data name="Weight" xml:space="preserve"><value>वजन</value></data>
+  <data name="Client" xml:space="preserve"><value>ग्राहक</value></data>
+  <data name="LR Number" xml:space="preserve"><value>LR नंबर</value></data>
+  <data name="Profit &amp; Loss" xml:space="preserve"><value>लाभ और हानि</value></data>
+  <data name="Total Expenses" xml:space="preserve"><value>कुल व्यय</value></data>
+  <data name="Trip Information" xml:space="preserve"><value>यात्रा की जानकारी</value></data>
+  <data name="Documents" xml:space="preserve"><value>दस्तावेज़</value></data>
+  <data name="Document Type" xml:space="preserve"><value>दस्तावेज़ प्रकार</value></data>
+  <data name="File" xml:space="preserve"><value>फ़ाइल</value></data>
+  <data name="Uploaded" xml:space="preserve"><value>अपलोड</value></data>
+  <data name="No expenses added yet." xml:space="preserve"><value>अभी तक कोई व्यय नहीं जोड़ा।</value></data>
+  <data name="No documents uploaded." xml:space="preserve"><value>कोई दस्तावेज़ अपलोड नहीं किया।</value></data>
+  <data name="Delete trip {0}?" xml:space="preserve"><value>यात्रा {0} हटाएं?</value></data>
+  <data name="Trip# / location…" xml:space="preserve"><value>यात्रा# / स्थान…</value></data>
+  <data name="Export Excel" xml:space="preserve"><value>Excel निर्यात</value></data>
+  <data name="Trip Report (Excel)" xml:space="preserve"><value>यात्रा रिपोर्ट (Excel)</value></data>
+
+  <!-- ── EXPENSE ── -->
+  <data name="Edit Expense" xml:space="preserve"><value>व्यय संपादित करें</value></data>
+  <data name="Expense Details" xml:space="preserve"><value>व्यय विवरण</value></data>
+  <data name="Trip *" xml:space="preserve"><value>यात्रा *</value></data>
+  <data name="— Select Trip —" xml:space="preserve"><value>— यात्रा चुनें —</value></data>
+  <data name="Category *" xml:space="preserve"><value>श्रेणी *</value></data>
+  <data name="Amount (₹) *" xml:space="preserve"><value>राशि (₹) *</value></data>
+  <data name="Expense Date *" xml:space="preserve"><value>व्यय तिथि *</value></data>
+  <data name="Description / Notes" xml:space="preserve"><value>विवरण / नोट्स</value></data>
+  <data name="Vendor / Supplier" xml:space="preserve"><value>विक्रेता / आपूर्तिकर्ता</value></data>
+  <data name="Bill / Receipt Number" xml:space="preserve"><value>बिल / रसीद नंबर</value></data>
+  <data name="Upload Receipt / Bill" xml:space="preserve"><value>रसीद / बिल अपलोड करें</value></data>
+  <data name="Choose file (PDF/JPG/PNG)" xml:space="preserve"><value>फ़ाइल चुनें (PDF/JPG/PNG)</value></data>
+  <data name="Current:" xml:space="preserve"><value>मौजूदा:</value></data>
+  <data name="View existing receipt" xml:space="preserve"><value>मौजूदा रसीद देखें</value></data>
+  <data name="Trip filter:" xml:space="preserve"><value>यात्रा फ़िल्टर:</value></data>
+  <data name="Remove filter" xml:space="preserve"><value>फ़िल्टर हटाएं</value></data>
+  <data name="All Categories" xml:space="preserve"><value>सभी श्रेणियां</value></data>
+  <data name="Vendor" xml:space="preserve"><value>विक्रेता</value></data>
+  <data name="Bill#" xml:space="preserve"><value>बिल #</value></data>
+  <data name="Receipt" xml:space="preserve"><value>रसीद</value></data>
+  <data name="Bill" xml:space="preserve"><value>बिल</value></data>
+  <data name="No expenses found." xml:space="preserve"><value>कोई व्यय नहीं मिला।</value></data>
+  <data name="Total:" xml:space="preserve"><value>कुल:</value></data>
+  <data name="Delete this expense?" xml:space="preserve"><value>यह व्यय हटाएं?</value></data>
+  <data name="Trip# / description…" xml:space="preserve"><value>यात्रा# / विवरण…</value></data>
+
+  <!-- ── ALERT ── -->
+  <data name="Alerts &amp; Notifications" xml:space="preserve"><value>अलर्ट और सूचनाएं</value></data>
+  <data name="Refresh Alerts" xml:space="preserve"><value>अलर्ट ताज़ा करें</value></data>
+  <data name="Critical (0-7 days)" xml:space="preserve"><value>गंभीर (0-7 दिन)</value></data>
+  <data name="Warning (8-30 days)" xml:space="preserve"><value>चेतावनी (8-30 दिन)</value></data>
+  <data name="Upcoming (31-60 days)" xml:space="preserve"><value>आगामी (31-60 दिन)</value></data>
+  <data name="Unread" xml:space="preserve"><value>अपठित</value></data>
+  <data name="Critical Alerts" xml:space="preserve"><value>गंभीर अलर्ट</value></data>
+  <data name="Alert" xml:space="preserve"><value>अलर्ट</value></data>
+  <data name="Expires" xml:space="preserve"><value>समाप्त</value></data>
+  <data name="License" xml:space="preserve"><value>लाइसेंस</value></data>
+  <data name="Insurance" xml:space="preserve"><value>बीमा</value></data>
+  <data name="Fitness" xml:space="preserve"><value>फिटनेस</value></data>
+  <data name="days" xml:space="preserve"><value>दिन</value></data>
+  <data name="No critical alerts" xml:space="preserve"><value>कोई गंभीर अलर्ट नहीं</value></data>
+  <data name="Warning Alerts" xml:space="preserve"><value>चेतावनी अलर्ट</value></data>
+  <data name="No warnings" xml:space="preserve"><value>कोई चेतावनी नहीं</value></data>
+  <data name="Notification Settings" xml:space="preserve"><value>सूचना सेटिंग</value></data>
+  <data name="Notification Channels" xml:space="preserve"><value>सूचना चैनल</value></data>
+  <data name="Email Alerts" xml:space="preserve"><value>ईमेल अलर्ट</value></data>
+  <data name="SMS Alerts" xml:space="preserve"><value>SMS अलर्ट</value></data>
+  <data name="Push Notifications" xml:space="preserve"><value>पुश सूचनाएं</value></data>
+  <data name="Alert Thresholds" xml:space="preserve"><value>अलर्ट सीमाएं</value></data>
+  <data name="Critical (days):" xml:space="preserve"><value>गंभीर (दिन):</value></data>
+  <data name="Warning (days):" xml:space="preserve"><value>चेतावनी (दिन):</value></data>
+  <data name="Save Settings" xml:space="preserve"><value>सेटिंग सहेजें</value></data>
+  <data name="EXPIRED {0}d ago" xml:space="preserve"><value>समाप्त {0}दिन पहले</value></data>
+  <data name="{0} days" xml:space="preserve"><value>{0} दिन</value></data>
+
+  <!-- ── USER ── -->
+  <data name="Users" xml:space="preserve"><value>उपयोगकर्ता</value></data>
+  <data name="Last Login" xml:space="preserve"><value>अंतिम लॉगिन</value></data>
+  <data name="Super Admin" xml:space="preserve"><value>सुपर व्यवस्थापक</value></data>
+  <data name="Company Admin" xml:space="preserve"><value>कंपनी व्यवस्थापक</value></data>
+  <data name="Data Entry" xml:space="preserve"><value>डेटा प्रवेश</value></data>
+  <data name="Viewer" xml:space="preserve"><value>दर्शक</value></data>
+  <data name="No users found." xml:space="preserve"><value>कोई उपयोगकर्ता नहीं मिला।</value></data>
+  <data name="Edit User" xml:space="preserve"><value>उपयोगकर्ता संपादित करें</value></data>
+  <data name="User Details" xml:space="preserve"><value>उपयोगकर्ता विवरण</value></data>
+  <data name="— Global (Super Admin) —" xml:space="preserve"><value>— वैश्विक (सुपर व्यवस्थापक) —</value></data>
+  <data name="Role *" xml:space="preserve"><value>भूमिका *</value></data>
+  <data name="— Select Role —" xml:space="preserve"><value>— भूमिका चुनें —</value></data>
+  <data name="New Password (leave blank to keep)" xml:space="preserve"><value>नया पासवर्ड (खाली छोड़ें)</value></data>
+  <data name="Min 8 characters" xml:space="preserve"><value>न्यूनतम 8 अक्षर</value></data>
+  <data name="Leave blank to keep current" xml:space="preserve"><value>खाली छोड़ें</value></data>
+  <data name="Role Permissions" xml:space="preserve"><value>भूमिका अनुमतियां</value></data>
+  <data name="Access Level" xml:space="preserve"><value>पहुंच स्तर</value></data>
+  <data name="Full system access, all companies" xml:space="preserve"><value>पूर्ण सिस्टम पहुंच, सभी कंपनियां</value></data>
+  <data name="Full access within their company" xml:space="preserve"><value>अपनी कंपनी में पूर्ण पहुंच</value></data>
+  <data name="View, Create, Edit — no Delete" xml:space="preserve"><value>देखें, बनाएं, संपादित करें — हटाएं नहीं</value></data>
+  <data name="Read-only access" xml:space="preserve"><value>केवल पढ़ने की पहुंच</value></data>
+  <data name="Create User" xml:space="preserve"><value>उपयोगकर्ता बनाएं</value></data>
+  <data name="Delete user {0}?" xml:space="preserve"><value>उपयोगकर्ता {0} हटाएं?</value></data>
+  <data name="After creating the user, you can set fine-grained permissions using the" xml:space="preserve"><value>उपयोगकर्ता बनाने के बाद,</value></data>
+  <data name="button in the user list." xml:space="preserve"><value>बटन से विस्तृत अनुमतियां सेट करें।</value></data>
+
+  <!-- ── PERMISSIONS ── -->
+  <data name="Permissions" xml:space="preserve"><value>अनुमतियां</value></data>
+  <data name="How permissions work:" xml:space="preserve"><value>अनुमतियां कैसे काम करती हैं:</value></data>
+  <data name="Role permissions are the baseline. User overrides take precedence —" xml:space="preserve"><value>भूमिका अनुमतियां आधार हैं। उपयोगकर्ता ओवरराइड प्राथमिकता लेते हैं —</value></data>
+  <data name="Grant" xml:space="preserve"><value>अनुमति दें</value></data>
+  <data name="or" xml:space="preserve"><value>या</value></data>
+  <data name="Deny" xml:space="preserve"><value>अस्वीकार करें</value></data>
+  <data name="individual permissions for this user." xml:space="preserve"><value>इस उपयोगकर्ता के लिए व्यक्तिगत अनुमतियां।</value></data>
+  <data name="Grant All" xml:space="preserve"><value>सभी अनुमति</value></data>
+  <data name="Deny All" xml:space="preserve"><value>सभी अस्वीकार</value></data>
+  <data name="Inherit All" xml:space="preserve"><value>सभी इनहेरिट</value></data>
+  <data name="Role:" xml:space="preserve"><value>भूमिका:</value></data>
+  <data name="Granted" xml:space="preserve"><value>अनुमत</value></data>
+  <data name="Denied" xml:space="preserve"><value>अस्वीकृत</value></data>
+  <data name="Inherit" xml:space="preserve"><value>इनहेरिट</value></data>
+  <data name="Save Permissions" xml:space="preserve"><value>अनुमतियां सहेजें</value></data>
+
+  <!-- ── TENANT / COMPANY ── -->
+  <data name="Companies" xml:space="preserve"><value>कंपनियां</value></data>
+  <data name="Edit Company" xml:space="preserve"><value>कंपनी संपादित करें</value></data>
+  <data name="Subdomain" xml:space="preserve"><value>सबडोमेन</value></data>
+  <data name="Contact" xml:space="preserve"><value>संपर्क</value></data>
+  <data name="Plan" xml:space="preserve"><value>योजना</value></data>
+  <data name="No companies found." xml:space="preserve"><value>कोई कंपनी नहीं मिली।</value></data>
+  <data name="Company Information" xml:space="preserve"><value>कंपनी की जानकारी</value></data>
+  <data name="Company Name *" xml:space="preserve"><value>कंपनी का नाम *</value></data>
+  <data name="Subdomain *" xml:space="preserve"><value>सबडोमेन *</value></data>
+  <data name="Contact Person" xml:space="preserve"><value>संपर्क व्यक्ति</value></data>
+  <data name="GST Number" xml:space="preserve"><value>GST नंबर</value></data>
+  <data name="Plan &amp; Limits" xml:space="preserve"><value>योजना और सीमाएं</value></data>
+  <data name="Subscription Plan" xml:space="preserve"><value>सदस्यता योजना</value></data>
+  <data name="Max Trucks" xml:space="preserve"><value>अधिकतम ट्रक</value></data>
+  <data name="Max Users" xml:space="preserve"><value>अधिकतम उपयोगकर्ता</value></data>
+  <data name="Plans:" xml:space="preserve"><value>योजनाएं:</value></data>
+  <data name="trucks, 5 users" xml:space="preserve"><value>ट्रक, 5 उपयोगकर्ता</value></data>
+  <data name="trucks, 10 users" xml:space="preserve"><value>ट्रक, 10 उपयोगकर्ता</value></data>
+  <data name="Company Admin Account" xml:space="preserve"><value>कंपनी व्यवस्थापक खाता</value></data>
+  <data name="Admin Name *" xml:space="preserve"><value>व्यवस्थापक नाम *</value></data>
+  <data name="Admin Email *" xml:space="preserve"><value>व्यवस्थापक ईमेल *</value></data>
+  <data name="Admin Phone" xml:space="preserve"><value>व्यवस्थापक फ़ोन</value></data>
+  <data name="This creates the Company Admin account. The admin can create additional users from their dashboard." xml:space="preserve"><value>यह कंपनी व्यवस्थापक खाता बनाता है। व्यवस्थापक अपने डैशबोर्ड से अतिरिक्त उपयोगकर्ता बना सकते हैं।</value></data>
+  <data name="Create Company" xml:space="preserve"><value>कंपनी बनाएं</value></data>
+  <data name="Delete company {0}? This cannot be undone." xml:space="preserve"><value>कंपनी {0} हटाएं? यह पूर्ववत नहीं होगा।</value></data>
+
+  <!-- ── REPORT ── -->
+  <data name="Profit &amp; Loss Report" xml:space="preserve"><value>लाभ और हानि रिपोर्ट</value></data>
+  <data name="From Date" xml:space="preserve"><value>से तारीख</value></data>
+  <data name="To Date" xml:space="preserve"><value>तक तारीख</value></data>
+  <data name="Tenant" xml:space="preserve"><value>किरायेदार</value></data>
+  <data name="All Tenants" xml:space="preserve"><value>सभी किरायेदार</value></data>
+  <data name="Generate P&amp;L Report" xml:space="preserve"><value>P&amp;L रिपोर्ट तैयार करें</value></data>
+  <data name="Download Excel" xml:space="preserve"><value>Excel डाउनलोड करें</value></data>
+  <data name="Expense Report" xml:space="preserve"><value>व्यय रिपोर्ट</value></data>
+  <data name="Format" xml:space="preserve"><value>प्रारूप</value></data>
+  <data name="Download (Coming Soon)" xml:space="preserve"><value>डाउनलोड (शीघ्र आ रहा है)</value></data>
+</root>

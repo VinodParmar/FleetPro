@@ -2,7 +2,6 @@
     var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
     bool IsSuperAdmin = User.IsInRole("SuperAdmin");
     bool IsTenantAdmin = User.IsInRole("TenantAdmin");
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
 }
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -11,7 +10,7 @@
             <a asp-controller="Dashboard" asp-action="Index"
                class="nav-link @(ctrl == "Dashboard" ? "active" : "")">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>@(isHi ? "डैशबोर्ड" : "Dashboard")</p>
+                <p>@L["Dashboard"]</p>
             </a>
         </li>
 
@@ -20,17 +19,17 @@
             <li class="nav-item @(ctrl == "Tenant" ? "menu-open" : "")">
                 <a href="#" class="nav-link @(ctrl == "Tenant" ? "active" : "")">
                     <i class="nav-icon fas fa-building"></i>
-                    <p>@(isHi ? "कंपनी प्रबंधन" : "Company Management") <i class="right fas fa-angle-left"></i></p>
+                    <p>@L["Company Management"] <i class="right fas fa-angle-left"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a asp-controller="Tenant" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "कंपनी सूची" : "Company List")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@L["Company List"]</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a asp-controller="Tenant" asp-action="Create" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "कंपनी जोड़ें" : "Add Company")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@L["Add Company"]</p>
                         </a>
                     </li>
                 </ul>
@@ -42,17 +41,17 @@
             <li class="nav-item @(ctrl == "User" ? "menu-open" : "")">
                 <a href="#" class="nav-link @(ctrl == "User" ? "active" : "")">
                     <i class="nav-icon fas fa-users"></i>
-                    <p>@(isHi ? "उपयोगकर्ता प्रबंधन" : "User Management") <i class="right fas fa-angle-left"></i></p>
+                    <p>@L["User Management"] <i class="right fas fa-angle-left"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a asp-controller="User" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "उपयोगकर्ता सूची" : "User List")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@L["User List"]</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a asp-controller="User" asp-action="Create" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@(isHi ? "उपयोगकर्ता जोड़ें" : "Add User")</p>
+                            <i class="far fa-circle nav-icon"></i><p>@L["Add User"]</p>
                         </a>
                     </li>
                 </ul>
@@ -62,17 +61,17 @@
         <li class="nav-item @(ctrl == "Truck" ? "menu-open" : "")">
             <a href="#" class="nav-link @(ctrl == "Truck" ? "active" : "")">
                 <i class="nav-icon fas fa-truck"></i>
-                <p>@(isHi ? "ट्रक प्रबंधन" : "Truck Management") <i class="right fas fa-angle-left"></i></p>
+                <p>@L["Truck Management"] <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Truck" asp-action="Index" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "ट्रक सूची" : "Truck List")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Truck List"]</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Truck" asp-action="Create" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "ट्रक जोड़ें" : "Add Truck")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Add Truck"]</p>
                     </a>
                 </li>
             </ul>
@@ -81,17 +80,17 @@
         <li class="nav-item @(ctrl == "Driver" ? "menu-open" : "")">
             <a href="#" class="nav-link @(ctrl == "Driver" ? "active" : "")">
                 <i class="nav-icon fas fa-user-tie"></i>
-                <p>@(isHi ? "चालक प्रबंधन" : "Driver Management") <i class="right fas fa-angle-left"></i></p>
+                <p>@L["Driver Management"] <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Driver" asp-action="Index" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "चालक सूची" : "Driver List")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Driver List"]</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Driver" asp-action="Create" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "चालक जोड़ें" : "Add Driver")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Add Driver"]</p>
                     </a>
                 </li>
             </ul>
@@ -100,17 +99,17 @@
         <li class="nav-item @(ctrl == "Trip" ? "menu-open" : "")">
             <a href="#" class="nav-link @(ctrl == "Trip" ? "active" : "")">
                 <i class="nav-icon fas fa-route"></i>
-                <p>@(isHi ? "यात्रा प्रबंधन" : "Trip Management") <i class="right fas fa-angle-left"></i></p>
+                <p>@L["Trip Management"] <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Trip" asp-action="Index" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "यात्रा सूची" : "Trip List")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Trip List"]</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Trip" asp-action="Create" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "नई यात्रा" : "New Trip")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["New Trip"]</p>
                     </a>
                 </li>
             </ul>
@@ -119,17 +118,17 @@
         <li class="nav-item @(ctrl == "Expense" ? "menu-open" : "")">
             <a href="#" class="nav-link @(ctrl == "Expense" ? "active" : "")">
                 <i class="nav-icon fas fa-receipt"></i>
-                <p>@(isHi ? "व्यय प्रबंधन" : "Expense Management") <i class="right fas fa-angle-left"></i></p>
+                <p>@L["Expense Management"] <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Expense" asp-action="Index" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "व्यय सूची" : "Expense List")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Expense List"]</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Expense" asp-action="Create" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "व्यय जोड़ें" : "Add Expense")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Add Expense"]</p>
                     </a>
                 </li>
             </ul>
@@ -138,17 +137,17 @@
         <li class="nav-item @(ctrl == "Report" ? "menu-open" : "")">
             <a href="#" class="nav-link @(ctrl == "Report" ? "active" : "")">
                 <i class="nav-icon fas fa-chart-line"></i>
-                <p>@(isHi ? "रिपोर्ट" : "Reports") <i class="right fas fa-angle-left"></i></p>
+                <p>@L["Reports"] <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Report" asp-action="Index" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "लाभ-हानि रिपोर्ट" : "P&L Report")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["P&L Report"]</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="Report" asp-action="ExportTripsExcel" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i><p>@(isHi ? "यात्राएं निर्यात (Excel)" : "Export Trips (Excel)")</p>
+                        <i class="far fa-circle nav-icon"></i><p>@L["Export Trips (Excel)"]</p>
                     </a>
                 </li>
             </ul>
@@ -158,7 +157,7 @@
             <a asp-controller="Alert" asp-action="Index"
                class="nav-link @(ctrl == "Alert" ? "active" : "")">
                 <i class="nav-icon fas fa-bell"></i>
-                <p>@(isHi ? "अलर्ट" : "Alerts") <span class="badge badge-danger ml-2">@(ViewBag.AlertCount ?? "")</span></p>
+                <p>@L["Alerts"] <span class="badge badge-danger ml-2">@(ViewBag.AlertCount ?? "")</span></p>
             </a>
         </li>
 

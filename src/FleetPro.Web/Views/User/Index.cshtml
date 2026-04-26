@@ -1,21 +1,20 @@
 @* ══════════════════ Views/User/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.Entities.ApplicationUser>
 @{
-    ViewData["Title"] = "Users";
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    ViewData["Title"] = L["Users"].Value;
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@(isHi ? "उपयोगकर्ता प्रबंधन" : "User Management")
-                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-user-plus mr-1"></i>@(isHi ? "उपयोगकर्ता जोड़ें" : "Add User")</a>
+            <h1 class="m-0">@L["User Management"]
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-user-plus mr-1"></i>@L["Add User"]</a>
             </h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item active">@(isHi ? "उपयोगकर्ता प्रबंधन" : "User Management")</li>
+                <li class="breadcrumb-item active">@L["User Management"]</li>
             </ol>
         </div>
     </div>
@@ -27,10 +26,10 @@
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:130px;">@(isHi ? "कार्रवाई" : "Actions")</th>
-                        <th>@(isHi ? "नाम" : "Name")</th><th>@(isHi ? "ईमेल" : "Email")</th>
-                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "कंपनी" : "Company")</th> }
-                        <th>@(isHi ? "भूमिका" : "Role")</th><th>@(isHi ? "स्थिति" : "Status")</th><th>@(isHi ? "अंतिम लॉगिन" : "Last Login")</th>
+                        <th style="width:130px;">@L["Actions"]</th>
+                        <th>@L["Name"]</th><th>@L["Email"]</th>
+                        @if (User.IsInRole("SuperAdmin")) { <th>@L["Company"]</th> }
+                        <th>@L["Role"]</th><th>@L["Status"]</th><th>@L["Last Login"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +44,7 @@
                                 }
                                 <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "उपयोगकर्ता " + u.FullName + " हटाएं?" : "Delete user " + u.FullName + "?")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete user {0}?", u.FullName]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -64,10 +63,10 @@
                                 {
                                     @switch (ur.Role?.Name)
                                     {
-                                        case "SuperAdmin":       <span class="badge badge-dark">@(isHi ? "सुपर व्यवस्थापक" : "Super Admin")</span>       break;
-                                        case "TenantAdmin":      <span class="badge badge-primary">@(isHi ? "कंपनी व्यवस्थापक" : "Company Admin")</span>   break;
-                                        case "DataEntryOperator":<span class="badge badge-info">@(isHi ? "डेटा प्रवेश" : "Data Entry")</span>        break;
-                                        case "Viewer":           <span class="badge badge-secondary">@(isHi ? "दर्शक" : "Viewer")</span>       break;
+                                        case "SuperAdmin":       <span class="badge badge-dark">@L["Super Admin"]</span>       break;
+                                        case "TenantAdmin":      <span class="badge badge-primary">@L["Company Admin"]</span>   break;
+                                        case "DataEntryOperator":<span class="badge badge-info">@L["Data Entry"]</span>        break;
+                                        case "Viewer":           <span class="badge badge-secondary">@L["Viewer"]</span>       break;
                                         default:                 <span class="badge badge-light">@ur.Role?.Name</span>   break;
                                     }
                                 }
@@ -75,16 +74,16 @@
                             <td>
                                 @switch (u.Status)
                                 {
-                                    case FleetPro.Models.Entities.UserStatus.Active:   <span class="badge badge-success">@(isHi ? "सक्रिय" : "Active")</span>   break;
-                                    case FleetPro.Models.Entities.UserStatus.Inactive: <span class="badge badge-secondary">@(isHi ? "निष्क्रिय" : "Inactive")</span> break;
-                                    case FleetPro.Models.Entities.UserStatus.Locked:   <span class="badge badge-danger">@(isHi ? "बंद" : "Locked")</span>    break;
+                                    case FleetPro.Models.Entities.UserStatus.Active:   <span class="badge badge-success">@L["Active"]</span>   break;
+                                    case FleetPro.Models.Entities.UserStatus.Inactive: <span class="badge badge-secondary">@L["Inactive"]</span> break;
+                                    case FleetPro.Models.Entities.UserStatus.Locked:   <span class="badge badge-danger">@L["Locked"]</span>    break;
                                 }
                             </td>
-                            <td>@(u.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? (isHi ? "कभी नहीं" : "Never"))</td>
+                            <td>@(u.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? L["Never"].Value)</td>
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="7" class="text-center text-muted py-4">@(isHi ? "कोई उपयोगकर्ता नहीं मिला।" : "No users found.")</td></tr> }
+                    { <tr><td colspan="7" class="text-center text-muted py-4">@L["No users found."]</td></tr> }
                 </tbody>
             </table>
         </div>

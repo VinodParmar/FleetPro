@@ -1,21 +1,20 @@
 @* ══════════════════ Views/Tenant/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.ViewModels.TenantViewModel>
 @{
-    ViewData["Title"] = "Companies";
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    ViewData["Title"] = L["Companies"].Value;
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@(isHi ? "कंपनी प्रबंधन" : "Company Management")
-                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "कंपनी जोड़ें" : "Add Company")</a>
+            <h1 class="m-0">@L["Company Management"]
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@L["Add Company"]</a>
             </h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item active">@(isHi ? "कंपनी प्रबंधन" : "Company Management")</li>
+                <li class="breadcrumb-item active">@L["Company Management"]</li>
             </ol>
         </div>
     </div>
@@ -24,10 +23,10 @@
 <section class="content"><div class="container-fluid">
 
     <div class="row mb-3">
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-building"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल" : "Total")</span><span class="info-box-number">@Model.Count</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "सक्रिय" : "Active")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Active)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "परीक्षण" : "Trial")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Trial)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-secondary"><i class="fas fa-pause"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "निष्क्रिय" : "Inactive")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Inactive)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-building"></i></span><div class="info-box-content"><span class="info-box-text">@L["Total"]</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check"></i></span><div class="info-box-content"><span class="info-box-text">@L["Active"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Active)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span><div class="info-box-content"><span class="info-box-text">@L["Trial"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Trial)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-secondary"><i class="fas fa-pause"></i></span><div class="info-box-content"><span class="info-box-text">@L["Inactive"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TenantStatus.Inactive)</span></div></div></div>
     </div>
 
     <div class="card">
@@ -35,9 +34,9 @@
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:110px;">@(isHi ? "कार्रवाई" : "Actions")</th>
-                        <th>@(isHi ? "कंपनी" : "Company")</th><th>@(isHi ? "सबडोमेन" : "Subdomain")</th><th>@(isHi ? "संपर्क" : "Contact")</th><th>@(isHi ? "योजना" : "Plan")</th>
-                        <th>@(isHi ? "ट्रक" : "Trucks")</th><th>@(isHi ? "चालक" : "Drivers")</th><th>@(isHi ? "उपयोगकर्ता" : "Users")</th><th>@(isHi ? "स्थिति" : "Status")</th><th>@(isHi ? "शहर" : "City")</th>
+                        <th style="width:110px;">@L["Actions"]</th>
+                        <th>@L["Company"]</th><th>@L["Subdomain"]</th><th>@L["Contact"]</th><th>@L["Plan"]</th>
+                        <th>@L["Trucks"]</th><th>@L["Drivers"]</th><th>@L["Users"]</th><th>@L["Status"]</th><th>@L["City"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,7 +47,7 @@
                                 <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "कंपनी " + t.CompanyName + " हटाएं? यह पूर्ववत नहीं होगा।" : "Delete company " + t.CompanyName + "? This cannot be undone.")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete company {0}? This cannot be undone.", t.CompanyName]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -83,17 +82,17 @@
                             <td>
                                 @switch (t.Status)
                                 {
-                                    case FleetPro.Models.Entities.TenantStatus.Active:   <span class="badge badge-success">@(isHi ? "सक्रिय" : "Active")</span>   break;
-                                    case FleetPro.Models.Entities.TenantStatus.Trial:    <span class="badge badge-warning">@(isHi ? "परीक्षण" : "Trial")</span>    break;
-                                    case FleetPro.Models.Entities.TenantStatus.Inactive: <span class="badge badge-secondary">@(isHi ? "निष्क्रिय" : "Inactive")</span> break;
-                                    case FleetPro.Models.Entities.TenantStatus.Suspended:<span class="badge badge-danger">@(isHi ? "निलंबित" : "Suspended")</span> break;
+                                    case FleetPro.Models.Entities.TenantStatus.Active:   <span class="badge badge-success">@L["Active"]</span>   break;
+                                    case FleetPro.Models.Entities.TenantStatus.Trial:    <span class="badge badge-warning">@L["Trial"]</span>    break;
+                                    case FleetPro.Models.Entities.TenantStatus.Inactive: <span class="badge badge-secondary">@L["Inactive"]</span> break;
+                                    case FleetPro.Models.Entities.TenantStatus.Suspended:<span class="badge badge-danger">@L["Suspended"]</span> break;
                                 }
                             </td>
                             <td>@t.City, @t.State</td>
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="10" class="text-center text-muted py-4">@(isHi ? "कोई कंपनी नहीं मिली।" : "No companies found.")</td></tr> }
+                    { <tr><td colspan="10" class="text-center text-muted py-4">@L["No companies found."]</td></tr> }
                 </tbody>
             </table>
         </div>

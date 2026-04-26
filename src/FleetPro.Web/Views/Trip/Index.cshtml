@@ -1,21 +1,20 @@
 @* ══════════════════ Views/Trip/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.Entities.Trip>
 @{
-    ViewData["Title"] = "Trips";
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    ViewData["Title"] = L["Trips"].Value;
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@(isHi ? "यात्रा प्रबंधन" : "Trip Management")
-                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "नई यात्रा" : "New Trip")</a>
+            <h1 class="m-0">@L["Trip Management"]
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@L["New Trip"]</a>
             </h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item active">@(isHi ? "यात्रा प्रबंधन" : "Trip Management")</li>
+                <li class="breadcrumb-item active">@L["Trip Management"]</li>
             </ol>
         </div>
     </div>
@@ -24,10 +23,10 @@
 <section class="content"><div class="container-fluid">
 
     <div class="row mb-3">
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-route"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल" : "Total")</span><span class="info-box-number">@Model.Count</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-spinner"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "प्रगति में" : "In Progress")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.InProgress)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check-double"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "पूर्ण" : "Completed")</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.Completed)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-primary"><i class="fas fa-rupee-sign"></i></span><div class="info-box-content"><span class="info-box-text">@(isHi ? "कुल आय" : "Total Revenue")</span><span class="info-box-number">₹@Model.Sum(t => t.Revenue).ToString("N0")</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-route"></i></span><div class="info-box-content"><span class="info-box-text">@L["Total"]</span><span class="info-box-number">@Model.Count</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-spinner"></i></span><div class="info-box-content"><span class="info-box-text">@L["In Progress"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.InProgress)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check-double"></i></span><div class="info-box-content"><span class="info-box-text">@L["Completed"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.Completed)</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-primary"><i class="fas fa-rupee-sign"></i></span><div class="info-box-content"><span class="info-box-text">@L["Total Revenue"]</span><span class="info-box-number">₹@Model.Sum(t => t.Revenue).ToString("N0")</span></div></div></div>
     </div>
 
     <div class="card">
@@ -36,23 +35,23 @@
                 <input name="from" type="date" value="@Context.Request.Query["from"]" class="form-control form-control-sm">
                 <input name="to"   type="date" value="@Context.Request.Query["to"]"   class="form-control form-control-sm">
                 <select name="status" class="form-control form-control-sm">
-                    <option value="">@(isHi ? "सभी स्थिति" : "All Status")</option>
+                    <option value="">@L["All Status"]</option>
                     @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TripStatus>())
                     { <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString() ? "selected" : null)">@s</option> }
                 </select>
-                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@(isHi ? "यात्रा# / स्थान…" : "Trip# / location…")">
-                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-filter mr-1"></i>@(isHi ? "फ़िल्टर" : "Filter")</button>
-                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@(isHi ? "साफ़ करें" : "Clear")</a>
-                <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-sm btn-success ml-auto"><i class="fas fa-file-excel mr-1"></i>@(isHi ? "Excel निर्यात" : "Export Excel")</a>
+                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / location…"]">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-filter mr-1"></i>@L["Filter"]</button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Clear"]</a>
+                <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-sm btn-success ml-auto"><i class="fas fa-file-excel mr-1"></i>@L["Export Excel"]</a>
             </form>
         </div>
         <div class="card-body p-0">
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:110px;">@(isHi ? "कार्रवाई" : "Actions")</th>
-                        <th>@(isHi ? "यात्रा #" : "Trip #")</th><th>@(isHi ? "से" : "From")</th><th>@(isHi ? "तक" : "To")</th><th>@(isHi ? "चालक" : "Driver")</th><th>@(isHi ? "ट्रक" : "Truck")</th>
-                        <th>@(isHi ? "शुरू" : "Start")</th><th>@(isHi ? "समाप्त" : "End")</th><th>@(isHi ? "आय" : "Revenue")</th><th>@(isHi ? "व्यय" : "Expenses")</th><th>@(isHi ? "लाभ" : "Profit")</th><th>@(isHi ? "स्थिति" : "Status")</th>
+                        <th style="width:110px;">@L["Actions"]</th>
+                        <th>@L["Trip #"]</th><th>@L["From"]</th><th>@L["To"]</th><th>@L["Driver"]</th><th>@L["Truck"]</th>
+                        <th>@L["Start"]</th><th>@L["End"]</th><th>@L["Revenue"]</th><th>@L["Expenses"]</th><th>@L["Profit"]</th><th>@L["Status"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,7 +64,7 @@
                                 <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "यात्रा " + t.TripNumber + " हटाएं?" : "Delete trip " + t.TripNumber + "?")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete trip {0}?", t.TripNumber]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td><strong>@t.TripNumber</strong></td>
@@ -76,29 +75,29 @@
                             <td>@t.StartDate.ToString("dd/MM/yy")</td>
                             <td>@(t.EndDate?.ToString("dd/MM/yy") ?? "—")</td>
                             <td class="text-success font-weight-bold">₹@t.Revenue.ToString("N0")</td>
-                            <td><a asp-controller="Expense" asp-action="Index" asp-route-tripId="@t.Id" class="text-danger font-weight-bold" title="@(isHi ? "व्यय देखें" : "View expenses")">₹@t.TotalExpenses.ToString("N0")</a></td>
+                            <td><a asp-controller="Expense" asp-action="Index" asp-route-tripId="@t.Id" class="text-danger font-weight-bold" title="@L["View expenses"]">₹@t.TotalExpenses.ToString("N0")</a></td>
                             <td class="@(profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@profit.ToString("N0")</td>
                             <td>
                                 @switch (t.Status)
                                 {
-                                    case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">@(isHi ? "पूर्ण" : "Completed")</span>  break;
-                                    case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">@(isHi ? "प्रगति में" : "In Progress")</span> break;
-                                    case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">@(isHi ? "निर्धारित" : "Scheduled")</span>    break;
-                                    case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">@(isHi ? "रद्द" : "Cancelled")</span>   break;
+                                    case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">@L["Completed"]</span>  break;
+                                    case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">@L["In Progress"]</span> break;
+                                    case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">@L["Scheduled"]</span>    break;
+                                    case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">@L["Cancelled"]</span>   break;
                                 }
                             </td>
                         </tr>
                     }
                     @if (!Model.Any())
                     {
-                        <tr><td colspan="12" class="text-center text-muted py-4">@(isHi ? "कोई यात्रा नहीं मिली।" : "No trips found.") <a asp-action="Create">@(isHi ? "पहली यात्रा बनाएं →" : "Create first trip →")</a></td></tr>
+                        <tr><td colspan="12" class="text-center text-muted py-4">@L["No trips found."] <a asp-action="Create">@L["Create first trip →"]</a></td></tr>
                     }
                 </tbody>
                 @if (Model.Any())
                 {
                     <tfoot class="bg-light font-weight-bold">
                         <tr>
-                            <td colspan="8" class="text-right">@(isHi ? "कुल:" : "Totals:")</td>
+                            <td colspan="8" class="text-right">@L["Totals:"]</td>
                             <td class="text-success">₹@Model.Sum(t => t.Revenue).ToString("N0")</td>
                             <td class="text-danger">₹@Model.Sum(t => t.TotalExpenses).ToString("N0")</td>
                             <td class="text-primary">₹@Model.Sum(t => t.NetProfit).ToString("N0")</td>

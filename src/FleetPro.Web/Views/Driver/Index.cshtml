@@ -1,22 +1,21 @@
 @* ══════════════════ Views/Driver/Index.cshtml ══════════════════ *@
 @model List<FleetPro.Models.Entities.Driver>
 @{
-    ViewData["Title"] = "Drivers";
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
+    ViewData["Title"] = L["Drivers"].Value;
     string ExpiryClass(DateTime? d) => d == null ? "" : (d < DateTime.Today ? "expiry-bad" : d < DateTime.Today.AddDays(30) ? "expiry-warn" : "expiry-ok");
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@(isHi ? "चालक प्रबंधन" : "Driver Management")
-                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@(isHi ? "चालक जोड़ें" : "Add Driver")</a>
+            <h1 class="m-0">@L["Driver Management"]
+                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@L["Add Driver"]</a>
             </h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item active">@(isHi ? "चालक प्रबंधन" : "Driver Management")</li>
+                <li class="breadcrumb-item active">@L["Driver Management"]</li>
             </ol>
         </div>
     </div>
@@ -27,11 +26,11 @@
         <div class="card-header">
             <form method="get" class="form-inline" style="gap:6px;">
                 <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
-                    <option value="">@(isHi ? "सभी स्थिति" : "All Status")</option>
+                    <option value="">@L["All Status"]</option>
                     @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.DriverStatus>())
                     { <option value="@s" selected="@(Context.Request.Query["status"] == s.ToString() ? "selected" : null)">@s</option> }
                 </select>
-                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@(isHi ? "नाम / लाइसेंस #" : "Name / License #")">
+                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Name / License #"]">
                 <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
             </form>
         </div>
@@ -39,10 +38,10 @@
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
-                        <th style="width:100px;">@(isHi ? "कार्रवाई" : "Actions")</th>
-                        <th>@(isHi ? "नाम" : "Name")</th><th>@(isHi ? "फ़ोन" : "Phone")</th>
-                        @if (User.IsInRole("SuperAdmin")) { <th>@(isHi ? "कंपनी" : "Company")</th> }
-                        <th>@(isHi ? "लाइसेंस #" : "License #")</th><th>@(isHi ? "लाइसेंस प्रकार" : "License Type")</th><th>@(isHi ? "लाइसेंस समाप्ति" : "License Expiry")</th><th>@(isHi ? "वेतन" : "Salary")</th><th>@(isHi ? "स्थिति" : "Status")</th>
+                        <th style="width:100px;">@L["Actions"]</th>
+                        <th>@L["Name"]</th><th>@L["Phone"]</th>
+                        @if (User.IsInRole("SuperAdmin")) { <th>@L["Company"]</th> }
+                        <th>@L["License #"]</th><th>@L["License Type"]</th><th>@L["License Expiry"]</th><th>@L["Salary"]</th><th>@L["Status"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +52,7 @@
                                 <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form asp-action="Delete" asp-route-id="@d.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@(isHi ? "चालक " + d.FullName + " हटाएं?" : "Delete driver " + d.FullName + "?")" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete driver {0}?", d.FullName]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -74,22 +73,22 @@
                                 @if (d.LicenseExpiry.HasValue)
                                 {
                                     var days = (d.LicenseExpiry.Value - DateTime.Today).Days;
-                                    <small>(@(days < 0 ? (isHi ? "समाप्त" : "EXPIRED") : days + "d"))</small>
+                                    <small>(@(days < 0 ? L["EXPIRED"].Value : days + "d"))</small>
                                 }
                             </td>
                             <td>@(d.MonthlySalary.HasValue ? "₹" + d.MonthlySalary.Value.ToString("N0") : "—")</td>
                             <td>
                                 @switch (d.Status)
                                 {
-                                    case FleetPro.Models.Entities.DriverStatus.Active:  <span class="badge badge-success">@(isHi ? "सक्रिय" : "Active")</span>  break;
-                                    case FleetPro.Models.Entities.DriverStatus.OnLeave: <span class="badge badge-warning">@(isHi ? "छुट्टी पर" : "On Leave")</span> break;
-                                    case FleetPro.Models.Entities.DriverStatus.Inactive:<span class="badge badge-secondary">@(isHi ? "निष्क्रिय" : "Inactive")</span> break;
+                                    case FleetPro.Models.Entities.DriverStatus.Active:  <span class="badge badge-success">@L["Active"]</span>  break;
+                                    case FleetPro.Models.Entities.DriverStatus.OnLeave: <span class="badge badge-warning">@L["On Leave"]</span> break;
+                                    case FleetPro.Models.Entities.DriverStatus.Inactive:<span class="badge badge-secondary">@L["Inactive"]</span> break;
                                 }
                             </td>
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="9" class="text-center text-muted py-4">@(isHi ? "कोई चालक नहीं मिला।" : "No drivers found.")</td></tr> }
+                    { <tr><td colspan="9" class="text-center text-muted py-4">@L["No drivers found."]</td></tr> }
                 </tbody>
             </table>
         </div>

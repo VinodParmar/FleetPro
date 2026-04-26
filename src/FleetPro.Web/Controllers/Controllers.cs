@@ -21,9 +21,12 @@ public class AccountController : Controller
 
     public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
     {
-        // Set language from HttpContext for login page too
-        var lang = context.HttpContext.Items["Language"]?.ToString() ?? "en";
+        var lang = context.HttpContext.Items["Language"]?.ToString();
+        if (string.IsNullOrEmpty(lang))
+            context.HttpContext.Request.Cookies.TryGetValue("FleetPro_Lang", out lang);
+        lang = lang == "hi" ? "hi" : "en";
         ViewData["Lang"] = lang;
+        _log.LogInformation($"AccountController.OnActionExecuting: Set ViewData[Lang]={lang}");
         base.OnActionExecuting(context);
     }
 

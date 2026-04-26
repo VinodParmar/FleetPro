@@ -1,9 +1,8 @@
 @* ══════════════════ Views/User/Create.cshtml ══════════════════ *@
 @model FleetPro.Models.ViewModels.UserViewModel
 @{
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
     bool isCreate = Model.Id == 0;
-    ViewData["Title"] = isCreate ? (isHi ? "उपयोगकर्ता जोड़ें" : "Add User") : (isHi ? "उपयोगकर्ता संपादित करें" : "Edit User");
+    ViewData["Title"] = isCreate ? L["Add User"].Value : L["Edit User"].Value;
 }
 
 <div class="content-header"><div class="container-fluid">
@@ -11,7 +10,7 @@
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "उपयोगकर्ता" : "Users")</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@L["Users"]</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
     </div>
@@ -24,16 +23,16 @@
     <div class="row">
         <div class="col-md-7">
             <div class="card">
-                <div class="card-header bg-info text-white"><h3 class="card-title"><i class="fas fa-user mr-2"></i>@(isHi ? "उपयोगकर्ता विवरण" : "User Details")</h3></div>
+                <div class="card-header bg-info text-white"><h3 class="card-title"><i class="fas fa-user mr-2"></i>@L["User Details"]</h3></div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label asp-for="FullName" class="font-weight-bold">@(isHi ? "पूरा नाम *" : "Full Name *")</label>
+                            <label asp-for="FullName" class="font-weight-bold">@L["Full Name *"]</label>
                             <input asp-for="FullName" class="form-control">
                             <span asp-validation-for="FullName" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Email" class="font-weight-bold">@(isHi ? "ईमेल *" : "Email *")</label>
+                            <label asp-for="Email" class="font-weight-bold">@L["Email *"]</label>
                             @if (!isCreate)
                             {
                                 <input asp-for="Email" type="email" class="form-control" readonly>
@@ -45,32 +44,32 @@
                             <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Phone">@(isHi ? "फ़ोन" : "Phone")</label>
+                            <label asp-for="Phone">@L["Phone"]</label>
                             <input asp-for="Phone" class="form-control" placeholder="+91 98765 43210">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Status">@(isHi ? "स्थिति" : "Status")</label>
+                            <label asp-for="Status">@L["Status"]</label>
                             <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.UserStatus>()" class="form-control"></select>
                         </div>
                         @if (User.IsInRole("SuperAdmin") && ViewBag.Tenants != null)
                         {
                             <div class="col-md-12 form-group">
-                                <label asp-for="TenantId" class="font-weight-bold">@(isHi ? "कंपनी" : "Company")</label>
+                                <label asp-for="TenantId" class="font-weight-bold">@L["Company"]</label>
                                 <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control">
-                                    <option value="">@(isHi ? "— वैश्विक (सुपर व्यवस्थापक) —" : "— Global (Super Admin) —")</option>
+                                    <option value="">@L["— Global (Super Admin) —"]</option>
                                 </select>
                             </div>
                         }
                         <div class="col-md-6 form-group">
-                            <label asp-for="RoleId" class="font-weight-bold">@(isHi ? "भूमिका *" : "Role *")</label>
+                            <label asp-for="RoleId" class="font-weight-bold">@L["Role *"]</label>
                             <select asp-for="RoleId" asp-items="ViewBag.Roles" class="form-control">
-                                <option value="">@(isHi ? "— भूमिका चुनें —" : "— Select Role —")</option>
+                                <option value="">@L["— Select Role —"]</option>
                             </select>
                             <span asp-validation-for="RoleId" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Password" class="font-weight-bold">@(isCreate ? (isHi ? "पासवर्ड *" : "Password *") : (isHi ? "नया पासवर्ड (खाली छोड़ें)" : "New Password (leave blank to keep)"))</label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="@(isCreate ? (isHi ? "न्यूनतम 8 अक्षर" : "Min 8 characters") : (isHi ? "खाली छोड़ें" : "Leave blank to keep current"))">
+                            <label asp-for="Password" class="font-weight-bold">@(isCreate ? L["Password *"].Value : L["New Password (leave blank to keep)"].Value)</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="@(isCreate ? L["Min 8 characters"].Value : L["Leave blank to keep current"].Value)">
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
                     </div>
@@ -80,20 +79,20 @@
 
         <div class="col-md-5">
             <div class="card">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>@(isHi ? "भूमिका अनुमतियां" : "Role Permissions")</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>@L["Role Permissions"]</h3></div>
                 <div class="card-body">
                     <table class="table table-sm table-borderless mb-0" style="font-size:12px;">
-                        <thead><tr><th>@(isHi ? "भूमिका" : "Role")</th><th>@(isHi ? "पहुंच स्तर" : "Access Level")</th></tr></thead>
+                        <thead><tr><th>@L["Role"]</th><th>@L["Access Level"]</th></tr></thead>
                         <tbody>
-                            <tr><td><span class="badge badge-dark">@(isHi ? "सुपर व्यवस्थापक" : "Super Admin")</span></td><td>@(isHi ? "पूर्ण सिस्टम पहुंच, सभी कंपनियां" : "Full system access, all companies")</td></tr>
-                            <tr><td><span class="badge badge-primary">@(isHi ? "कंपनी व्यवस्थापक" : "Company Admin")</span></td><td>@(isHi ? "अपनी कंपनी में पूर्ण पहुंच" : "Full access within their company")</td></tr>
-                            <tr><td><span class="badge badge-info">@(isHi ? "डेटा प्रवेश" : "Data Entry")</span></td><td>@(isHi ? "देखें, बनाएं, संपादित करें — हटाएं नहीं" : "View, Create, Edit — no Delete")</td></tr>
-                            <tr><td><span class="badge badge-secondary">@(isHi ? "दर्शक" : "Viewer")</span></td><td>@(isHi ? "केवल पढ़ने की पहुंच" : "Read-only access")</td></tr>
+                            <tr><td><span class="badge badge-dark">@L["Super Admin"]</span></td><td>@L["Full system access, all companies"]</td></tr>
+                            <tr><td><span class="badge badge-primary">@L["Company Admin"]</span></td><td>@L["Full access within their company"]</td></tr>
+                            <tr><td><span class="badge badge-info">@L["Data Entry"]</span></td><td>@L["View, Create, Edit — no Delete"]</td></tr>
+                            <tr><td><span class="badge badge-secondary">@L["Viewer"]</span></td><td>@L["Read-only access"]</td></tr>
                         </tbody>
                     </table>
                     <hr>
                     <p class="text-muted small mb-0">
-                        <i class="fas fa-info-circle mr-1"></i>@(isHi ? "उपयोगकर्ता बनाने के बाद, उपयोगकर्ता सूची में " : "After creating the user, you can set fine-grained permissions using the ")<strong>@(isHi ? "अनुमतियां" : "Permissions")</strong>@(isHi ? " बटन से विस्तृत अनुमतियां सेट करें।" : " button in the user list.")
+                        <i class="fas fa-info-circle mr-1"></i>@L["After creating the user, you can set fine-grained permissions using the"] <strong>@L["Permissions"]</strong> @L["button in the user list."]
                     </p>
                 </div>
             </div>
@@ -101,8 +100,8 @@
     </div>
 
     <div class="text-right mb-3">
-        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@(isHi ? "रद्द करें" : "Cancel")</a>
-        <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "उपयोगकर्ता बनाएं" : "Create User") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
+        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
+        <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i>@(isCreate ? L["Create User"].Value : L["Save Changes"].Value)</button>
     </div>
 </form>
 </div></section>

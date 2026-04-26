@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using Newtonsoft.Json;
 
@@ -89,27 +90,44 @@ public class TenantMiddleware
 // ═══════════════════════════════════════════════════
 public class LanguageMiddleware
 {
+    private static readonly CultureInfo HindiCulture = new CultureInfo("hi");
+    private static readonly CultureInfo EnglishCulture = new CultureInfo("en");
+
     private readonly RequestDelegate _next;
+    private readonly ILogger<LanguageMiddleware> _logger;
     private const string LANG_COOKIE = "FleetPro_Lang";
 
-    public LanguageMiddleware(RequestDelegate next) => _next = next;
+    public LanguageMiddleware(RequestDelegate next, ILogger<LanguageMiddleware> logger)
+    { 
+        _next = next;
+        _logger = logger;
+    }
 
     public async Task InvokeAsync(HttpContext context)
     {
+        // Debug: Log incoming request
+        _logger.LogInformation($"LanguageMiddleware: Path={context.Request.Path}, QueryString={context.Request.QueryString}");
+
         // Check for lang query parameter
         if (context.Request.Query.TryGetValue("lang", out var langValue))
         {
             var lang = langValue.ToString().ToLower();
+            _logger.LogInformation($"LanguageMiddleware: Found lang parameter = {lang}");
+
             if (lang == "hi" || lang == "en")
             {
-                // Set cookie for 1 year
+                _logger.LogInformation($"LanguageMiddleware: Setting cookie for language={lang}");
+
+                // Set cookie - use less restrictive settings for better compatibility
                 context.Response.Cookies.Append(LANG_COOKIE, lang,
                     new Microsoft.AspNetCore.Http.CookieOptions
                     {
                         Expires = DateTimeOffset.UtcNow.AddYears(1),
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict
+                        HttpOnly = false,
+                        Secure = false,
+                        SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
+                        IsEssential = true,
+                        Path = "/"
                     });
 
                 // Redirect to remove the lang query parameter
@@ -118,6 +136,8 @@ public class LanguageMiddleware
                        .Replace($"?lang={lang}", "")
                        .Replace($"&lang={lang}", "");
                 var redirectUrl = context.Request.Path + qs;
+
+                _logger.LogInformation($"LanguageMiddleware: Redirecting to {redirectUrl}");
                 context.Response.Redirect(redirectUrl);
                 return;
             }
@@ -128,10 +148,20 @@ public class LanguageMiddleware
         if (context.Request.Cookies.TryGetValue(LANG_COOKIE, out var cookieLang))
         {
             currentLang = cookieLang == "hi" ? "hi" : "en";
+            _logger.LogInformation($"LanguageMiddleware: Found cookie language = {currentLang}");
+        }
+        else
+        {
+            _logger.LogInformation($"LanguageMiddleware: No cookie found, using default language = {currentLang}");
         }
 
         // Store in HttpContext for use in controllers/views
         context.Items["Language"] = currentLang;
+
+        // Set thread culture so IStringLocalizer picks the right .resx file
+        var culture = currentLang == "hi" ? HindiCulture : EnglishCulture;
+        CultureInfo.CurrentCulture = culture;
+        CultureInfo.CurrentUICulture = culture;
 
         await _next(context);
     }

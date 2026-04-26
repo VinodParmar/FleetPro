@@ -1,9 +1,8 @@
 @* ══════════════════ Views/Tenant/Create.cshtml ══════════════════ *@
 @model FleetPro.Models.ViewModels.TenantViewModel
 @{
-    bool isHi = ViewData["Lang"]?.ToString() == "hi";
     bool isCreate = Model.Id == 0;
-    ViewData["Title"] = isCreate ? (isHi ? "कंपनी जोड़ें" : "Add Company") : (isHi ? "कंपनी संपादित करें" : "Edit Company");
+    ViewData["Title"] = isCreate ? L["Add Company"].Value : L["Edit Company"].Value;
 }
 
 <div class="content-header"><div class="container-fluid">
@@ -11,7 +10,7 @@
         <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a asp-action="Index">@(isHi ? "कंपनियां" : "Companies")</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@L["Companies"]</a></li>
             <li class="breadcrumb-item active">@ViewData["Title"]</li>
         </ol></div>
     </div>
@@ -25,16 +24,16 @@
         <!-- Company Info -->
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white"><h3 class="card-title"><i class="fas fa-building mr-2"></i>@(isHi ? "कंपनी की जानकारी" : "Company Information")</h3></div>
+                <div class="card-header bg-primary text-white"><h3 class="card-title"><i class="fas fa-building mr-2"></i>@L["Company Information"]</h3></div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8 form-group">
-                            <label asp-for="CompanyName" class="font-weight-bold">@(isHi ? "कंपनी का नाम *" : "Company Name *")</label>
+                            <label asp-for="CompanyName" class="font-weight-bold">@L["Company Name *"]</label>
                             <input asp-for="CompanyName" class="form-control" placeholder="Sharma Transport Pvt. Ltd.">
                             <span asp-validation-for="CompanyName" class="text-danger small"></span>
                         </div>
                         <div class="col-md-4 form-group">
-                            <label asp-for="Subdomain" class="font-weight-bold">@(isHi ? "सबडोमेन *" : "Subdomain *")</label>
+                            <label asp-for="Subdomain" class="font-weight-bold">@L["Subdomain *"]</label>
                             <div class="input-group">
                                 @if (!isCreate)
                                 {
@@ -49,31 +48,31 @@
                             <span asp-validation-for="Subdomain" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="ContactPerson" class="font-weight-bold">@(isHi ? "संपर्क व्यक्ति" : "Contact Person")</label>
+                            <label asp-for="ContactPerson" class="font-weight-bold">@L["Contact Person"]</label>
                             <input asp-for="ContactPerson" class="form-control" placeholder="Ravi Kumar Sharma">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Phone">@(isHi ? "फ़ोन" : "Phone")</label>
+                            <label asp-for="Phone">@L["Phone"]</label>
                             <input asp-for="Phone" class="form-control" placeholder="+91 98765 43210">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="Email">@(isHi ? "ईमेल" : "Email")</label>
+                            <label asp-for="Email">@L["Email"]</label>
                             <input asp-for="Email" type="email" class="form-control" placeholder="contact@company.com">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="GstNumber">@(isHi ? "GST नंबर" : "GST Number")</label>
+                            <label asp-for="GstNumber">@L["GST Number"]</label>
                             <input asp-for="GstNumber" class="form-control" placeholder="27AAAAA0000A1Z5" style="text-transform:uppercase;">
                         </div>
                         <div class="col-md-12 form-group">
-                            <label asp-for="Address">@(isHi ? "पता" : "Address")</label>
+                            <label asp-for="Address">@L["Address"]</label>
                             <input asp-for="Address" class="form-control">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="City">@(isHi ? "शहर" : "City")</label>
+                            <label asp-for="City">@L["City"]</label>
                             <input asp-for="City" class="form-control">
                         </div>
                         <div class="col-md-6 form-group">
-                            <label asp-for="State">@(isHi ? "राज्य" : "State")</label>
+                            <label asp-for="State">@L["State"]</label>
                             <input asp-for="State" class="form-control">
                         </div>
                     </div>
@@ -84,29 +83,29 @@
         <!-- Plan & Limits -->
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header bg-info text-white"><h3 class="card-title"><i class="fas fa-cog mr-2"></i>@(isHi ? "योजना और सीमाएं" : "Plan & Limits")</h3></div>
+                <div class="card-header bg-info text-white"><h3 class="card-title"><i class="fas fa-cog mr-2"></i>@L["Plan & Limits"]</h3></div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label asp-for="Plan" class="font-weight-bold">@(isHi ? "सदस्यता योजना" : "Subscription Plan")</label>
+                        <label asp-for="Plan" class="font-weight-bold">@L["Subscription Plan"]</label>
                         <select asp-for="Plan" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TenantPlan>()" class="form-control" id="planSelect"></select>
                     </div>
                     <div class="form-group">
-                        <label asp-for="Status" class="font-weight-bold">@(isHi ? "स्थिति" : "Status")</label>
+                        <label asp-for="Status" class="font-weight-bold">@L["Status"]</label>
                         <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TenantStatus>()" class="form-control"></select>
                     </div>
                     <div class="form-group">
-                        <label asp-for="MaxTrucks">@(isHi ? "अधिकतम ट्रक" : "Max Trucks")</label>
+                        <label asp-for="MaxTrucks">@L["Max Trucks"]</label>
                         <input asp-for="MaxTrucks" type="number" class="form-control" min="1">
                     </div>
                     <div class="form-group">
-                        <label asp-for="MaxUsers">@(isHi ? "अधिकतम उपयोगकर्ता" : "Max Users")</label>
+                        <label asp-for="MaxUsers">@L["Max Users"]</label>
                         <input asp-for="MaxUsers" type="number" class="form-control" min="1">
                     </div>
                     <div class="alert alert-info p-2" style="font-size:12px;">
-                        <strong>@(isHi ? "योजनाएं:" : "Plans:")</strong><br>
-                        🥉 Starter — 10 @(isHi ? "ट्रक, 5 उपयोगकर्ता" : "trucks, 5 users")<br>
-                        🥈 Business — 25 @(isHi ? "ट्रक, 10 उपयोगकर्ता" : "trucks, 10 users")<br>
-                        🥇 Premium — @(isHi ? "असीमित" : "Unlimited")
+                        <strong>@L["Plans:"]</strong><br>
+                        🥉 Starter — 10 @L["trucks, 5 users"]<br>
+                        🥈 Business — 25 @L["trucks, 10 users"]<br>
+                        🥇 Premium — @L["Unlimited"]
                     </div>
                 </div>
             </div>
@@ -117,31 +116,31 @@
         {
             <div class="col-md-8">
                 <div class="card border-warning">
-                    <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-user-shield mr-2"></i>@(isHi ? "कंपनी व्यवस्थापक खाता" : "Company Admin Account")</h3></div>
+                    <div class="card-header bg-warning"><h3 class="card-title"><i class="fas fa-user-shield mr-2"></i>@L["Company Admin Account"]</h3></div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label asp-for="OwnerName" class="font-weight-bold">@(isHi ? "व्यवस्थापक नाम *" : "Admin Name *")</label>
+                                <label asp-for="OwnerName" class="font-weight-bold">@L["Admin Name *"]</label>
                                 <input asp-for="OwnerName" class="form-control" placeholder="Ravi Kumar Sharma">
                                 <span asp-validation-for="OwnerName" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label asp-for="OwnerEmail" class="font-weight-bold">@(isHi ? "व्यवस्थापक ईमेल *" : "Admin Email *")</label>
+                                <label asp-for="OwnerEmail" class="font-weight-bold">@L["Admin Email *"]</label>
                                 <input asp-for="OwnerEmail" type="email" class="form-control" placeholder="ravi@sharmatransport.in">
                                 <span asp-validation-for="OwnerEmail" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label asp-for="OwnerPassword" class="font-weight-bold">@(isHi ? "पासवर्ड *" : "Password *")</label>
-                                <input asp-for="OwnerPassword" type="password" class="form-control" placeholder="@(isHi ? "न्यूनतम 8 अक्षर" : "Min 8 characters")">
+                                <label asp-for="OwnerPassword" class="font-weight-bold">@L["Password *"]</label>
+                                <input asp-for="OwnerPassword" type="password" class="form-control" placeholder="@L["Min 8 characters"]">
                                 <span asp-validation-for="OwnerPassword" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label asp-for="OwnerPhone">@(isHi ? "व्यवस्थापक फ़ोन" : "Admin Phone")</label>
+                                <label asp-for="OwnerPhone">@L["Admin Phone"]</label>
                                 <input asp-for="OwnerPhone" class="form-control" placeholder="+91 98765 43210">
                             </div>
                         </div>
                         <div class="alert alert-info p-2 mb-0" style="font-size:12px;">
-                            <i class="fas fa-info-circle mr-1"></i>@(isHi ? "यह कंपनी व्यवस्थापक खाता बनाता है। व्यवस्थापक अपने डैशबोर्ड से अतिरिक्त उपयोगकर्ता बना सकते हैं।" : "This creates the Company Admin account. The admin can create additional users from their dashboard.")
+                            <i class="fas fa-info-circle mr-1"></i>@L["This creates the Company Admin account. The admin can create additional users from their dashboard."]
                         </div>
                     </div>
                 </div>
@@ -150,8 +149,8 @@
     </div>
 
     <div class="text-right mb-3">
-        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@(isHi ? "रद्द करें" : "Cancel")</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? (isHi ? "कंपनी बनाएं" : "Create Company") : (isHi ? "परिवर्तन सहेजें" : "Save Changes"))</button>
+        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? L["Create Company"].Value : L["Save Changes"].Value)</button>
     </div>
 </form>
 </div></section>

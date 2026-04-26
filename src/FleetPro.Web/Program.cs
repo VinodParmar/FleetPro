@@ -19,11 +19,14 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // ── SERVICES ─────────────────────────────────────────────────
+builder.Services.AddLocalization();
+
 builder.Services.AddControllersWithViews(options =>
 {
     // Global CSRF protection
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
-});
+})
+.AddViewLocalization();
 
 // EF Core
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -97,16 +100,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<FleetPro.Middleware.LanguageMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseResponseCompression();
-app.UseResponseCaching();
-app.UseSession();
-app.UseMiddleware<TenantMiddleware>();
+app.UseMiddleware<FleetPro.Middleware.LanguageMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

@@ -21,14 +21,17 @@ public abstract class BaseController : Controller
         _current = current;
     }
 
-    // Called before every action — sets language from HttpContext
+    // Called before every action — sets language from cookie
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
 
-        // Set language from HttpContext.Items (set by LanguageMiddleware)
-        var lang = context.HttpContext.Items["Language"]?.ToString() ?? "en";
-        ViewData["Lang"] = lang;
+        // Read from middleware-set value first, fallback to cookie
+        var lang = context.HttpContext.Items["Language"]?.ToString();
+        if (string.IsNullOrEmpty(lang))
+            context.HttpContext.Request.Cookies.TryGetValue("FleetPro_Lang", out lang);
+
+        ViewData["Lang"] = lang == "hi" ? "hi" : "en";
     }
 
     // Called after every action — safe to use async here

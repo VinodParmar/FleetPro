@@ -24,11 +24,11 @@
 <div class="login-box">
     <div class="login-logo text-center mb-3">
         <a href="#"><i class="fas fa-truck-moving mr-2"></i>FleetPro</a>
-        <small>@(ViewData["Lang"]?.ToString()=="hi" ? "बहु-किरायेदार वाहन प्रबंधन प्रणाली" : "Multi-tenant Fleet Management System")</small>
+        <small>@L["Multi-tenant Fleet Management System"]</small>
     </div>
     <div class="card shadow-lg">
         <div class="card-body login-card-body">
-            <p class="login-box-msg">@(ViewData["Lang"]?.ToString()=="hi" ? "जारी रखने के लिए साइन इन करें" : "Sign in to continue")</p>
+            <p class="login-box-msg">@L["Sign in to continue"]</p>
             <form asp-action="Login" asp-controller="Account" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="ReturnUrl" />

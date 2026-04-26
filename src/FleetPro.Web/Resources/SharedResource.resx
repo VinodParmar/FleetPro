@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- NAVIGATION -->
+  <data name="Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="Alerts" xml:space="preserve"><value>Alerts</value></data>
+  <data name="View All Alerts" xml:space="preserve"><value>View All Alerts</value></data>
+  <data name="View All Alerts →" xml:space="preserve"><value>View All Alerts →</value></data>
+
+  <!-- SIDEBAR -->
+  <data name="Company Management" xml:space="preserve"><value>Company Management</value></data>
+  <data name="Company List" xml:space="preserve"><value>Company List</value></data>
+  <data name="Add Company" xml:space="preserve"><value>Add Company</value></data>
+  <data name="User Management" xml:space="preserve"><value>User Management</value></data>
+  <data name="User List" xml:space="preserve"><value>User List</value></data>
+  <data name="Add User" xml:space="preserve"><value>Add User</value></data>
+  <data name="Truck Management" xml:space="preserve"><value>Truck Management</value></data>
+  <data name="Truck List" xml:space="preserve"><value>Truck List</value></data>
+  <data name="Add Truck" xml:space="preserve"><value>Add Truck</value></data>
+  <data name="Driver Management" xml:space="preserve"><value>Driver Management</value></data>
+  <data name="Driver List" xml:space="preserve"><value>Driver List</value></data>
+  <data name="Add Driver" xml:space="preserve"><value>Add Driver</value></data>
+  <data name="Trip Management" xml:space="preserve"><value>Trip Management</value></data>
+  <data name="Trip List" xml:space="preserve"><value>Trip List</value></data>
+  <data name="New Trip" xml:space="preserve"><value>New Trip</value></data>
+  <data name="Expense Management" xml:space="preserve"><value>Expense Management</value></data>
+  <data name="Expense List" xml:space="preserve"><value>Expense List</value></data>
+  <data name="Add Expense" xml:space="preserve"><value>Add Expense</value></data>
+  <data name="Reports" xml:space="preserve"><value>Reports</value></data>
+  <data name="P&amp;L Report" xml:space="preserve"><value>P&amp;L Report</value></data>
+  <data name="Export Trips (Excel)" xml:space="preserve"><value>Export Trips (Excel)</value></data>
+
+  <!-- LOGIN -->
+  <data name="Multi-tenant Fleet Management System" xml:space="preserve"><value>Multi-tenant Fleet Management System</value></data>
+  <data name="Sign in to continue" xml:space="preserve"><value>Sign in to continue</value></data>
+  <data name="Remember Me" xml:space="preserve"><value>Remember Me</value></data>
+  <data name="Sign In" xml:space="preserve"><value>Sign In</value></data>
+
+  <!-- COMMON -->
+  <data name="Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Phone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Company" xml:space="preserve"><value>Company</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Save Changes" xml:space="preserve"><value>Save Changes</value></data>
+  <data name="Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Back" xml:space="preserve"><value>Back</value></data>
+  <data name="View" xml:space="preserve"><value>View</value></data>
+  <data name="Upload" xml:space="preserve"><value>Upload</value></data>
+  <data name="New" xml:space="preserve"><value>New</value></data>
+  <data name="Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Clear" xml:space="preserve"><value>Clear</value></data>
+  <data name="Manage" xml:space="preserve"><value>Manage</value></data>
+  <data name="Select" xml:space="preserve"><value>Select</value></data>
+  <data name="Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Active" xml:space="preserve"><value>Active</value></data>
+  <data name="Inactive" xml:space="preserve"><value>Inactive</value></data>
+  <data name="All Status" xml:space="preserve"><value>All Status</value></data>
+  <data name="All" xml:space="preserve"><value>All</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Full Name *" xml:space="preserve"><value>Full Name *</value></data>
+  <data name="Email *" xml:space="preserve"><value>Email *</value></data>
+  <data name="Company *" xml:space="preserve"><value>Company *</value></data>
+  <data name="Password *" xml:space="preserve"><value>Password *</value></data>
+
+  <!-- STATUS -->
+  <data name="Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="In Progress" xml:space="preserve"><value>In Progress</value></data>
+  <data name="Scheduled" xml:space="preserve"><value>Scheduled</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="EXPIRED" xml:space="preserve"><value>EXPIRED</value></data>
+  <data name="Maintenance" xml:space="preserve"><value>Maintenance</value></data>
+  <data name="Never" xml:space="preserve"><value>Never</value></data>
+</root>
