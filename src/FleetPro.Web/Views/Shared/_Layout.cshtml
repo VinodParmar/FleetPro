@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration _cfg
 <!DOCTYPE html>
 <html lang="@ViewData["Lang"]">
 <head>
@@ -143,6 +144,9 @@
 
 @if (TempData["AccessDenied"] != null)
 {
+    var deniedAction   = TempData["AccessDeniedAction"]?.ToString() ?? "";
+    var deniedResource = TempData["AccessDeniedResource"]?.ToString() ?? "";
+
     <!-- Access Denied Modal -->
     <div class="modal fade" id="accessDeniedModal" tabindex="-1" role="dialog" aria-labelledby="accessDeniedModalLabel" aria-modal="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -157,7 +161,15 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <i class="fas fa-lock fa-3x text-danger mb-3 d-block"></i>
-                    <p class="mb-0">@TempData["AccessDenied"]</p>
+                    @if (!string.IsNullOrEmpty(deniedAction) && !string.IsNullOrEmpty(deniedResource))
+                    {
+                        <div class="mb-3">
+                            <span class="badge badge-danger px-3 py-2" style="font-size:14px;">
+                                <i class="fas fa-shield-alt mr-1"></i>@deniedAction &nbsp;<strong>@deniedResource</strong>
+                            </span>
+                        </div>
+                    }
+                    <p class="mb-1">@TempData["AccessDenied"]</p>
                     <small class="text-muted">Contact your administrator if you need access.</small>
                 </div>
                 <div class="modal-footer justify-content-center">
@@ -168,6 +180,122 @@
     </div>
     <script>
         $(function () { $('#accessDeniedModal').modal('show'); });
+    </script>
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var idleMinutes = _cfg.GetValue<int>("AppSettings:IdleLockTimeoutMinutes", 1);
+    var userName    = User.Identity.Name ?? "";
+    var userInitial = userName.Length > 0 ? userName[0].ToString().ToUpper() : "?";
+    var userEmail   = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+
+    <!-- ── LOCK SCREEN OVERLAY ───────────────────── -->
+    <div id="lockScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1a2980 0%,#26d0ce 100%);align-items:center;justify-content:center;">
+        <div style="width:100%;max-width:380px;padding:16px;">
+            <div class="card shadow-lg" style="border-radius:16px;overflow:hidden;">
+                <div class="card-body text-center p-4">
+                    <div style="width:72px;height:72px;border-radius:50%;background:#7b2ff7;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;margin-bottom:12px;">
+                        @userInitial
+                    </div>
+                    <h5 class="mb-0 font-weight-bold">@userName</h5>
+                    <small class="text-muted">@userEmail</small>
+                    <p class="mt-3 mb-3 text-muted" style="font-size:13px;"><i class="fas fa-lock mr-1"></i>Session locked due to inactivity</p>
+
+                    <div class="input-group mb-3">
+                        <input type="password" id="lockPassword" class="form-control" placeholder="Enter your password to unlock"
+                               style="border-radius:8px 0 0 8px;" autocomplete="current-password">
+                        <div class="input-group-append">
+                            <button id="lockToggleBtn" class="btn btn-outline-secondary" type="button" tabindex="-1"
+                                    onclick="var i=document.getElementById('lockPassword');i.type=i.type==='password'?'text':'password';">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="lockError" class="alert alert-danger py-1 small mb-2" style="display:none;">Incorrect password. Please try again.</div>
+
+                    <button id="unlockBtn" class="btn btn-primary btn-block mb-2" style="border-radius:8px;">
+                        <i class="fas fa-unlock mr-1"></i>Unlock
+                    </button>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-link btn-sm text-muted">Sign out instead</button>
+                    </form>
+                </div>
+            </div>
+            <p class="text-center text-white mt-3" style="font-size:11px;opacity:.7;">FleetPro · Session Protection</p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        var IDLE_MS = @(idleMinutes * 60 * 1000);
+        var timer, locked = false;
+        var overlay = document.getElementById('lockScreen');
+        var pwdInput = document.getElementById('lockPassword');
+        var errMsg   = document.getElementById('lockError');
+        var token    = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+        function lock() {
+            if (locked) return;
+            locked = true;
+            overlay.style.display = 'flex';
+            pwdInput.value = '';
+            errMsg.style.display = 'none';
+            setTimeout(function () { pwdInput.focus(); }, 100);
+        }
+
+        function resetTimer() {
+            if (locked) return;
+            clearTimeout(timer);
+            timer = setTimeout(lock, IDLE_MS);
+        }
+
+        // Listen for any user activity
+        ['mousemove','keydown','mousedown','touchstart','scroll','click'].forEach(function(evt) {
+            document.addEventListener(evt, resetTimer, { passive: true });
+        });
+
+        // Unlock handler
+        document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
+        pwdInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+
+        function tryUnlock() {
+            var btn = document.getElementById('unlockBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Checking…';
+            errMsg.style.display = 'none';
+
+            // Get a fresh antiforgery token from the hidden form inside the overlay
+            var formToken = overlay.querySelector('input[name="__RequestVerificationToken"]')?.value ?? token;
+
+            fetch('@Url.Action("Unlock", "Account")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': formToken },
+                body: 'password=' + encodeURIComponent(pwdInput.value) + '&__RequestVerificationToken=' + encodeURIComponent(formToken)
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    locked = false;
+                    overlay.style.display = 'none';
+                    pwdInput.value = '';
+                    resetTimer();
+                } else {
+                    errMsg.style.display = 'block';
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                }
+            })
+            .catch(function() { errMsg.style.display = 'block'; })
+            .finally(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-unlock mr-1"></i>Unlock';
+            });
+        }
+
+        resetTimer(); // start the idle timer on page load
+    })();
     </script>
 }
 </body>

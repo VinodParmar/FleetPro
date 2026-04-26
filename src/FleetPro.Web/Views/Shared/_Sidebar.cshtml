@@ -36,6 +36,23 @@
             </li>
         }
 
+        @if (IsSuperAdmin)
+        {
+            <li class="nav-item @(ctrl == "Role" ? "menu-open" : "")">
+                <a href="#" class="nav-link @(ctrl == "Role" ? "active" : "")">
+                    <i class="nav-icon fas fa-shield-alt"></i>
+                    <p>@L["Roles"] <i class="right fas fa-angle-left"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a asp-controller="Role" asp-action="Index" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i><p>@L["Role List"]</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+
         @if (IsSuperAdmin || IsTenantAdmin)
         {
             <li class="nav-item @(ctrl == "User" ? "menu-open" : "")">

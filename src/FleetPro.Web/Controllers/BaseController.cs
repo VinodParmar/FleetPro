@@ -38,7 +38,16 @@ public abstract class BaseController : Controller
     protected IActionResult? CheckPermission(string permissionKey)
     {
         if (_current.HasPermission(permissionKey)) return null;
-        TempData["AccessDenied"] = "You do not have permission to perform this action.";
+
+        // Format "trucks.create" → "Create Trucks"
+        var parts = permissionKey.Split('.');
+        var action   = parts.Length > 1 ? System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[1]) : permissionKey;
+        var resource = parts.Length > 0 ? System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(parts[0]) : "";
+
+        TempData["AccessDenied"]            = "You do not have permission to perform this action.";
+        TempData["AccessDeniedAction"]      = action;
+        TempData["AccessDeniedResource"]    = resource;
+
         return Redirect(Request.Headers.Referer.ToString() is { Length: > 0 } referer ? referer : "/Dashboard");
     }
 

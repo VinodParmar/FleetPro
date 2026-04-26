@@ -13,8 +13,17 @@
                 <li class="breadcrumb-item"><a asp-action="Index">@L["Trips"]</a></li>
                 <li class="breadcrumb-item active">@Model.TripNumber</li>
             </ol>
-            <div class="text-right mt-1">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm mr-1"><i class="fas fa-edit mr-1"></i>@L["Edit"]</a>
+            <div class="text-right mt-1" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit mr-1"></i>@L["Edit"]</a>
+                @if (Model.TruckId > 0)
+                {
+                    <a asp-controller="Truck" asp-action="Edit" asp-route-id="@Model.TruckId" class="btn btn-sm btn-outline-primary"><i class="fas fa-truck mr-1"></i>@L["Truck"]</a>
+                }
+                @if (Model.DriverId > 0)
+                {
+                    <a asp-controller="Driver" asp-action="Edit" asp-route-id="@Model.DriverId" class="btn btn-sm btn-outline-info"><i class="fas fa-user-tie mr-1"></i>@L["Driver"]</a>
+                }
+                <a asp-controller="Expense" asp-action="Index" asp-route-tripId="@Model.Id" class="btn btn-sm btn-outline-danger"><i class="fas fa-receipt mr-1"></i>@L["Expenses"]</a>
                 <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>@L["Back"]</a>
             </div>
         </div>
@@ -42,8 +51,8 @@
                 <div class="card-body p-0">
                     <table class="table table-sm table-borderless mb-0">
                         <tr><th class="text-muted" style="width:40%">@L["Trip Number"]</th><td><strong>@Model.TripNumber</strong></td></tr>
-                        <tr><th class="text-muted">@L["Truck"]</th><td>@Model.Truck?.NumberPlate (@Model.Truck?.Model)</td></tr>
-                        <tr><th class="text-muted">@L["Driver"]</th><td>@Model.Driver?.FullName</td></tr>
+                        <tr><th class="text-muted">@L["Truck"]</th><td><a asp-controller="Truck" asp-action="Edit" asp-route-id="@Model.TruckId" class="font-weight-bold">@Model.Truck?.NumberPlate</a> <span class="text-muted">(@Model.Truck?.Model)</span></td></tr>
+                        <tr><th class="text-muted">@L["Driver"]</th><td><a asp-controller="Driver" asp-action="Edit" asp-route-id="@Model.DriverId" class="font-weight-bold">@Model.Driver?.FullName</a></td></tr>
                         <tr><th class="text-muted">@L["From"]</th><td>@Model.FromLocation</td></tr>
                         <tr><th class="text-muted">@L["To"]</th><td>@Model.ToLocation</td></tr>
                         <tr><th class="text-muted">@L["Start Date"]</th><td>@Model.StartDate.ToString("dd MMM yyyy")</td></tr>

@@ -109,6 +109,25 @@ public class UserPermissionViewModel
     public List<PermissionGroupViewModel> Groups { get; set; } = new();
 }
 
+public class RolePermissionViewModel
+{
+    public int RoleId { get; set; }
+    public string RoleName { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public bool IsSystemRole { get; set; }
+    public List<PermissionGroupViewModel> Groups { get; set; } = new();
+}
+
+public class RoleListViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public bool IsSystemRole { get; set; }
+    public int PermissionCount { get; set; }
+    public int UserCount { get; set; }
+}
+
 public class PermissionGroupViewModel
 {
     public string Module { get; set; } = string.Empty;

@@ -2,11 +2,63 @@
 @model FleetPro.Models.ViewModels.UserPermissionViewModel
 @{
     ViewData["Title"] = "Permissions — " + Model.UserName;
+
+    // Collect all unique actions across all modules (columns)
+    var allActions = Model.Groups
+        .SelectMany(g => g.Permissions.Select(p => p.Action))
+        .Distinct()
+        .OrderBy(a => a switch {
+            "View"           => 0,
+            "Create"         => 1,
+            "Edit"           => 2,
+            "Delete"         => 3,
+            "AssignRoles"    => 4,
+            "AttachDocument" => 5,
+            "AttachBill"     => 6,
+            "Export"         => 7,
+            "Manage"         => 8,
+            _                => 9
+        }).ToList();
+}
+
+@section Styles {
+<style>
+    .perm-pill { display:inline-flex; border-radius:20px; overflow:hidden; border:1px solid #dee2e6; box-shadow:0 1px 2px rgba(0,0,0,.07); }
+    .perm-pill .pp-btn {
+        padding:4px 11px; font-size:12px; font-weight:600; cursor:pointer; border:none;
+        background:#f8f9fa; color:#6c757d; transition:background .15s,color .15s; line-height:1.6;
+        letter-spacing:.3px;
+    }
+    .perm-pill .pp-btn:hover { background:#e2e6ea; color:#343a40; }
+    .pp-btn.active-grant   { background:#28a745; color:#fff; }
+    .pp-btn.active-inherit { background:#6c757d; color:#fff; }
+    .pp-btn.active-deny    { background:#dc3545; color:#fff; }
+
+    .perm-matrix th, .perm-matrix td { vertical-align:middle; white-space:nowrap; }
+    .perm-matrix thead th {
+        text-align:center; background:#e9ecef; text-transform:uppercase;
+        letter-spacing:.6px; font-size:12px; font-weight:700; padding:10px 8px;
+    }
+    .perm-matrix thead th:first-child { text-align:left; }
+    .perm-matrix td.module-col {
+        font-weight:700; font-size:14px; background:#fafafa;
+        min-width:145px; padding:10px 12px;
+    }
+    .perm-matrix td.action-col { text-align:center; min-width:120px; padding:8px 6px; }
+    .perm-matrix td.empty-col  { text-align:center; color:#ced4da; font-size:16px; }
+    .module-actions-row { display:flex; gap:4px; justify-content:flex-end; }
+
+    .role-indicator { font-size:11px; font-weight:600; display:block; margin-top:4px; }
+    .ri-granted { color:#28a745; }
+    .ri-denied  { color:#dc3545; }
+
+    .module-icon { font-size:15px; margin-right:7px; }
+</style>
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-sm-6"><h1 class="m-0">@L["Permissions"] — @Model.UserName</h1></div>
+        <div class="col-sm-6"><h1 class="m-0">@L["Permissions"] — <span class="text-primary">@Model.UserName</span></h1></div>
         <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
             <li class="breadcrumb-item"><a asp-action="Index">@L["Users"]</a></li>
@@ -19,58 +71,113 @@
 <form asp-action="Permissions" asp-route-id="@Model.UserId" method="post">
     @Html.AntiForgeryToken()
 
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle mr-2"></i>
-        <strong>@L["How permissions work:"]</strong> @L["Role permissions are the baseline. User overrides take precedence —"] <span class="badge badge-success">@L["Grant"]</span> @L["or"] <span class="badge badge-danger">@L["Deny"]</span> @L["individual permissions for this user."]
-    </div>
-
-    @foreach (var group in Model.Groups)
-    {
-        <div class="card">
-            <div class="card-header bg-light">
-                <h3 class="card-title"><i class="fas fa-layer-group mr-2"></i>@group.Module</h3>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'grant')">@L["Grant All"]</button>
-                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'deny')">@L["Deny All"]</button>
-                    <button type="button" class="btn btn-sm btn-default" onclick="setGroupAll('@group.Module', 'inherit')">@L["Inherit All"]</button>
-                </div>
+    <!-- Legend + Global actions -->
+    <div class="card mb-3">
+        <div class="card-body py-2 d-flex align-items-center justify-content-between flex-wrap" style="gap:8px;">
+            <div class="d-flex align-items-center flex-wrap" style="gap:14px;font-size:13px;">
+                <span><span class="badge px-2 py-1" style="background:#28a745;color:#fff;font-size:12px;"><i class="fas fa-check mr-1"></i>Grant</span> Override — always allow</span>
+                <span><span class="badge px-2 py-1" style="background:#6c757d;color:#fff;font-size:12px;"><i class="fas fa-minus mr-1"></i>Role</span> Follow role baseline</span>
+                <span><span class="badge px-2 py-1" style="background:#dc3545;color:#fff;font-size:12px;"><i class="fas fa-times mr-1"></i>Deny</span> Override — always block</span>
+                <span class="text-muted border-left pl-3">Role baseline: <strong class="ri-granted">✓ role grants</strong> &nbsp; <strong class="ri-denied">✗ role denies</strong></span>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    @foreach (var perm in group.Permissions)
-                    {
-                        <div class="col-md-4 mb-3" data-group="@group.Module">
-                            <label class="font-weight-bold d-block" style="font-size:13px;">@perm.Action</label>
-                            <small class="text-muted d-block mb-1">@L["Role:"] @(perm.IsGrantedByRole ? "✓ " + L["Granted"].Value : "✗ " + L["Denied"].Value)</small>
-                            <div class="btn-group btn-group-sm perm-group" data-perm="@perm.PermissionId">
-                                <button type="button"
-                                        class="btn @(perm.IsOverriddenByUser == true ? "btn-success" : "btn-outline-success") perm-btn"
-                                        data-val="grant" data-perm="@perm.PermissionId"
-                                        onclick="setPerm(this, '@perm.PermissionId', 'grant')">
-                                    <i class="fas fa-check mr-1"></i>@L["Grant"]
-                                </button>
-                                <button type="button"
-                                        class="btn @(perm.IsOverriddenByUser == null ? "btn-secondary" : "btn-outline-secondary") perm-btn"
-                                        data-val="inherit" data-perm="@perm.PermissionId"
-                                        onclick="setPerm(this, '@perm.PermissionId', 'inherit')">
-                                    <i class="fas fa-minus mr-1"></i>@L["Inherit"]
-                                </button>
-                                <button type="button"
-                                        class="btn @(perm.IsOverriddenByUser == false ? "btn-danger" : "btn-outline-danger") perm-btn"
-                                        data-val="deny" data-perm="@perm.PermissionId"
-                                        onclick="setPerm(this, '@perm.PermissionId', 'deny')">
-                                    <i class="fas fa-times mr-1"></i>@L["Deny"]
-                                </button>
-                            </div>
-                            <input type="hidden" name="permissionValues[perm_@perm.PermissionId]"
-                                   id="perm_@perm.PermissionId"
-                                   value="@(perm.IsOverriddenByUser == true ? "grant" : perm.IsOverriddenByUser == false ? "deny" : "inherit")">
-                        </div>
-                    }
-                </div>
+            <div style="gap:4px;" class="d-flex">
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="setAll('grant')"><i class="fas fa-check-double mr-1"></i>@L["Grant All"]</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setAll('inherit')"><i class="fas fa-minus mr-1"></i>@L["Inherit All"]</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="setAll('deny')"><i class="fas fa-times mr-1"></i>@L["Deny All"]</button>
             </div>
         </div>
-    }
+    </div>
+
+    <!-- Permission Matrix Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm mb-0 perm-matrix">
+                    <thead>
+                        <tr>
+                            <th style="min-width:140px;">Module</th>
+                            @foreach (var action in allActions)
+                            {
+                                <th>@action</th>
+                            }
+                            <th style="min-width:150px;">Quick Set</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var group in Model.Groups)
+                        {
+                            <tr>
+                                        <td class="module-col">
+                                    <i class="fas @(group.Module switch {
+                                        "Trucks"   => "fa-truck",
+                                        "Drivers"  => "fa-user-tie",
+                                        "Trips"    => "fa-route",
+                                        "Expenses" => "fa-receipt",
+                                        "Users"    => "fa-users",
+                                        "Tenants"  => "fa-building",
+                                        "Reports"  => "fa-chart-line",
+                                        "Alerts"   => "fa-bell",
+                                        "Dashboard"=> "fa-tachometer-alt",
+                                        _          => "fa-layer-group"
+                                    }) module-icon text-primary"></i>@group.Module
+                                </td>
+
+                                @foreach (var action in allActions)
+                                {
+                                    var perm = group.Permissions.FirstOrDefault(p => p.Action == action);
+                                    if (perm == null)
+                                    {
+                                        <td class="empty-col">—</td>
+                                    }
+                                    else
+                                    {
+                                        var state = perm.IsOverriddenByUser == true ? "grant"
+                                                  : perm.IsOverriddenByUser == false ? "deny"
+                                                  : "inherit";
+                                        <td class="action-col">
+                                            <div class="perm-pill" id="pill_@perm.PermissionId">
+                                                <button type="button" class="pp-btn @(state=="grant"?"active-grant":"")"
+                                                        title="Grant — always allow" onclick="setPerm(@perm.PermissionId,'grant')">
+                                                    <i class="fas fa-check"></i> Grant
+                                                </button>
+                                                <button type="button" class="pp-btn @(state=="inherit"?"active-inherit":"")"
+                                                        title="Inherit role baseline" onclick="setPerm(@perm.PermissionId,'inherit')">
+                                                    <i class="fas fa-minus"></i> Role
+                                                </button>
+                                                <button type="button" class="pp-btn @(state=="deny"?"active-deny":"")"
+                                                        title="Deny — always block" onclick="setPerm(@perm.PermissionId,'deny')">
+                                                    <i class="fas fa-times"></i> Deny
+                                                </button>
+                                            </div>
+                                            <span class="role-indicator @(perm.IsGrantedByRole ? "ri-granted" : "ri-denied")">
+                                                @(perm.IsGrantedByRole ? "✓ role grants" : "✗ role denies")
+                                            </span>
+                                            <input type="hidden"
+                                                   name="permissionValues[perm_@perm.PermissionId]"
+                                                   id="perm_@perm.PermissionId"
+                                                   value="@state">
+                                        </td>
+                                    }
+                                }
+
+                                <!-- Quick Set for this row -->
+                                <td>
+                                    <div class="module-actions-row">
+                                        <button type="button" class="btn btn-xs btn-outline-success"
+                                                onclick="setRow('@group.Module','grant')"><i class="fas fa-check mr-1"></i>Grant</button>
+                                        <button type="button" class="btn btn-xs btn-outline-secondary"
+                                                onclick="setRow('@group.Module','inherit')"><i class="fas fa-minus mr-1"></i>Role</button>
+                                        <button type="button" class="btn btn-xs btn-outline-danger"
+                                                onclick="setRow('@group.Module','deny')"><i class="fas fa-times mr-1"></i>Deny</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <div class="text-right mb-3">
         <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
@@ -81,26 +188,37 @@
 
 @section Scripts {
 <script>
-function setPerm(btn, permId, val) {
-    const group = btn.closest('.btn-group');
-    group.querySelectorAll('.perm-btn').forEach(b => {
-        b.className = b.className.replace('btn-success','btn-outline-success')
-                                  .replace('btn-secondary','btn-outline-secondary')
-                                  .replace('btn-danger','btn-outline-danger');
+// Activate a pill button and update hidden input
+function setPerm(permId, val) {
+    var pill = document.getElementById('pill_' + permId);
+    pill.querySelectorAll('.pp-btn').forEach(function(b) {
+        b.classList.remove('active-grant','active-inherit','active-deny');
     });
-    if (val === 'grant') btn.className = btn.className.replace('btn-outline-success','btn-success');
-    if (val === 'inherit') btn.className = btn.className.replace('btn-outline-secondary','btn-secondary');
-    if (val === 'deny') btn.className = btn.className.replace('btn-outline-danger','btn-danger');
+    var cls = val === 'grant' ? 'active-grant' : val === 'deny' ? 'active-deny' : 'active-inherit';
+    var idx = val === 'grant' ? 0 : val === 'inherit' ? 1 : 2;
+    pill.querySelectorAll('.pp-btn')[idx].classList.add(cls);
     document.getElementById('perm_' + permId).value = val;
 }
 
-function setGroupAll(module, val) {
-    document.querySelectorAll('[data-group="' + module + '"]').forEach(div => {
-        const permId = div.querySelector('.perm-btn')?.dataset.perm;
-        if (!permId) return;
-        const btn = div.querySelector('.perm-btn[data-val="' + val + '"]');
-        if (btn) setPerm(btn, permId, val);
+// Set all permissions in a module row
+function setRow(module, val) {
+    document.querySelectorAll('input[type=hidden][name^="permissionValues"]').forEach(function(inp) {
+        var permId = inp.id.replace('perm_','');
+        var pill = document.getElementById('pill_' + permId);
+        if (pill && pill.closest('tr') &&
+            pill.closest('tr').querySelector('.module-col') &&
+            pill.closest('tr').querySelector('.module-col').textContent.trim().includes(module)) {
+            setPerm(permId, val);
+        }
+    });
+}
+
+// Set all permissions globally
+function setAll(val) {
+    document.querySelectorAll('input[type=hidden][name^="permissionValues"]').forEach(function(inp) {
+        setPerm(inp.id.replace('perm_',''), val);
     });
 }
 </script>
 }
+

@@ -1,0 +1,227 @@
+@* ══════════════════ Views/Role/Permissions.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.RolePermissionViewModel
+@{
+    ViewData["Title"] = "Role Permissions — " + Model.RoleName;
+
+    var allActions = Model.Groups
+        .SelectMany(g => g.Permissions.Select(p => p.Action))
+        .Distinct()
+        .OrderBy(a => a switch {
+            "View"           => 0,
+            "Create"         => 1,
+            "Edit"           => 2,
+            "Delete"         => 3,
+            "AssignRoles"    => 4,
+            "AttachDocument" => 5,
+            "AttachBill"     => 6,
+            "Export"         => 7,
+            "Manage"         => 8,
+            _                => 9
+        }).ToList();
+}
+
+@section Styles {
+<style>
+    .perm-toggle { display:inline-flex; border-radius:6px; overflow:hidden; border:1px solid #dee2e6; box-shadow:0 1px 2px rgba(0,0,0,.07); }
+    .perm-toggle .pt-btn {
+        padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; border:none;
+        background:#f8f9fa; color:#6c757d; transition:background .15s,color .15s; line-height:1.5;
+    }
+    .perm-toggle .pt-btn:hover { background:#e2e6ea; color:#343a40; }
+    .pt-btn.active-on  { background:#28a745; color:#fff; }
+    .pt-btn.active-off { background:#f8f9fa; color:#adb5bd; }
+
+    .role-matrix th, .role-matrix td { vertical-align:middle; white-space:nowrap; }
+    .role-matrix thead th {
+        text-align:center; background:#e9ecef; text-transform:uppercase;
+        letter-spacing:.6px; font-size:12px; font-weight:700; padding:10px 8px;
+    }
+    .role-matrix thead th:first-child { text-align:left; }
+    .role-matrix td.module-col {
+        font-weight:700; font-size:14px; background:#fafafa; min-width:145px; padding:10px 12px;
+    }
+    .role-matrix td.action-col { text-align:center; min-width:130px; padding:8px 6px; }
+    .role-matrix td.empty-col  { text-align:center; color:#ced4da; font-size:16px; }
+    .row-actions { display:flex; gap:4px; justify-content:flex-end; }
+    .module-icon { font-size:15px; margin-right:7px; }
+    .perm-key { font-size:10px; color:#adb5bd; display:block; margin-top:2px; }
+</style>
+}
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0">
+                <i class="fas fa-key mr-2"></i>@Model.RoleName
+                @if (Model.IsSystemRole)
+                { <span class="badge badge-secondary ml-1" style="font-size:13px;">System Role</span> }
+            </h1>
+        </div>
+        <div class="col-sm-6"><ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Roles</a></li>
+            <li class="breadcrumb-item active">@Model.RoleName</li>
+        </ol></div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="alert alert-light border mb-3">
+            <i class="fas fa-info-circle mr-2 text-muted"></i>@Model.Description
+        </div>
+    }
+
+    <form asp-action="Permissions" asp-route-id="@Model.RoleId" method="post">
+        @Html.AntiForgeryToken()
+
+        <!-- Toolbar -->
+        <div class="card mb-3">
+            <div class="card-body py-2 d-flex align-items-center justify-content-between flex-wrap" style="gap:8px;">
+                <div class="d-flex align-items-center flex-wrap" style="gap:14px;font-size:13px;">
+                    <span><span class="badge px-2 py-1" style="background:#28a745;color:#fff;font-size:12px;"><i class="fas fa-check mr-1"></i>On</span> Permission granted to this role</span>
+                    <span><span class="badge px-2 py-1" style="background:#f8f9fa;color:#6c757d;font-size:12px;border:1px solid #dee2e6;">Off</span> Permission not granted</span>
+                    <span class="text-muted border-left pl-3"><i class="fas fa-info-circle mr-1"></i>Role permissions are the <strong>baseline</strong> for all users in this role.</span>
+                </div>
+                <div class="d-flex" style="gap:4px;">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="setAll(true)">
+                        <i class="fas fa-check-double mr-1"></i>Grant All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="setAll(false)">
+                        <i class="fas fa-times mr-1"></i>Revoke All
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary ml-2">
+                        <i class="fas fa-save mr-1"></i>Save Permissions
+                    </button>
+                    <a asp-action="Index" class="btn btn-sm btn-secondary ml-1">
+                        <i class="fas fa-arrow-left mr-1"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Matrix -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0 role-matrix">
+                        <thead>
+                            <tr>
+                                <th style="min-width:145px;">Module</th>
+                                @foreach (var action in allActions)
+                                {
+                                    <th>@action</th>
+                                }
+                                <th style="min-width:155px;">Quick Set</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var group in Model.Groups)
+                            {
+                                <tr>
+                                    <td class="module-col">
+                                        <i class="fas @(group.Module switch {
+                                            "Trucks"   => "fa-truck",
+                                            "Drivers"  => "fa-user-tie",
+                                            "Trips"    => "fa-route",
+                                            "Expenses" => "fa-receipt",
+                                            "Users"    => "fa-users",
+                                            "Tenants"  => "fa-building",
+                                            "Reports"  => "fa-chart-line",
+                                            "Alerts"   => "fa-bell",
+                                            "Dashboard"=> "fa-tachometer-alt",
+                                            _          => "fa-layer-group"
+                                        }) module-icon text-primary"></i>@group.Module
+                                    </td>
+
+                                    @foreach (var action in allActions)
+                                    {
+                                        var perm = group.Permissions.FirstOrDefault(p => p.Action == action);
+                                        if (perm == null)
+                                        {
+                                            <td class="empty-col">—</td>
+                                        }
+                                        else
+                                        {
+                                            var isOn = perm.IsGrantedByRole;
+                                            <td class="action-col">
+                                                <div class="perm-toggle" id="tog_@perm.PermissionId">
+                                                    <button type="button"
+                                                            class="pt-btn @(isOn ? "active-on" : "")"
+                                                            title="Grant this permission"
+                                                            onclick="setTog(@perm.PermissionId, true)">
+                                                        <i class="fas fa-check mr-1"></i>On
+                                                    </button>
+                                                    <button type="button"
+                                                            class="pt-btn @(!isOn ? "active-off" : "")"
+                                                            title="Revoke this permission"
+                                                            onclick="setTog(@perm.PermissionId, false)">
+                                                        <i class="fas fa-times mr-1"></i>Off
+                                                    </button>
+                                                </div>
+                                                <span class="perm-key">@perm.Key</span>
+                                                <input type="checkbox"
+                                                       class="perm-check d-none"
+                                                       id="perm_@perm.PermissionId"
+                                                       name="grantedPermissions"
+                                                       value="@perm.PermissionId"
+                                                       data-group="@group.Module"
+                                                       @(isOn ? "checked" : "")>
+                                            </td>
+                                        }
+                                    }
+
+                                    <!-- Per-row Quick Set -->
+                                    <td>
+                                        <div class="row-actions">
+                                            <button type="button" class="btn btn-xs btn-outline-success"
+                                                    onclick="setGroup('@group.Module', true)">
+                                                <i class="fas fa-check mr-1"></i>Grant
+                                            </button>
+                                            <button type="button" class="btn btn-xs btn-outline-danger"
+                                                    onclick="setGroup('@group.Module', false)">
+                                                <i class="fas fa-times mr-1"></i>Revoke
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-right mb-3">
+            <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-arrow-left mr-1"></i>Back</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Save Permissions</button>
+        </div>
+
+    </form>
+
+</div></section>
+
+@section Scripts {
+<script>
+function setTog(permId, grant) {
+    var tog = document.getElementById('tog_' + permId);
+    var cb  = document.getElementById('perm_' + permId);
+    var btns = tog.querySelectorAll('.pt-btn');
+    btns[0].classList.toggle('active-on',  grant);
+    btns[1].classList.toggle('active-off', !grant);
+    cb.checked = grant;
+}
+function setGroup(module, grant) {
+    document.querySelectorAll('.perm-check[data-group="' + module + '"]').forEach(function(cb) {
+        setTog(cb.value, grant);
+    });
+}
+function setAll(grant) {
+    document.querySelectorAll('.perm-check').forEach(function(cb) {
+        setTog(cb.value, grant);
+    });
+}
+</script>
+}

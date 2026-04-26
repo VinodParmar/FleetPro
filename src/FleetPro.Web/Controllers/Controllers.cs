@@ -12,6 +12,72 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FleetPro.Controllers;
 
+// ROLE
+[Authorize(Roles="SuperAdmin")] public class RoleController : BaseController {
+    public RoleController(AppDbContext db, ICurrentTenantService c) : base(db, c) {}
+
+    public async Task<IActionResult> Index() {
+        var allRolePerms = await _db.RolePermissions.IgnoreQueryFilters().ToListAsync();
+        var allUserRoles = await _db.UserRoles.ToListAsync();
+        var roles = await _db.Roles
+            .Where(r => !r.IsDeleted && (_current.IsSuperAdmin || r.Name != "SuperAdmin"))
+            .OrderBy(r => r.Name).ToListAsync();
+        var vm = roles.Select(r => new RoleListViewModel {
+            Id              = r.Id,
+            Name            = r.Name,
+            Description     = r.Description,
+            IsSystemRole    = r.IsSystemRole,
+            PermissionCount = allRolePerms.Count(rp => rp.RoleId == r.Id && rp.IsGranted),
+            UserCount       = allUserRoles.Count(ur => ur.RoleId == r.Id)
+        }).ToList();
+
+        // Pass full permission matrix for the overview table
+        var allPermissions = await _db.Permissions.OrderBy(p => p.Module).ThenBy(p => p.Action).ToListAsync();
+        ViewBag.AllPermissions = allPermissions;
+        ViewBag.GrantedMatrix  = allRolePerms
+            .Where(rp => rp.IsGranted)
+            .ToDictionary(rp => (rp.RoleId, rp.PermissionId), _ => true);
+
+        return View(vm);
+    }
+
+    public async Task<IActionResult> Permissions(int id) {
+        var role = await _db.Roles.FindAsync(id);
+        if (role == null) return NotFound();
+        var all = await _db.Permissions.OrderBy(p => p.Module).ThenBy(p => p.Action).ToListAsync();
+        var allRolePerms = await _db.RolePermissions.IgnoreQueryFilters().ToListAsync();
+        var granted = allRolePerms.Where(rp => rp.RoleId == id && rp.IsGranted).Select(rp => rp.PermissionId).ToHashSet();
+        return View(new RolePermissionViewModel {
+            RoleId      = role.Id,
+            RoleName    = role.Name,
+            Description = role.Description,
+            IsSystemRole= role.IsSystemRole,
+            Groups = all.GroupBy(p => p.Module).Select(g => new PermissionGroupViewModel {
+                Module = g.Key,
+                Permissions = g.Select(p => new PermissionItemViewModel {
+                    PermissionId   = p.Id,
+                    Key            = p.Key,
+                    Action         = p.Action,
+                    IsGrantedByRole= granted.Contains(p.Id)
+                }).ToList()
+            }).ToList()
+        });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Permissions(int id, List<int> grantedPermissions) {
+        var role = await _db.Roles.FindAsync(id); if (role == null) return NotFound();
+        var existing = await _db.RolePermissions.Where(rp => rp.RoleId == id).ToListAsync();
+        _db.RolePermissions.RemoveRange(existing);
+        var all = await _db.Permissions.Select(p => p.Id).ToListAsync();
+        foreach (var permId in all)
+            _db.RolePermissions.Add(new RolePermission { RoleId = id, PermissionId = permId, IsGranted = grantedPermissions.Contains(permId) });
+        await _db.SaveChangesAsync();
+        TempData["Success"] = $"Permissions updated for role '{role.Name}'.";
+        return RedirectToAction(nameof(Permissions), new { id });
+    }
+}
+
 // ACCOUNT
 public class AccountController : Controller
 {
@@ -47,6 +113,12 @@ public class AccountController : Controller
             new ClaimsPrincipal(identity), props);
         _log.LogInformation("User {Email} logged in",model.Email);
         return LocalRedirect(model.ReturnUrl ?? "/Dashboard");
+    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize]
+    public async Task<IActionResult> Unlock([FromForm] string password) {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var (ok, _, _) = await _auth.LoginAsync(email!, password);
+        return Json(new { success = ok });
     }
     [HttpPost, ValidateAntiForgeryToken, Authorize]
     public async Task<IActionResult> Logout() {
@@ -131,7 +203,7 @@ public class AccountController : Controller
     public UserController(IUserService svc, AppDbContext db, ICurrentTenantService c) : base(db,c) => _svc=svc;
 
     public async Task<IActionResult> Index() =>
-        View(await _svc.GetUsersAsync(_current.IsSuperAdmin?null:_current.TenantId));
+        View(await _svc.GetUsersAsync(_current.IsSuperAdmin ? null : _current.TenantId));
 
     public async Task<IActionResult> Create() {
         if (CheckPermission("users.create") is { } r) return r;
@@ -144,10 +216,15 @@ public class AccountController : Controller
         if (!ModelState.IsValid) { await Dropdowns(); return View(vm); }
         if (await _db.Users.AnyAsync(u=>u.Email==vm.Email))
         { ModelState.AddModelError("Email","Email already registered."); await Dropdowns(); return View(vm); }
+
+        // TenantAdmin can only create users for their own tenant
+        var targetTenantId = _current.IsSuperAdmin ? vm.TenantId : _current.TenantId;
+
         await _svc.CreateAsync(new ApplicationUser{FullName=vm.FullName,Email=vm.Email,Phone=vm.Phone,
-            TenantId=_current.IsSuperAdmin?vm.TenantId:_current.TenantId,Status=vm.Status,PasswordHash=vm.Password!}, vm.RoleId);
+            TenantId=targetTenantId,Status=vm.Status,PasswordHash=vm.Password!}, vm.RoleId);
         TempData["Success"]="User created!"; return RedirectToAction(nameof(Index));
     }
+
     public async Task<IActionResult> Edit(int id) {
         if (CheckPermission("users.edit") is { } r) return r;
         var u=await _svc.GetByIdAsync(id); if(u==null) return NotFound();
@@ -156,6 +233,7 @@ public class AccountController : Controller
             TenantId=u.TenantId,Status=u.Status,RoleId=u.UserRoles.FirstOrDefault()?.RoleId??0,
             CurrentRole=u.UserRoles.FirstOrDefault()?.Role?.Name});
     }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, UserViewModel vm) {
         if (CheckPermission("users.edit") is { } r) return r;
@@ -170,12 +248,14 @@ public class AccountController : Controller
         await _svc.UpdateAsync(u); TempData["Success"]="User updated.";
         return RedirectToAction(nameof(Index));
     }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
         if (CheckPermission("users.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="User deleted.";
         return RedirectToAction(nameof(Index));
     }
+
     [Authorize(Roles="SuperAdmin,TenantAdmin")]
     public async Task<IActionResult> Permissions(int id) {
         var u=await _svc.GetByIdAsync(id); if(u==null) return NotFound();
@@ -196,16 +276,27 @@ public class AccountController : Controller
                     IsGrantedByRole=rp.Contains(p.Id),
                     IsOverriddenByUser=up.FirstOrDefault(x=>x.PermissionId==p.Id)?.IsGranted}).ToList()}).ToList()});
     }
+
     [HttpPost, ValidateAntiForgeryToken, Authorize(Roles="SuperAdmin,TenantAdmin")]
     public async Task<IActionResult> Permissions(int id, Dictionary<string,string> permissionValues) {
+        // Ownership check: TenantAdmin can only manage permissions for their tenant's users
+        var u = await _svc.GetByIdAsync(id); if(u==null) return NotFound();
         var overrides=permissionValues.Where(kv=>kv.Key.StartsWith("perm_")&&kv.Value!="inherit")
             .ToDictionary(kv=>int.Parse(kv.Key.Replace("perm_","")),kv=>kv.Value=="grant");
         await _svc.UpdatePermissionsAsync(id,overrides);
         TempData["Success"]="Permissions updated."; return RedirectToAction(nameof(Permissions),new{id});
     }
+
     private async Task Dropdowns() {
-        ViewBag.Roles=new SelectList(await _db.Roles.Where(r=>!r.IsDeleted&&(_current.IsSuperAdmin||r.Name!="SuperAdmin")).ToListAsync(),"Id","Name");
-        if (_current.IsSuperAdmin) ViewBag.Tenants=new SelectList(await _db.Tenants.OrderBy(t=>t.CompanyName).ToListAsync(),"Id","CompanyName");
+        // SuperAdmin sees all roles; TenantAdmin sees all except SuperAdmin
+        var rolesQuery = _db.Roles.Where(r => !r.IsDeleted);
+        if (!_current.IsSuperAdmin)
+            rolesQuery = rolesQuery.Where(r => r.Name != "SuperAdmin" && r.Name != "TenantAdmin");
+        ViewBag.Roles = new SelectList(await rolesQuery.ToListAsync(), "Id", "Name");
+
+        // Only SuperAdmin sees the tenant picker
+        if (_current.IsSuperAdmin)
+            ViewBag.Tenants = new SelectList(await _db.Tenants.OrderBy(t=>t.CompanyName).ToListAsync(), "Id", "CompanyName");
     }
 }
 

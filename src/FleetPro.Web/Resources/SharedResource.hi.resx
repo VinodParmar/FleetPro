@@ -17,6 +17,8 @@
   <data name="Companies" xml:space="preserve"><value>कंपनियां</value></data>
   <data name="Company List" xml:space="preserve"><value>कंपनी सूची</value></data>
   <data name="Add Company" xml:space="preserve"><value>कंपनी जोड़ें</value></data>
+  <data name="Roles" xml:space="preserve"><value>भूमिकाएं</value></data>
+  <data name="Role List" xml:space="preserve"><value>भूमिका सूची</value></data>
   <data name="Users" xml:space="preserve"><value>उपयोगकर्ता</value></data>
   <data name="User List" xml:space="preserve"><value>उपयोगकर्ता सूची</value></data>
   <data name="Add User" xml:space="preserve"><value>उपयोगकर्ता जोड़ें</value></data>

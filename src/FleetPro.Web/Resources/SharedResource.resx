@@ -17,6 +17,8 @@
   <data name="Companies" xml:space="preserve"><value>Companies</value></data>
   <data name="Company List" xml:space="preserve"><value>Company List</value></data>
   <data name="Add Company" xml:space="preserve"><value>Add Company</value></data>
+  <data name="Roles" xml:space="preserve"><value>Roles</value></data>
+  <data name="Role List" xml:space="preserve"><value>Role List</value></data>
   <data name="Users" xml:space="preserve"><value>Users</value></data>
   <data name="User List" xml:space="preserve"><value>User List</value></data>
   <data name="Add User" xml:space="preserve"><value>Add User</value></data>

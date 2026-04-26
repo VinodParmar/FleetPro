@@ -17,8 +17,6 @@ public static class DataSeeder
 
     private static async Task SeedPermissionsAsync(AppDbContext db)
     {
-        if (await db.Permissions.AnyAsync()) return;
-
         var modules = new[]
         {
             ("Tenants",  new[] { "View","Create","Edit","Delete" }),
@@ -32,54 +30,88 @@ public static class DataSeeder
             ("Dashboard",new[] { "View" }),
         };
 
-        var permissions = new List<Permission>();
+        var existingKeys = await db.Permissions.Select(p => p.Key).ToHashSetAsync();
+
+        var toAdd = new List<Permission>();
         foreach (var (module, actions) in modules)
             foreach (var action in actions)
-                permissions.Add(new Permission
-                {
-                    Module = module, Action = action,
-                    Key = $"{module.ToLower()}.{action.ToLower()}",
-                    Description = $"{action} {module}"
-                });
+            {
+                var key = $"{module.ToLower()}.{action.ToLower()}";
+                if (!existingKeys.Contains(key))
+                    toAdd.Add(new Permission {
+                        Module = module, Action = action,
+                        Key = key, Description = $"{action} {module}"
+                    });
+            }
 
-        db.Permissions.AddRange(permissions);
-        await db.SaveChangesAsync();
+        if (toAdd.Count > 0)
+        {
+            db.Permissions.AddRange(toAdd);
+            await db.SaveChangesAsync();
+        }
     }
 
     private static async Task SeedRolesAsync(AppDbContext db)
     {
-        if (await db.Roles.AnyAsync()) return;
+        // ── Ensure all 4 roles exist ──────────────────────────────
+        var roleDefs = new[]
+        {
+            ("SuperAdmin",        "Full system access"),
+            ("TenantAdmin",       "Full access within their tenant"),
+            ("DataEntryOperator", "Create and edit, no delete"),
+            ("Viewer",            "Read-only access"),
+        };
 
-        var allPerms = await db.Permissions.ToListAsync();
+        foreach (var (name, desc) in roleDefs)
+            if (!await db.Roles.AnyAsync(r => r.Name == name))
+                db.Roles.Add(new Role { Name = name, Description = desc, IsSystemRole = true });
 
-        var superAdminRole  = new Role { Name="SuperAdmin",         Description="Full system access",                IsSystemRole=true };
-        var tenantAdminRole = new Role { Name="TenantAdmin",        Description="Full access within their tenant",  IsSystemRole=true };
-        var dataEntryRole   = new Role { Name="DataEntryOperator",  Description="Create and edit, no delete",       IsSystemRole=true };
-        var viewerRole      = new Role { Name="Viewer",             Description="Read-only access",                 IsSystemRole=true };
-
-        db.Roles.AddRange(superAdminRole, tenantAdminRole, dataEntryRole, viewerRole);
         await db.SaveChangesAsync();
 
-        var rolePerms = new List<RolePermission>();
+        // ── Ensure role permissions are complete ──────────────────
+        var allPerms    = await db.Permissions.ToListAsync();
+        var superAdmin  = await db.Roles.FirstAsync(r => r.Name == "SuperAdmin");
+        var tenantAdmin = await db.Roles.FirstAsync(r => r.Name == "TenantAdmin");
+        var dataEntry   = await db.Roles.FirstAsync(r => r.Name == "DataEntryOperator");
+        var viewer      = await db.Roles.FirstAsync(r => r.Name == "Viewer");
+
+        // Load existing role-permission pairs to avoid duplicates
+        var existingRpList = await db.RolePermissions
+            .Select(rp => new { rp.RoleId, rp.PermissionId })
+            .ToListAsync();
+        var existing = existingRpList
+            .Select(rp => (rp.RoleId, rp.PermissionId))
+            .ToHashSet();
+
+        var toAdd = new List<RolePermission>();
+
+        void AddIfMissing(int roleId, IEnumerable<Permission> perms)
+        {
+            foreach (var p in perms)
+                if (!existing.Contains((roleId, p.Id)))
+                    toAdd.Add(new RolePermission { RoleId = roleId, PermissionId = p.Id, IsGranted = true });
+        }
 
         // SuperAdmin — ALL
-        foreach (var p in allPerms)
-            rolePerms.Add(new RolePermission { RoleId=superAdminRole.Id, PermissionId=p.Id, IsGranted=true });
+        AddIfMissing(superAdmin.Id, allPerms);
 
-        // TenantAdmin — all except tenants.create / tenants.delete
-        foreach (var p in allPerms.Where(p => !(p.Module=="Tenants" && p.Action is "Create" or "Delete")))
-            rolePerms.Add(new RolePermission { RoleId=tenantAdminRole.Id, PermissionId=p.Id, IsGranted=true });
+        // TenantAdmin — all except Tenants.Create / Tenants.Delete
+        AddIfMissing(tenantAdmin.Id,
+            allPerms.Where(p => !(p.Module == "Tenants" && p.Action is "Create" or "Delete")));
 
-        // DataEntry — View + Create + Edit + Attach
-        foreach (var p in allPerms.Where(p => p.Action is "View" or "Create" or "Edit" or "AttachDocument" or "AttachBill"))
-            rolePerms.Add(new RolePermission { RoleId=dataEntryRole.Id, PermissionId=p.Id, IsGranted=true });
+        // DataEntryOperator — View + Create + Edit + AttachDocument + AttachBill
+        AddIfMissing(dataEntry.Id,
+            allPerms.Where(p => p.Action is "View" or "Create" or "Edit" or "AttachDocument" or "AttachBill"));
 
         // Viewer — View only
-        foreach (var p in allPerms.Where(p => p.Action == "View"))
-            rolePerms.Add(new RolePermission { RoleId=viewerRole.Id, PermissionId=p.Id, IsGranted=true });
+        AddIfMissing(viewer.Id,
+            allPerms.Where(p => p.Action == "View"));
 
-        db.RolePermissions.AddRange(rolePerms);
-        await db.SaveChangesAsync();
+        if (toAdd.Count > 0)
+        {
+            db.RolePermissions.AddRange(toAdd);
+            await db.SaveChangesAsync();
+        }
     }
 
     private static async Task SeedSuperAdminAsync(AppDbContext db)

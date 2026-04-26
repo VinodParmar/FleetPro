@@ -259,6 +259,13 @@ public class UserService : IUserService
         var user = await _db.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Id == id);
 
+        // Tenant isolation: non-SuperAdmin can only access users in their own tenant
+        if (user != null && !_current.IsSuperAdmin)
+        {
+            if (user.TenantId != _current.TenantId)
+                return null;
+        }
+
         if (user != null)
         {
             // Materialize all user permissions and permissions to avoid CTE generation
@@ -308,7 +315,11 @@ public class UserService : IUserService
     public async Task DeleteAsync(int id)
     {
         var u = await _db.Users.FindAsync(id);
-        if (u != null) { u.IsDeleted = true; await _db.SaveChangesAsync(); }
+        if (u == null) return;
+        // Tenant isolation: non-SuperAdmin can only delete users in their own tenant
+        if (!_current.IsSuperAdmin && u.TenantId != _current.TenantId) return;
+        u.IsDeleted = true;
+        await _db.SaveChangesAsync();
     }
 
     public async Task UpdatePermissionsAsync(int userId, Dictionary<int, bool> permissions)
