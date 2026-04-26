@@ -34,6 +34,14 @@ public abstract class BaseController : Controller
         ViewData["Lang"] = lang == "hi" ? "hi" : "en";
     }
 
+    // Returns null if allowed, or a redirect with a modal message if the user lacks the permission.
+    protected IActionResult? CheckPermission(string permissionKey)
+    {
+        if (_current.HasPermission(permissionKey)) return null;
+        TempData["AccessDenied"] = "You do not have permission to perform this action.";
+        return Redirect(Request.Headers.Referer.ToString() is { Length: > 0 } referer ? referer : "/Dashboard");
+    }
+
     // Called after every action — safe to use async here
     public override void OnActionExecuted(ActionExecutedContext context)
     {

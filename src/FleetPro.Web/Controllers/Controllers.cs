@@ -133,10 +133,14 @@ public class AccountController : Controller
     public async Task<IActionResult> Index() =>
         View(await _svc.GetUsersAsync(_current.IsSuperAdmin?null:_current.TenantId));
 
-    public async Task<IActionResult> Create() { await Dropdowns(); return View(new UserViewModel()); }
+    public async Task<IActionResult> Create() {
+        if (CheckPermission("users.create") is { } r) return r;
+        await Dropdowns(); return View(new UserViewModel());
+    }
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UserViewModel vm) {
+        if (CheckPermission("users.create") is { } r) return r;
         if (!ModelState.IsValid) { await Dropdowns(); return View(vm); }
         if (await _db.Users.AnyAsync(u=>u.Email==vm.Email))
         { ModelState.AddModelError("Email","Email already registered."); await Dropdowns(); return View(vm); }
@@ -145,6 +149,7 @@ public class AccountController : Controller
         TempData["Success"]="User created!"; return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(int id) {
+        if (CheckPermission("users.edit") is { } r) return r;
         var u=await _svc.GetByIdAsync(id); if(u==null) return NotFound();
         await Dropdowns();
         return View("Create",new UserViewModel{Id=u.Id,FullName=u.FullName,Email=u.Email,Phone=u.Phone,
@@ -153,6 +158,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, UserViewModel vm) {
+        if (CheckPermission("users.edit") is { } r) return r;
         ModelState.Remove("Password");
         if (!ModelState.IsValid) { await Dropdowns(); return View("Create",vm); }
         var u=await _svc.GetByIdAsync(id); if(u==null) return NotFound();
@@ -166,6 +172,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
+        if (CheckPermission("users.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="User deleted.";
         return RedirectToAction(nameof(Index));
     }
@@ -215,19 +222,25 @@ public class AccountController : Controller
             t.Model.Contains(search,StringComparison.OrdinalIgnoreCase)).ToList();
         ViewBag.StatusFilter=status; ViewBag.Search=search; return View(trucks);
     }
-    public async Task<IActionResult> Create() { await PopT(); return View(new TruckViewModel()); }
+    public async Task<IActionResult> Create() {
+        if (CheckPermission("trucks.create") is { } r) return r;
+        await PopT(); return View(new TruckViewModel());
+    }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TruckViewModel vm) {
+        if (CheckPermission("trucks.create") is { } r) return r;
         if (!ModelState.IsValid) { await PopT(); return View(vm); }
         await _svc.CreateAsync(ToEntity(vm)); TempData["Success"]=$"Truck {vm.NumberPlate} added.";
         return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(int id) {
+        if (CheckPermission("trucks.edit") is { } r) return r;
         var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
         await PopT(); return View("Create",ToVM(t));
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TruckViewModel vm) {
+        if (CheckPermission("trucks.edit") is { } r) return r;
         if (!ModelState.IsValid) { await PopT(); return View("Create",vm); }
         var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
         t.NumberPlate=vm.NumberPlate;t.Model=vm.Model;t.Make=vm.Make;t.ManufacturingYear=vm.ManufacturingYear;
@@ -240,6 +253,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
+        if (CheckPermission("trucks.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="Truck deleted.";
         return RedirectToAction(nameof(Index));
     }
@@ -270,19 +284,25 @@ public class AccountController : Controller
             (d.LicenseNumber?.Contains(search,StringComparison.OrdinalIgnoreCase)??false)).ToList();
         return View(drivers);
     }
-    public async Task<IActionResult> Create() { await PopD(); return View(new DriverViewModel()); }
+    public async Task<IActionResult> Create() {
+        if (CheckPermission("drivers.create") is { } r) return r;
+        await PopD(); return View(new DriverViewModel());
+    }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(DriverViewModel vm) {
+        if (CheckPermission("drivers.create") is { } r) return r;
         if (!ModelState.IsValid) { await PopD(); return View(vm); }
         await _svc.CreateAsync(ToEntity(vm)); TempData["Success"]=$"Driver {vm.FullName} added.";
         return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(int id) {
+        if (CheckPermission("drivers.edit") is { } r) return r;
         var d=await _svc.GetByIdAsync(id); if(d==null) return NotFound();
         await PopD(); return View("Create",ToVM(d));
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, DriverViewModel vm) {
+        if (CheckPermission("drivers.edit") is { } r) return r;
         if (!ModelState.IsValid) { await PopD(); return View("Create",vm); }
         var d=await _svc.GetByIdAsync(id); if(d==null) return NotFound();
         d.FullName=vm.FullName;d.Phone=vm.Phone;d.Email=vm.Email;d.LicenseNumber=vm.LicenseNumber;
@@ -294,6 +314,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
+        if (CheckPermission("drivers.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="Driver deleted.";
         return RedirectToAction(nameof(Index));
     }
@@ -327,9 +348,13 @@ public class AccountController : Controller
     public async Task<IActionResult> Details(int id) {
         var t=await _svc.GetByIdAsync(id); return t==null?NotFound():View(t);
     }
-    public async Task<IActionResult> Create() { await PopDD(); return View(new TripViewModel{StartDate=DateTime.Today}); }
+    public async Task<IActionResult> Create() {
+        if (CheckPermission("trips.create") is { } r) return r;
+        await PopDD(); return View(new TripViewModel{StartDate=DateTime.Today});
+    }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TripViewModel vm) {
+        if (CheckPermission("trips.create") is { } r) return r;
         if (!ModelState.IsValid) { await PopDD(); return View(vm); }
         var trip=new Trip{TruckId=vm.TruckId,DriverId=vm.DriverId,FromLocation=vm.FromLocation,
             ToLocation=vm.ToLocation,StartDate=vm.StartDate,EndDate=vm.EndDate,DistanceKm=vm.DistanceKm,
@@ -340,6 +365,7 @@ public class AccountController : Controller
         return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(int id) {
+        if (CheckPermission("trips.edit") is { } r) return r;
         var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
         await PopDD();
         return View("Create",new TripViewModel{Id=t.Id,TripNumber=t.TripNumber,TruckId=t.TruckId,
@@ -350,6 +376,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TripViewModel vm) {
+        if (CheckPermission("trips.edit") is { } r) return r;
         if (!ModelState.IsValid) { await PopDD(); return View("Create",vm); }
         var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
         t.TruckId=vm.TruckId;t.DriverId=vm.DriverId;t.FromLocation=vm.FromLocation;t.ToLocation=vm.ToLocation;
@@ -361,11 +388,13 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
+        if (CheckPermission("trips.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="Trip deleted.";
         return RedirectToAction(nameof(Index));
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadDocument(int tripId, IFormFile file, string documentType) {
+        if (CheckPermission("trips.attachdocument") is { } r) return r;
         if (file==null||file.Length==0){TempData["Error"]="No file.";return RedirectToAction(nameof(Details),new{id=tripId});}
         var dir=Path.Combine(_env.WebRootPath,"uploads","trips",tripId.ToString());
         Directory.CreateDirectory(dir);
@@ -398,10 +427,12 @@ public class AccountController : Controller
         ViewBag.TripFilter=tripId; ViewBag.CategoryFilter=category; return View(expenses);
     }
     public async Task<IActionResult> Create(int? tripId) {
+        if (CheckPermission("expenses.create") is { } r) return r;
         await PopE(); return View(new ExpenseViewModel{TripId=tripId??0,ExpenseDate=DateTime.Today});
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ExpenseViewModel vm) {
+        if (CheckPermission("expenses.create") is { } r) return r;
         if (!ModelState.IsValid){await PopE();return View(vm);}
         var e=new Expense{TripId=vm.TripId,Category=vm.Category,Amount=vm.Amount,ExpenseDate=vm.ExpenseDate,
             Description=vm.Description,VendorName=vm.VendorName,BillNumber=vm.BillNumber,TenantId=_current.TenantId??0};
@@ -415,6 +446,7 @@ public class AccountController : Controller
         return vm.TripId>0?RedirectToAction("Details","Trip",new{id=vm.TripId}):RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(int id) {
+        if (CheckPermission("expenses.edit") is { } r) return r;
         var e=await _svc.GetByIdAsync(id); if(e==null) return NotFound();
         await PopE();
         return View("Create",new ExpenseViewModel{Id=e.Id,TripId=e.TripId,Category=e.Category,Amount=e.Amount,
@@ -423,6 +455,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ExpenseViewModel vm) {
+        if (CheckPermission("expenses.edit") is { } r) return r;
         ModelState.Remove("Receipt");
         if (!ModelState.IsValid){await PopE();return View("Create",vm);}
         var e=await _svc.GetByIdAsync(id); if(e==null) return NotFound();
@@ -439,6 +472,7 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id) {
+        if (CheckPermission("expenses.delete") is { } r) return r;
         await _svc.DeleteAsync(id); TempData["Success"]="Expense deleted.";
         return RedirectToAction(nameof(Index));
     }

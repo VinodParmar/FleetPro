@@ -140,5 +140,35 @@
     });
 </script>
 @await RenderSectionAsync("Scripts", required: false)
+
+@if (TempData["AccessDenied"] != null)
+{
+    <!-- Access Denied Modal -->
+    <div class="modal fade" id="accessDeniedModal" tabindex="-1" role="dialog" aria-labelledby="accessDeniedModalLabel" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="accessDeniedModalLabel">
+                        <i class="fas fa-ban mr-2"></i>Access Denied
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-lock fa-3x text-danger mb-3 d-block"></i>
+                    <p class="mb-0">@TempData["AccessDenied"]</p>
+                    <small class="text-muted">Contact your administrator if you need access.</small>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () { $('#accessDeniedModal').modal('show'); });
+    </script>
+}
 </body>
 </html>
