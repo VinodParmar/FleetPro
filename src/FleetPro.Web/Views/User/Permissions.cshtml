@@ -68,7 +68,7 @@
 </div></div>
 
 <section class="content"><div class="container-fluid">
-<form asp-action="Permissions" asp-route-id="@Model.UserId" method="post">
+<form asp-action="Permissions" asp-route-eid="@Ids.Protect(Model.UserId)" method="post">
     @Html.AntiForgeryToken()
 
     <!-- Legend + Global actions -->

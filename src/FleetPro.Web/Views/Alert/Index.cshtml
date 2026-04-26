@@ -48,7 +48,7 @@
                             {
                                 <tr class="@(!a.IsRead ? "" : "text-muted")">
                                     <td>
-                                        <form asp-action="MarkRead" asp-route-id="@a.Id" method="post" class="d-inline">
+                                        <form asp-action="MarkRead" asp-route-eid="@Ids.Protect(a.Id)" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-xs btn-outline-secondary" title="Mark Read"><i class="fas fa-check"></i></button>
                                         </form>
@@ -96,7 +96,7 @@
                             {
                                 <tr class="@(!a.IsRead ? "" : "text-muted")">
                                     <td>
-                                        <form asp-action="MarkRead" asp-route-id="@a.Id" method="post" class="d-inline">
+                                        <form asp-action="MarkRead" asp-route-eid="@Ids.Protect(a.Id)" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-xs btn-outline-secondary" title="Mark Read"><i class="fas fa-check"></i></button>
                                         </form>

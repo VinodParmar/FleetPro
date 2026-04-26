@@ -17,7 +17,7 @@
 </div></div>
 
 <section class="content"><div class="container-fluid">
-<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post">
+<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-eid="@Ids.Protect(Model.Id)" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 

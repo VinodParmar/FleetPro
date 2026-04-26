@@ -109,8 +109,8 @@
                                 {
                                     <tr>
                                         <td class="action-btn">
-                                            <a asp-controller="Trip" asp-action="Details" asp-route-id="@t.Id" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
-                                            <a asp-controller="Trip" asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                            <a asp-controller="Trip" asp-action="Details" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
+                                            <a asp-controller="Trip" asp-action="Edit" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                         </td>
                                         <td><strong>@t.TripNumber</strong></td>
                                         <td>@t.FromLocation → @t.ToLocation</td>

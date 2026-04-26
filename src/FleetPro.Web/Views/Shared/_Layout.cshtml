@@ -75,6 +75,13 @@
                     </form>
                 </div>
             </li>
+
+            <!-- ⚙ Theme Settings Toggle -->
+            <li class="nav-item">
+                <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button" title="Theme Settings">
+                    <i class="fas fa-sliders-h"></i>
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -122,15 +129,238 @@
     </div>
 
     <footer class="main-footer text-sm">
-        <strong>© @DateTime.Now.Year FleetPro</strong> — Multi-Company Fleet Management
-        <div class="float-right d-none d-sm-inline-block"><b>v2.5.0</b> · ASP.NET Core 10 MVC</div>
+        <strong>© @DateTime.Now.Year FleetPro</strong> — Development and Designed by Vinod Parmar
+        <div class="float-right d-none d-sm-inline-block"><b>v2.5.0</b></div>
     </footer>
+
+    <!-- ── CONTROL SIDEBAR (Theme Settings) ── must be INSIDE .wrapper, AFTER footer ── -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <div class="p-3 control-sidebar-content" style="overflow-y:auto;height:100%;">
+            <h5 class="mb-3"><i class="fas fa-sliders-h mr-2"></i>Theme Settings</h5>
+            <hr class="mb-3">
+
+            <div class="mb-3 d-flex align-items-center justify-content-between">
+                <span style="font-size:13px;"><i class="fas fa-moon mr-2 text-info"></i>Dark Mode</span>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="darkModeSwitch">
+                    <label class="custom-control-label" for="darkModeSwitch"></label>
+                </div>
+            </div>
+            <hr>
+
+            <p class="text-muted mb-2" style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Navbar Colour</p>
+            <div class="d-flex flex-wrap mb-3" style="gap:6px;" id="navbarPicker">
+                <span class="theme-swatch active" data-add="navbar-white navbar-light"    style="background:#fff;border:2px solid #ccc;" title="White"></span>
+                <span class="theme-swatch" data-add="navbar-dark"                         style="background:#343a40;" title="Dark"></span>
+                <span class="theme-swatch" data-add="navbar-primary navbar-dark"          style="background:#007bff;" title="Primary"></span>
+                <span class="theme-swatch" data-add="navbar-success navbar-dark"          style="background:#28a745;" title="Success"></span>
+                <span class="theme-swatch" data-add="navbar-danger navbar-dark"           style="background:#dc3545;" title="Danger"></span>
+                <span class="theme-swatch" data-add="navbar-warning navbar-light"         style="background:#ffc107;" title="Warning"></span>
+                <span class="theme-swatch" data-add="navbar-info navbar-dark"             style="background:#17a2b8;" title="Info"></span>
+                <span class="theme-swatch" data-add="navbar-dark" data-navbar-bg="#1a2980" style="background:#1a2980;" title="Navy"></span>
+            </div>
+            <hr>
+
+            <p class="text-muted mb-2" style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Sidebar Skin</p>
+            <div class="d-flex flex-wrap mb-3" style="gap:6px;" id="sidebarPicker">
+                <span class="theme-swatch active" data-skin="sidebar-dark-primary"  style="background:#1e2a4a;" title="Navy"></span>
+                <span class="theme-swatch" data-skin="sidebar-dark-dark"            style="background:#343a40;" title="Dark"></span>
+                <span class="theme-swatch" data-skin="sidebar-dark-success"         style="background:#28a745;" title="Green"></span>
+                <span class="theme-swatch" data-skin="sidebar-dark-danger"          style="background:#dc3545;" title="Red"></span>
+                <span class="theme-swatch" data-skin="sidebar-dark-warning"         style="background:#ffc107;" title="Yellow"></span>
+                <span class="theme-swatch" data-skin="sidebar-dark-info"            style="background:#17a2b8;" title="Teal"></span>
+                <span class="theme-swatch" data-skin="sidebar-light-primary"        style="background:#f4f6f9;border:1px solid #dee2e6;" title="Light"></span>
+            </div>
+            <hr>
+
+            <p class="text-muted mb-2" style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Accent Colour</p>
+            <div class="d-flex flex-wrap mb-3" style="gap:6px;" id="accentPicker">
+                <span class="theme-swatch active" data-accent="accent-primary" style="background:#007bff;" title="Blue"></span>
+                <span class="theme-swatch" data-accent="accent-success"        style="background:#28a745;" title="Green"></span>
+                <span class="theme-swatch" data-accent="accent-danger"         style="background:#dc3545;" title="Red"></span>
+                <span class="theme-swatch" data-accent="accent-warning"        style="background:#ffc107;" title="Yellow"></span>
+                <span class="theme-swatch" data-accent="accent-info"           style="background:#17a2b8;" title="Teal"></span>
+                <span class="theme-swatch" data-accent="accent-navy"           style="background:#1a2980;" title="Navy"></span>
+                <span class="theme-swatch" data-accent="accent-purple"         style="background:#7b2ff7;" title="Purple"></span>
+                <span class="theme-swatch" data-accent="accent-orange"         style="background:#fd7e14;" title="Orange"></span>
+            </div>
+            <hr>
+
+            <p class="text-muted mb-2" style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;">Layout</p>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span style="font-size:13px;"><i class="fas fa-thumbtack mr-2 text-info"></i>Fixed Header</span>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="fixedHeaderSwitch" checked>
+                    <label class="custom-control-label" for="fixedHeaderSwitch"></label>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span style="font-size:13px;"><i class="fas fa-columns mr-2 text-info"></i>Fixed Sidebar</span>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="fixedSidebarSwitch" checked>
+                    <label class="custom-control-label" for="fixedSidebarSwitch"></label>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span style="font-size:13px;"><i class="fas fa-shoe-prints mr-2 text-info"></i>Fixed Footer</span>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="fixedFooterSwitch">
+                    <label class="custom-control-label" for="fixedFooterSwitch"></label>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span style="font-size:13px;"><i class="fas fa-compress-alt mr-2 text-info"></i>Compact Sidebar</span>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="sidebarCollapsedSwitch">
+                    <label class="custom-control-label" for="sidebarCollapsedSwitch"></label>
+                </div>
+            </div>
+            <hr>
+            <button id="resetThemeBtn" class="btn btn-outline-secondary btn-sm btn-block">
+                <i class="fas fa-undo mr-1"></i>Reset to Default
+            </button>
+        </div>
+    </aside>
+    <div class="control-sidebar-bg"></div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+    .theme-swatch {
+        width:24px;height:24px;border-radius:50%;cursor:pointer;
+        border:2px solid transparent;transition:transform .15s,border-color .15s;
+        display:inline-block;
+    }
+    .theme-swatch:hover  { transform:scale(1.2); }
+    .theme-swatch.active { border-color:#fff!important;box-shadow:0 0 0 2px #007bff; }
+    .control-sidebar-content { font-size:13px; }
+    .control-sidebar { width:260px; }
+    /* Custom accent classes */
+    .accent-navy    .brand-link,
+    .accent-navy    .btn-primary  { background-color:#1a2980!important; border-color:#1a2980!important; }
+    .accent-purple  .btn-primary  { background-color:#7b2ff7!important; border-color:#7b2ff7!important; }
+    .accent-orange  .btn-primary  { background-color:#fd7e14!important; border-color:#fd7e14!important; }
+</style>
+<script>
+(function () {
+    var STORE_KEY = 'fleetpro_theme';
+    var SIDEBAR_SKINS = ['sidebar-dark-primary','sidebar-dark-dark','sidebar-dark-success',
+                         'sidebar-dark-danger','sidebar-dark-warning','sidebar-dark-info','sidebar-light-primary'];
+    var ACCENT_CLASSES = ['accent-primary','accent-success','accent-danger','accent-warning',
+                          'accent-info','accent-navy','accent-purple','accent-orange'];
+    var NAVBAR_CLASSES = ['navbar-white','navbar-light','navbar-dark','navbar-primary',
+                          'navbar-secondary','navbar-success','navbar-danger','navbar-warning','navbar-info'];
+
+    var defaults = {
+        dark: false,
+        navbar: 'navbar-white navbar-light',
+        sidebar: 'sidebar-dark-primary',
+        accent: 'accent-primary',
+        fixedHeader: true,
+        fixedSidebar: true,
+        fixedFooter: false,
+        collapsed: false
+    };
+
+    function load() {
+        try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(STORE_KEY) || '{}')); }
+        catch(e) { return Object.assign({}, defaults); }
+    }
+    function save(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+
+    function applyState(s) {
+        var $body = $('body');
+        // Dark mode
+        $body.toggleClass('dark-mode', !!s.dark);
+        $('#darkModeSwitch').prop('checked', !!s.dark);
+
+        // Navbar
+        var $navbar = $('.main-header.navbar');
+        $navbar.removeClass(NAVBAR_CLASSES.join(' '));
+        s.navbar.split(' ').forEach(function(c){ if(c) $navbar.addClass(c); });
+
+        // Sidebar skin
+        var $sidebar = $('.main-sidebar');
+        $sidebar.removeClass(SIDEBAR_SKINS.join(' '));
+        $sidebar.addClass(s.sidebar);
+
+        // Accent
+        $body.removeClass(ACCENT_CLASSES.join(' ')).addClass(s.accent);
+
+        // Layout
+        $body.toggleClass('layout-navbar-fixed', !!s.fixedHeader);
+        $body.toggleClass('layout-fixed',        !!s.fixedSidebar);
+        $body.toggleClass('layout-footer-fixed', !!s.fixedFooter);
+        $body.toggleClass('sidebar-collapse',    !!s.collapsed);
+        $('#fixedHeaderSwitch').prop('checked',    !!s.fixedHeader);
+        $('#fixedSidebarSwitch').prop('checked',   !!s.fixedSidebar);
+        $('#fixedFooterSwitch').prop('checked',    !!s.fixedFooter);
+        $('#sidebarCollapsedSwitch').prop('checked', !!s.collapsed);
+
+        // Mark active swatches
+        markActive('#navbarPicker',  'data-add',    s.navbar);
+        markActive('#sidebarPicker', 'data-skin',   s.sidebar);
+        markActive('#accentPicker',  'data-accent',  s.accent);
+    }
+
+    function markActive(container, attr, value) {
+        $(container + ' .theme-swatch').each(function(){
+            $(this).toggleClass('active', $(this).attr(attr) === value ||
+                (value && value.indexOf($(this).attr(attr)) !== -1));
+        });
+    }
+
+    // Apply saved state immediately on load
+    var state = load();
+    applyState(state);
+
+    $(function () {
+        // Dark mode toggle
+        $('#darkModeSwitch').on('change', function () {
+            state.dark = this.checked; save(state); applyState(state);
+        });
+
+        // Navbar swatches
+        $('#navbarPicker').on('click', '.theme-swatch', function () {
+            state.navbar = $(this).data('add'); save(state); applyState(state);
+        });
+
+        // Sidebar skin swatches
+        $('#sidebarPicker').on('click', '.theme-swatch', function () {
+            state.sidebar = $(this).data('skin'); save(state); applyState(state);
+        });
+
+        // Accent colour swatches
+        $('#accentPicker').on('click', '.theme-swatch', function () {
+            state.accent = $(this).data('accent'); save(state); applyState(state);
+        });
+
+        // Layout switches
+        $('#fixedHeaderSwitch').on('change', function () {
+            state.fixedHeader = this.checked; save(state); applyState(state);
+        });
+        $('#fixedSidebarSwitch').on('change', function () {
+            state.fixedSidebar = this.checked; save(state); applyState(state);
+        });
+        $('#fixedFooterSwitch').on('change', function () {
+            state.fixedFooter = this.checked; save(state); applyState(state);
+        });
+        $('#sidebarCollapsedSwitch').on('change', function () {
+            state.collapsed = this.checked; save(state); applyState(state);
+        });
+
+        // Reset
+        $('#resetThemeBtn').on('click', function () {
+            state = Object.assign({}, defaults);
+            save(state); applyState(state);
+        });
+    });
+})();
+</script>
 <script>
     // Auto-dismiss alerts after 4s
     setTimeout(() => { $('.alert-dismissible').alert('close'); }, 4000);

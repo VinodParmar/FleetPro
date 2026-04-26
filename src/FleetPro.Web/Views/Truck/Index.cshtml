@@ -61,8 +61,8 @@
                     {
                         <tr>
                             <td class="action-btn">
-                                <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
-                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline">
+                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form asp-action="Delete" asp-route-eid="@Ids.Protect(t.Id)" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete truck {0}?", t.NumberPlate]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>

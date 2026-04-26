@@ -1,9 +1,29 @@
 using System.Security.Claims;
 using FleetPro.Data;
 using FleetPro.Models.Entities;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 namespace FleetPro.Services;
+
+// ═══════════════════════════════════════════════════
+//  ID PROTECTOR  (Singleton — wraps DataProtection)
+// ═══════════════════════════════════════════════════
+public interface IIdProtector
+{
+    string Protect(int id);
+    int    Unprotect(string token);
+}
+
+public class IdProtector : IIdProtector
+{
+    private readonly IDataProtector _dp;
+    public IdProtector(IDataProtectionProvider provider)
+        => _dp = provider.CreateProtector("FleetPro.RouteIds.v1");
+
+    public string Protect(int id)     => _dp.Protect(id.ToString());
+    public int    Unprotect(string t) => int.Parse(_dp.Unprotect(t));
+}
 
 // ═══════════════════════════════════════════════════
 //  CURRENT TENANT SERVICE  (Scoped)

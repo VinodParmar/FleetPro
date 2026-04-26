@@ -89,8 +89,8 @@
                     {
                         <tr>
                             <td class="action-btn">
-                                <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
-                                <form asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline">
+                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(e.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form asp-action="Delete" asp-route-eid="@Ids.Protect(e.Id)" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete this expense?"]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
@@ -108,7 +108,7 @@
                                 }
                                 <span class="badge badge-@badgeColor">@e.Category</span>
                             </td>
-                            <td><a asp-controller="Trip" asp-action="Details" asp-route-id="@e.TripId" class="font-weight-bold">@e.Trip?.TripNumber</a></td>
+                            <td><a asp-controller="Trip" asp-action="Details" asp-route-eid="@Ids.Protect(e.TripId)" class="font-weight-bold">@e.Trip?.TripNumber</a></td>
                             <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N2")</td>
                             <td>@e.ExpenseDate.ToString("dd MMM yyyy")</td>
                             <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="@e.Description">@e.Description</td>

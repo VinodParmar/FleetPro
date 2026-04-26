@@ -37,12 +37,12 @@
                     {
                         <tr>
                             <td class="action-btn">
-                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                 @if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
                                 {
-                                    <a asp-action="Permissions" asp-route-id="@u.Id" class="btn btn-xs btn-info" title="Permissions"><i class="fas fa-key"></i></a>
+                                    <a asp-action="Permissions" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-info" title="Permissions"><i class="fas fa-key"></i></a>
                                 }
-                                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
+                                <form asp-action="Delete" asp-route-eid="@Ids.Protect(u.Id)" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete user {0}?", u.FullName]" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>

@@ -6,19 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FleetPro.Controllers;
 
-/// <summary>
-/// Base controller — injects unread alert count into ViewBag for the sidebar badge.
-/// All tenant-aware controllers inherit from this.
-/// </summary>
 public abstract class BaseController : Controller
 {
     protected readonly AppDbContext _db;
     protected readonly ICurrentTenantService _current;
+    protected readonly IIdProtector _ids;
 
     protected BaseController(AppDbContext db, ICurrentTenantService current)
     {
         _db = db;
         _current = current;
+        // Resolved lazily via HttpContext so we don't need to change every constructor signature
+        _ids = null!;
+    }
+
+    // Encrypt an int ID for use in route/query parameters
+    protected string EId(int id) => (_ids ?? HttpContext.RequestServices.GetRequiredService<IIdProtector>()).Protect(id);
+
+    // Decrypt an encrypted token back to int — returns 0 on failure
+    protected int DId(string token)
+    {
+        try { return HttpContext.RequestServices.GetRequiredService<IIdProtector>().Unprotect(token); }
+        catch { return 0; }
     }
 
     // Called before every action — sets language from cookie

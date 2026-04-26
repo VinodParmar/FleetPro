@@ -19,7 +19,7 @@
 <section class="content"><div class="container-fluid">
 <div class="row justify-content-center">
 <div class="col-md-7">
-<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-eid="@Ids.Protect(Model.Id)" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
     <div class="card">

@@ -74,7 +74,7 @@
         </div>
     }
 
-    <form asp-action="Permissions" asp-route-id="@Model.RoleId" method="post">
+    <form asp-action="Permissions" asp-route-eid="@Ids.Protect(Model.RoleId)" method="post">
         @Html.AntiForgeryToken()
 
         <!-- Toolbar -->

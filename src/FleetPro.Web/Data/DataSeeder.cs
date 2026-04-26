@@ -10,9 +10,16 @@ public static class DataSeeder
     {
         await db.Database.MigrateAsync();
         await SeedPermissionsAsync(db);
-        await SeedRolesAsync(db);
+        await SeedRolePermissionsAsync(db);
         await SeedSuperAdminAsync(db);
         await SeedSampleTenantAsync(db);
+    }
+
+    // Public so it can be called on-demand from RoleController
+    public static async Task SeedRolePermissionsAsync(AppDbContext db)
+    {
+        await SeedPermissionsAsync(db);  // ensure permissions exist first
+        await SeedRolesAsync(db);
     }
 
     private static async Task SeedPermissionsAsync(AppDbContext db)
@@ -82,6 +89,22 @@ public static class DataSeeder
         var existing = existingRpList
             .Select(rp => (rp.RoleId, rp.PermissionId))
             .ToHashSet();
+
+        // Also clean up any existing duplicates in DB
+        var duplicates = await db.RolePermissions
+            .GroupBy(rp => new { rp.RoleId, rp.PermissionId })
+            .Where(g => g.Count() > 1)
+            .ToListAsync();
+        foreach (var grp in duplicates)
+        {
+            var toRemove = grp.Skip(1).ToList();
+            db.RolePermissions.RemoveRange(
+                await db.RolePermissions
+                    .Where(rp => rp.RoleId == grp.Key.RoleId && rp.PermissionId == grp.Key.PermissionId)
+                    .OrderBy(rp => rp.Id).Skip(1).ToListAsync()
+            );
+        }
+        if (duplicates.Any()) await db.SaveChangesAsync();
 
         var toAdd = new List<RolePermission>();
 
