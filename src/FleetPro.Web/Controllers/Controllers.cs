@@ -568,10 +568,10 @@ public class AccountController : Controller
     public ExpenseController(IExpenseService svc, AppDbContext db, ICurrentTenantService c, IWebHostEnvironment env)
         : base(db,c) { _svc=svc; _env=env; }
 
-    public async Task<IActionResult> Index(int? tripId, ExpenseCategory? category) {
-        var expenses=await _svc.GetAllAsync(tripId,category);
-        ViewBag.TripFilter=tripId; ViewBag.CategoryFilter=category;
-        await PopE(); // Load trips dropdown for modal
+    public async Task<IActionResult> Index(int? tripId, int? categoryId) {
+        var expenses=await _svc.GetAllAsync(tripId,categoryId);
+        ViewBag.TripFilter=tripId; ViewBag.CategoryFilter=categoryId;
+        await PopE(); // Load trips and categories dropdown for modal
         return View(expenses);
     }
     public async Task<IActionResult> Create(int? tripId) {
@@ -586,7 +586,7 @@ public class AccountController : Controller
             TempData["Error"]="Please fill all required fields.";
             return RedirectToAction(nameof(Index));
         }
-        var e=new Expense{TripId=vm.TripId,Category=vm.Category,Amount=vm.Amount,ExpenseDate=vm.ExpenseDate,
+        var e=new Expense{TripId=vm.TripId,CategoryId=vm.CategoryId,Amount=vm.Amount,ExpenseDate=vm.ExpenseDate,
             Description=vm.Description,VendorName=vm.VendorName,BillNumber=vm.BillNumber,TenantId=_current.TenantId??0};
         if (vm.Receipt is{Length:>0}){
             var dir=Path.Combine(_env.WebRootPath,"uploads","receipts"); Directory.CreateDirectory(dir);
@@ -602,7 +602,7 @@ public class AccountController : Controller
         var id=DId(eid); if(id==0) return NotFound();
         var e=await _svc.GetByIdAsync(id); if(e==null) return NotFound();
         await PopE();
-        return View("Create",new ExpenseViewModel{Id=e.Id,TripId=e.TripId,Category=e.Category,Amount=e.Amount,
+        return View("Create",new ExpenseViewModel{Id=e.Id,TripId=e.TripId,CategoryId=e.CategoryId,Amount=e.Amount,
             ExpenseDate=e.ExpenseDate,Description=e.Description,VendorName=e.VendorName,BillNumber=e.BillNumber,
             ExistingReceiptPath=e.ReceiptPath});
     }
@@ -613,7 +613,7 @@ public class AccountController : Controller
         ModelState.Remove("Receipt");
         if (!ModelState.IsValid){await PopE();return View("Create",vm);}
         var e=await _svc.GetByIdAsync(id); if(e==null) return NotFound();
-        e.Category=vm.Category;e.Amount=vm.Amount;e.ExpenseDate=vm.ExpenseDate;
+        e.CategoryId=vm.CategoryId;e.Amount=vm.Amount;e.ExpenseDate=vm.ExpenseDate;
         e.Description=vm.Description;e.VendorName=vm.VendorName;e.BillNumber=vm.BillNumber;
         if (vm.Receipt is{Length:>0}){
             var dir=Path.Combine(_env.WebRootPath,"uploads","receipts"); Directory.CreateDirectory(dir);
@@ -636,6 +636,64 @@ public class AccountController : Controller
         ViewBag.Trips=new SelectList(await _db.Trips.Where(t=>!t.IsDeleted&&(_current.IsSuperAdmin||t.TenantId==tId))
             .Select(t=>new{t.Id,Label=t.TripNumber+" — "+t.FromLocation+" → "+t.ToLocation})
             .OrderByDescending(t=>t.Id).ToListAsync(),"Id","Label");
+        // Load categories from database
+        ViewBag.Categories=await _db.ExpenseCategories.Where(c=>c.IsActive)
+            .OrderBy(c=>c.SortOrder).ThenBy(c=>c.Name).ToListAsync();
+    }
+}
+
+// EXPENSE CATEGORY (Master - Global, SuperAdmin only)
+[Authorize(Roles="SuperAdmin")] public class ExpenseCategoryController : BaseController {
+    private readonly IExpenseCategoryService _svc;
+    public ExpenseCategoryController(IExpenseCategoryService svc, AppDbContext db, ICurrentTenantService c) : base(db,c) => _svc=svc;
+
+    public async Task<IActionResult> Index() => View(await _svc.GetAllAsync());
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> SeedDefaults() {
+        await DataSeeder.SeedExpenseCategoriesAsync(_db);
+        TempData["Success"]="Default categories seeded.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(string name, string? icon, string? color, int sortOrder) {
+        if (string.IsNullOrWhiteSpace(name)) {
+            TempData["Error"]="Name is required.";
+            return RedirectToAction(nameof(Index));
+        }
+        await _svc.CreateAsync(new ExpenseCategoryMaster{
+            Name=name.Trim(), Icon=icon?.Trim(), Color=color?.Trim(), SortOrder=sortOrder
+        });
+        TempData["Success"]=$"Category '{name}' created.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(string eid, string name, string? icon, string? color, int sortOrder, bool isActive) {
+        var id=DId(eid); if(id==0) return NotFound();
+        var c=await _svc.GetByIdAsync(id); if(c==null) return NotFound();
+        if (string.IsNullOrWhiteSpace(name)) {
+            TempData["Error"]="Name is required.";
+            return RedirectToAction(nameof(Index));
+        }
+        c.Name=name.Trim(); c.Icon=icon?.Trim(); c.Color=color?.Trim(); 
+        c.SortOrder=sortOrder; c.IsActive=isActive;
+        await _svc.UpdateAsync(c);
+        TempData["Success"]=$"Category '{name}' updated.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string eid) {
+        var id=DId(eid); if(id==0) return NotFound();
+        if (await _svc.HasExpensesAsync(id)) {
+            TempData["Error"]="Cannot delete - category has expenses. Deactivate instead.";
+            return RedirectToAction(nameof(Index));
+        }
+        await _svc.DeleteAsync(id);
+        TempData["Success"]="Category deleted.";
+        return RedirectToAction(nameof(Index));
     }
 }
 

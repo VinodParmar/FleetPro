@@ -4,6 +4,7 @@ using FleetPro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FleetPro.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260427063047_MakeExpenseCategoryGlobal")]
+    partial class MakeExpenseCategoryGlobal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,7 +279,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal?>("MonthlySalary")
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PanNumber")
                         .HasMaxLength(30)
@@ -727,7 +730,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("CargoWeightTons")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ClientName")
                         .HasMaxLength(200)
@@ -740,7 +743,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("DistanceKm")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
@@ -903,7 +906,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("LoadCapacityTons")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Make")
                         .HasMaxLength(50)

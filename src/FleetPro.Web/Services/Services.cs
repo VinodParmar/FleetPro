@@ -38,7 +38,9 @@ public class MenuService : IMenuService
             .Select(c => c.Value)
             .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
-        bool Can(string? key) => isSuperAdmin || (key != null && permClaims.Contains(key));
+        // Fix: If key is null (no permission required), allow access
+        // If key is set, check if user has the permission
+        bool Can(string? key) => isSuperAdmin || key == null || permClaims.Contains(key);
 
         bool IsVisible(MenuItem m)
         {
@@ -672,7 +674,7 @@ public class TripService : ITripService
 // ═══════════════════════════════════════════════════
 public interface IExpenseService
 {
-    Task<List<Expense>> GetAllAsync(int? tripId = null, ExpenseCategory? category = null);
+    Task<List<Expense>> GetAllAsync(int? tripId = null, int? categoryId = null);
     Task<Expense?> GetByIdAsync(int id);
     Task<Expense> CreateAsync(Expense expense);
     Task UpdateAsync(Expense expense);
@@ -689,14 +691,14 @@ public class ExpenseService : IExpenseService
 
     private IQueryable<Expense> Query() =>
         _current.IsSuperAdmin
-            ? _db.Expenses.Include(e => e.Trip)
-            : _db.Expenses.Include(e => e.Trip).Where(e => e.TenantId == _current.TenantId);
+            ? _db.Expenses.Include(e => e.Trip).Include(e => e.CategoryMaster)
+            : _db.Expenses.Include(e => e.Trip).Include(e => e.CategoryMaster).Where(e => e.TenantId == _current.TenantId);
 
-    public async Task<List<Expense>> GetAllAsync(int? tripId = null, ExpenseCategory? category = null)
+    public async Task<List<Expense>> GetAllAsync(int? tripId = null, int? categoryId = null)
     {
         var q = Query();
         if (tripId.HasValue) q = q.Where(e => e.TripId == tripId);
-        if (category.HasValue) q = q.Where(e => e.Category == category);
+        if (categoryId.HasValue) q = q.Where(e => e.CategoryId == categoryId);
         return await q.OrderByDescending(e => e.ExpenseDate).ToListAsync();
     }
 
@@ -736,6 +738,56 @@ public class ExpenseService : IExpenseService
         var e = await _db.Expenses.FindAsync(id);
         if (e != null) { e.IsDeleted = true; await _db.SaveChangesAsync(); }
     }
+}
+
+// ═══════════════════════════════════════════════════
+//  EXPENSE CATEGORY SERVICE
+// ═══════════════════════════════════════════════════
+public interface IExpenseCategoryService
+{
+    Task<List<ExpenseCategoryMaster>> GetAllAsync();
+    Task<ExpenseCategoryMaster?> GetByIdAsync(int id);
+    Task<ExpenseCategoryMaster> CreateAsync(ExpenseCategoryMaster category);
+    Task UpdateAsync(ExpenseCategoryMaster category);
+    Task DeleteAsync(int id);
+    Task<bool> HasExpensesAsync(int id);
+}
+
+public class ExpenseCategoryService : IExpenseCategoryService
+{
+    private readonly AppDbContext _db;
+
+    public ExpenseCategoryService(AppDbContext db, ICurrentTenantService _)
+    { _db = db; }
+
+    public async Task<List<ExpenseCategoryMaster>> GetAllAsync() =>
+        await _db.ExpenseCategories.OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToListAsync();
+
+    public async Task<ExpenseCategoryMaster?> GetByIdAsync(int id) =>
+        await _db.ExpenseCategories.FirstOrDefaultAsync(c => c.Id == id);
+
+    public async Task<ExpenseCategoryMaster> CreateAsync(ExpenseCategoryMaster category)
+    {
+        _db.ExpenseCategories.Add(category);
+        await _db.SaveChangesAsync();
+        return category;
+    }
+
+    public async Task UpdateAsync(ExpenseCategoryMaster category)
+    {
+        category.UpdatedAt = DateTime.UtcNow;
+        _db.ExpenseCategories.Update(category);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var c = await _db.ExpenseCategories.FindAsync(id);
+        if (c != null) { c.IsDeleted = true; await _db.SaveChangesAsync(); }
+    }
+
+    public async Task<bool> HasExpensesAsync(int id) =>
+        await _db.Expenses.AnyAsync(e => e.CategoryId == id && !e.IsDeleted);
 }
 
 // ═══════════════════════════════════════════════════

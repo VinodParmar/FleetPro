@@ -13,6 +13,7 @@ public static class DataSeeder
         await SeedPermissionsAsync(db);
         await SeedRolePermissionsAsync(db);
         await SeedSuperAdminAsync(db);
+        await SeedExpenseCategoriesAsync(db);  // Global categories
         await SeedSampleTenantAsync(db);
         await SeedMenuItemsAsync(db);
     }
@@ -384,10 +385,33 @@ public static class DataSeeder
             // Expenses
             new MenuItem { Title = "Expense List", Icon = "far fa-circle", Controller = "Expense",Action = "Index",  ParentId = expenses.Id,  SortOrder = 1, IsActive = true },
             new MenuItem { Title = "Add Expense",  Icon = "far fa-circle", Controller = "Expense",Action = "Create", ParentId = expenses.Id,  SortOrder = 2, RequiredPermission = "expenses.create", IsActive = true },
+            new MenuItem { Title = "Expense Categories", Icon = "far fa-circle", Controller = "ExpenseCategory", Action = "Index", ParentId = expenses.Id, SortOrder = 3, SuperAdminOnly = true, IsActive = true },
             // Reports
             new MenuItem { Title = "P&L Report",          Icon = "far fa-circle", Controller = "Report", Action = "Index",            ParentId = reports.Id, SortOrder = 1, IsActive = true },
             new MenuItem { Title = "Export Trips (Excel)", Icon = "far fa-circle", Controller = "Report", Action = "ExportTripsExcel", ParentId = reports.Id, SortOrder = 2, RequiredPermission = "reports.export", IsActive = true }
         );
         await db.SaveChangesAsync();
+    }
+
+    // Seed default expense categories (Global - shared by all tenants)
+    public static async Task SeedExpenseCategoriesAsync(AppDbContext db)
+    {
+        // Force insert if table is empty (check raw count, not with EF query filter)
+        var count = await db.Database.ExecuteSqlRawAsync(@"
+            IF NOT EXISTS (SELECT 1 FROM ExpenseCategories WHERE IsDeleted = 0)
+            BEGIN
+                INSERT INTO ExpenseCategories (Name, Icon, Color, SortOrder, IsActive, CreatedAt, IsDeleted)
+                VALUES 
+                    ('Fuel', 'fas fa-gas-pump', 'primary', 1, 1, GETUTCDATE(), 0),
+                    ('Maintenance', 'fas fa-wrench', 'danger', 2, 1, GETUTCDATE(), 0),
+                    ('Toll', 'fas fa-road', 'warning', 3, 1, GETUTCDATE(), 0),
+                    ('Service', 'fas fa-tools', 'info', 4, 1, GETUTCDATE(), 0),
+                    ('Meal', 'fas fa-utensils', 'success', 5, 1, GETUTCDATE(), 0),
+                    ('Wages', 'fas fa-money-bill-wave', 'purple', 6, 1, GETUTCDATE(), 0),
+                    ('Tyre', 'fas fa-circle', 'dark', 7, 1, GETUTCDATE(), 0),
+                    ('Permit', 'fas fa-file-invoice', 'secondary', 8, 1, GETUTCDATE(), 0),
+                    ('Other', 'fas fa-tag', 'secondary', 99, 1, GETUTCDATE(), 0)
+            END
+        ");
     }
 }

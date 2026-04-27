@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Trip> Trips => Set<Trip>();
     public DbSet<TripDocument> TripDocuments => Set<TripDocument>();
     public DbSet<Expense> Expenses => Set<Expense>();
+    public DbSet<ExpenseCategoryMaster> ExpenseCategories => Set<ExpenseCategoryMaster>();
     public DbSet<Alert> Alerts => Set<Alert>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
@@ -111,6 +112,7 @@ public class AppDbContext : DbContext
             e.ToTable("Trucks");
             e.HasKey(x => x.Id);
             e.HasIndex(x => new { x.TenantId, x.NumberPlate }).IsUnique();
+            e.Property(x => x.LoadCapacityTons).HasColumnType("decimal(10,2)");
             e.HasOne(x => x.Tenant).WithMany(t => t.Trucks)
              .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
             e.HasQueryFilter(x => !x.IsDeleted);
@@ -121,6 +123,7 @@ public class AppDbContext : DbContext
         {
             e.ToTable("Drivers");
             e.HasKey(x => x.Id);
+            e.Property(x => x.MonthlySalary).HasColumnType("decimal(12,2)");
             e.HasOne(x => x.Tenant).WithMany(t => t.Drivers)
              .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
             e.HasQueryFilter(x => !x.IsDeleted);
@@ -133,6 +136,8 @@ public class AppDbContext : DbContext
             e.HasKey(x => x.Id);
             e.HasIndex(x => new { x.TenantId, x.TripNumber }).IsUnique();
             e.Property(x => x.Revenue).HasColumnType("decimal(18,2)");
+            e.Property(x => x.DistanceKm).HasColumnType("decimal(10,2)");
+            e.Property(x => x.CargoWeightTons).HasColumnType("decimal(10,2)");
             e.HasOne(x => x.Tenant).WithMany(t => t.Trips)
              .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Truck).WithMany(t => t.Trips)
@@ -160,6 +165,17 @@ public class AppDbContext : DbContext
             e.Property(x => x.Amount).HasColumnType("decimal(18,2)");
             e.HasOne(x => x.Trip).WithMany(t => t.Expenses)
              .HasForeignKey(x => x.TripId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.CategoryMaster).WithMany(c => c.Expenses)
+             .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.SetNull);
+            e.HasQueryFilter(x => !x.IsDeleted);
+        });
+
+        // ── ExpenseCategoryMaster (Global - shared by all tenants) ──
+        mb.Entity<ExpenseCategoryMaster>(e =>
+        {
+            e.ToTable("ExpenseCategories");
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Name).IsUnique();
             e.HasQueryFilter(x => !x.IsDeleted);
         });
 

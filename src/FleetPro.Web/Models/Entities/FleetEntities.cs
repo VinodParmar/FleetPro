@@ -184,6 +184,11 @@ public class Expense : TenantBaseEntity
     public int TripId { get; set; }
     public Trip Trip { get; set; } = null!;
 
+    // Dynamic category from master table
+    public int? CategoryId { get; set; }
+    public ExpenseCategoryMaster? CategoryMaster { get; set; }
+
+    // Keep enum for backward compatibility (will be phased out)
     public ExpenseCategory Category { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
@@ -202,8 +207,34 @@ public class Expense : TenantBaseEntity
 
     public string? ReceiptPath { get; set; }    // uploaded bill image/PDF
     public bool HasReceipt { get; set; } = false;
+
+    // Helper to get category name (from master or enum)
+    public string CategoryName => CategoryMaster?.Name ?? Category.ToString();
 }
 
+// ═══════════════════════════════════════════════════
+//  EXPENSE CATEGORY (Master - Global for all tenants)
+// ═══════════════════════════════════════════════════
+public class ExpenseCategoryMaster : BaseEntity
+{
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string? Icon { get; set; }  // e.g., "fas fa-gas-pump"
+
+    [MaxLength(20)]
+    public string? Color { get; set; } // e.g., "primary", "danger"
+
+    public int SortOrder { get; set; } = 0;
+
+    public bool IsActive { get; set; } = true;
+
+    // Navigation
+    public ICollection<Expense> Expenses { get; set; } = [];
+}
+
+// Keep enum for backward compatibility during migration
 public enum ExpenseCategory
 {
     Fuel = 1,

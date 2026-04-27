@@ -28,27 +28,24 @@
     <!-- Summary by Category -->
     <div class="row mb-3">
         @{
-            var grouped = Model.GroupBy(e => e.Category).ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+            var categories = ViewBag.Categories as List<FleetPro.Models.Entities.ExpenseCategoryMaster> ?? new();
+            var grouped = Model.Where(e => e.CategoryId != null)
+                .GroupBy(e => e.CategoryId)
+                .ToDictionary(g => g.Key!.Value, g => g.Sum(e => e.Amount));
             var totalExp = Model.Sum(e => e.Amount);
-            var catColors = new Dictionary<FleetPro.Models.Entities.ExpenseCategory, string> {
-                {FleetPro.Models.Entities.ExpenseCategory.Fuel,"bg-primary"},
-                {FleetPro.Models.Entities.ExpenseCategory.Maintenance,"bg-danger"},
-                {FleetPro.Models.Entities.ExpenseCategory.Toll,"bg-warning"},
-                {FleetPro.Models.Entities.ExpenseCategory.Wages,"bg-purple"},
-                {FleetPro.Models.Entities.ExpenseCategory.Meal,"bg-success"},
-                {FleetPro.Models.Entities.ExpenseCategory.Service,"bg-info"},
-            };
         }
         <div class="col-md-2">
             <div class="info-box mb-0"><span class="info-box-icon bg-dark"><i class="fas fa-receipt"></i></span>
             <div class="info-box-content"><span class="info-box-text">@L["Total"]</span><span class="info-box-number">₹@totalExp.ToString("N0")</span></div></div>
         </div>
-        @foreach (var cat in grouped.OrderByDescending(g => g.Value).Take(5))
+        @foreach (var catId in grouped.Keys.OrderByDescending(k => grouped[k]).Take(5))
         {
-            var color = catColors.GetValueOrDefault(cat.Key, "bg-secondary");
+            var cat = categories.FirstOrDefault(c => c.Id == catId);
+            var color = cat?.Color ?? "secondary";
+            var icon = cat?.Icon ?? "fas fa-tag";
             <div class="col-md-2">
-                <div class="info-box mb-0"><span class="info-box-icon @color"><i class="fas fa-tag"></i></span>
-                <div class="info-box-content"><span class="info-box-text">@cat.Key</span><span class="info-box-number">₹@cat.Value.ToString("N0")</span></div></div>
+                <div class="info-box mb-0"><span class="info-box-icon bg-@color"><i class="@icon"></i></span>
+                <div class="info-box-content"><span class="info-box-text">@(cat?.Name ?? "Unknown")</span><span class="info-box-number">₹@grouped[catId].ToString("N0")</span></div></div>
             </div>
         }
     </div>
@@ -68,10 +65,12 @@
                 {
                     <input type="hidden" name="tripId" value="@tripFilterId">
                 }
-                <select name="category" class="form-control form-control-sm" onchange="this.form.submit()">
+                <select name="categoryId" class="form-control form-control-sm" onchange="this.form.submit()">
                     <option value="">@L["All Categories"]</option>
-                    @foreach (var c in Enum.GetValues<FleetPro.Models.Entities.ExpenseCategory>())
-                    { <option value="@c" selected="@(Context.Request.Query["category"] == c.ToString() ? "selected" : null)">@c</option> }
+                    @foreach (var c in categories)
+                    {
+                        <option value="@c.Id" selected="@(Context.Request.Query["categoryId"] == c.Id.ToString() ? "selected" : null)">@c.Name</option>
+                    }
                 </select>
                 <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / description…"]">
                 <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
@@ -99,16 +98,12 @@
                             </td>
                             <td>
                                 @{
-                                    var badgeColor = e.Category switch {
-                                        FleetPro.Models.Entities.ExpenseCategory.Fuel => "primary",
-                                        FleetPro.Models.Entities.ExpenseCategory.Maintenance => "danger",
-                                        FleetPro.Models.Entities.ExpenseCategory.Toll => "warning",
-                                        FleetPro.Models.Entities.ExpenseCategory.Wages => "dark",
-                                        FleetPro.Models.Entities.ExpenseCategory.Meal => "success",
-                                        _ => "secondary"
-                                    };
+                                    var expCat = e.CategoryId.HasValue ? categories.FirstOrDefault(c => c.Id == e.CategoryId) : null;
+                                    var badgeColor = expCat?.Color ?? "secondary";
+                                    var catIcon = expCat?.Icon ?? "fas fa-tag";
+                                    var catName = expCat?.Name ?? e.CategoryName;
                                 }
-                                <span class="badge badge-@badgeColor">@e.Category</span>
+                                <span class="badge badge-@badgeColor"><i class="@catIcon mr-1"></i>@catName</span>
                             </td>
                             <td><a asp-controller="Trip" asp-action="Details" asp-route-eid="@Ids.Protect(e.TripId)" class="font-weight-bold">@e.Trip?.TripNumber</a></td>
                             <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N2")</td>
@@ -169,14 +164,15 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-bold">@L["Category *"]</label>
-                                                <select name="Category" id="modalCategory" class="form-control" required>
-                                                    @foreach (var c in Enum.GetValues<FleetPro.Models.Entities.ExpenseCategory>())
-                                                    {
-                                                        <option value="@c">@c</option>
-                                                    }
-                                                </select>
-                                            </div>
+                                                    <label class="font-weight-bold">@L["Category *"]</label>
+                                                    <select name="CategoryId" id="modalCategory" class="form-control" required>
+                                                        <option value="">@L["— Select Category —"]</option>
+                                                        @foreach (var c in categories)
+                                                        {
+                                                            <option value="@c.Id">@c.Name</option>
+                                                        }
+                                                    </select>
+                                                </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 form-group">

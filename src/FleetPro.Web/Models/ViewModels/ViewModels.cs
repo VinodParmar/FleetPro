@@ -305,8 +305,9 @@ public class ExpenseViewModel
     [Required]
     public int TripId { get; set; }
 
+    // Use CategoryId from database instead of enum
     [Required]
-    public ExpenseCategory Category { get; set; }
+    public int? CategoryId { get; set; }
 
     [Required, Range(0.01, double.MaxValue)]
     public decimal Amount { get; set; }

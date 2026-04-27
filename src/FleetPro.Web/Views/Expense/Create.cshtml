@@ -34,8 +34,18 @@
             </div>
             <div class="row">
                 <div class="col-md-6 form-group">
-                    <label asp-for="Category" class="font-weight-bold">@L["Category *"]</label>
-                    <select asp-for="Category" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.ExpenseCategory>()" class="form-control"></select>
+                    <label asp-for="CategoryId" class="font-weight-bold">@L["Category *"]</label>
+                    <select asp-for="CategoryId" class="form-control">
+                        <option value="">@L["— Select Category —"]</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var c in (List<FleetPro.Models.Entities.ExpenseCategoryMaster>)ViewBag.Categories)
+                            {
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6 form-group">
                     <label asp-for="Amount" class="font-weight-bold">@L["Amount (₹) *"]</label>

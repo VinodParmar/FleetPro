@@ -1,0 +1,207 @@
+@* ══════════════════ Views/ExpenseCategory/Index.cshtml ══════════════════ *@
+@model List<FleetPro.Models.Entities.ExpenseCategoryMaster>
+@{
+    ViewData["Title"] = L["Expense Categories"].Value;
+    var colors = new[] { "primary", "secondary", "success", "danger", "warning", "info", "dark", "purple", "orange", "teal" };
+    var icons = new[] { 
+        "fas fa-gas-pump", "fas fa-wrench", "fas fa-road", "fas fa-utensils", "fas fa-money-bill-wave",
+        "fas fa-car", "fas fa-parking", "fas fa-file-invoice", "fas fa-tools", "fas fa-tag"
+    };
+}
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0">
+                <i class="fas fa-tags mr-2"></i>@L["Expense Categories"]
+                @if (!Model.Any())
+                {
+                    <form asp-action="SeedDefaults" method="post" class="d-inline ml-2">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-magic mr-1"></i>@L["Seed Defaults"]
+                        </button>
+                    </form>
+                }
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@L["Expense Categories"]</li>
+            </ol>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+<div class="row">
+    <!-- Left: Add New Category -->
+    <div class="col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-plus mr-2"></i>@L["Add Category"]</h3>
+            </div>
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="font-weight-bold">@L["Category Name *"]</label>
+                        <input type="text" name="name" class="form-control" required placeholder="e.g., Fuel, Toll, Maintenance">
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Icon"]</label>
+                        <select name="icon" class="form-control">
+                            <option value="">— @L["Select Icon"] —</option>
+                            @foreach (var icon in icons)
+                            {
+                                <option value="@icon"><i class="@icon"></i> @icon.Replace("fas fa-", "")</option>
+                            }
+                        </select>
+                        <small class="text-muted">@L["Font Awesome icon class"]</small>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Color"]</label>
+                        <select name="color" class="form-control">
+                            @foreach (var color in colors)
+                            {
+                                <option value="@color">@color</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Sort Order"]</label>
+                        <input type="number" name="sortOrder" class="form-control" value="0" min="0">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-plus mr-1"></i>@L["Add Category"]
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>@L["Quick Tips"]</h3>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0 pl-3">
+                    <li>@L["Categories are shared by all tenants"]</li>
+                    <li>@L["Deactivate categories to hide from selection"]</li>
+                    <li>@L["Categories with expenses cannot be deleted"]</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Category List with inline edit -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-list mr-2"></i>@L["Category List"] (@Model.Count)</h3>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>@L["Name"]</th>
+                            <th style="width:80px;">@L["Icon"]</th>
+                            <th style="width:80px;">@L["Color"]</th>
+                            <th style="width:60px;">@L["Order"]</th>
+                            <th style="width:80px;">@L["Status"]</th>
+                            <th style="width:140px;">@L["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cat in Model)
+                        {
+                            var eid = Ids.Protect(cat.Id);
+                            <tr id="row-@cat.Id" class="@(!cat.IsActive ? "table-secondary" : "")">
+                                <!-- View Mode -->
+                                <td class="view-mode">@cat.SortOrder</td>
+                                <td class="view-mode">
+                                    @if (!string.IsNullOrEmpty(cat.Icon))
+                                    {
+                                        <i class="@cat.Icon mr-2 text-@(cat.Color ?? "primary")"></i>
+                                    }
+                                    <strong>@cat.Name</strong>
+                                </td>
+                                <td class="view-mode"><code class="small">@cat.Icon</code></td>
+                                <td class="view-mode"><span class="badge badge-@(cat.Color ?? "secondary")">@cat.Color</span></td>
+                                <td class="view-mode">@cat.SortOrder</td>
+                                <td class="view-mode">
+                                    @if (cat.IsActive)
+                                    { <span class="badge badge-success">@L["Active"]</span> }
+                                    else
+                                    { <span class="badge badge-secondary">@L["Inactive"]</span> }
+                                </td>
+                                <td class="view-mode">
+                                    <button type="button" class="btn btn-xs btn-warning" onclick="toggleEdit(@cat.Id)" title="@L["Edit"]">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form asp-action="Delete" asp-route-eid="@eid" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete category {0}?", cat.Name]" title="@L["Delete"]">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <!-- Edit Mode (hidden by default) -->
+                                <td class="edit-mode d-none" colspan="7">
+                                    <form asp-action="Update" asp-route-eid="@eid" method="post" class="form-inline" style="gap:8px;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="text" name="name" value="@cat.Name" class="form-control form-control-sm" style="width:150px;" required>
+                                        <select name="icon" class="form-control form-control-sm" style="width:130px;">
+                                            <option value="">—</option>
+                                            @foreach (var icon in icons)
+                                            {
+                                                <option value="@icon" selected="@(cat.Icon == icon ? "selected" : null)">@icon.Replace("fas fa-", "")</option>
+                                            }
+                                        </select>
+                                        <select name="color" class="form-control form-control-sm" style="width:100px;">
+                                            @foreach (var color in colors)
+                                            {
+                                                <option value="@color" selected="@(cat.Color == color ? "selected" : null)">@color</option>
+                                            }
+                                        </select>
+                                        <input type="number" name="sortOrder" value="@cat.SortOrder" class="form-control form-control-sm" style="width:60px;" min="0">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="active-@cat.Id" name="isActive" value="true" @(cat.IsActive ? "checked" : "")>
+                                            <label class="custom-control-label" for="active-@cat.Id">@L["Active"]</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit(@cat.Id)"><i class="fas fa-times"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr><td colspan="7" class="text-center text-muted py-4">@L["No categories found. Add your first category!"]</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div></section>
+
+@section Scripts {
+<script>
+    function toggleEdit(id) {
+        var row = document.getElementById('row-' + id);
+        var viewCells = row.querySelectorAll('.view-mode');
+        var editCell = row.querySelector('.edit-mode');
+        
+        viewCells.forEach(function(cell) {
+            cell.classList.toggle('d-none');
+        });
+        editCell.classList.toggle('d-none');
+    }
+</script>
+}

@@ -99,4 +99,23 @@
   <data name="Expired" xml:space="preserve"><value>Expired</value></data>
   <data name="Maintenance" xml:space="preserve"><value>Maintenance</value></data>
   <data name="Never" xml:space="preserve"><value>Never</value></data>
+
+  <!-- EXPENSE CATEGORIES -->
+  <data name="Expense Categories" xml:space="preserve"><value>Expense Categories</value></data>
+  <data name="Add Category" xml:space="preserve"><value>Add Category</value></data>
+  <data name="Category Name *" xml:space="preserve"><value>Category Name *</value></data>
+  <data name="Icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="Select Icon" xml:space="preserve"><value>Select Icon</value></data>
+  <data name="Font Awesome icon class" xml:space="preserve"><value>Font Awesome icon class</value></data>
+  <data name="Color" xml:space="preserve"><value>Color</value></data>
+  <data name="Sort Order" xml:space="preserve"><value>Sort Order</value></data>
+  <data name="Order" xml:space="preserve"><value>Order</value></data>
+  <data name="Category List" xml:space="preserve"><value>Category List</value></data>
+  <data name="Categories are shared by all tenants" xml:space="preserve"><value>Categories are shared by all tenants</value></data>
+  <data name="Deactivate categories to hide from selection" xml:space="preserve"><value>Deactivate categories to hide from selection</value></data>
+  <data name="Categories with expenses cannot be deleted" xml:space="preserve"><value>Categories with expenses cannot be deleted</value></data>
+  <data name="No categories found. Add your first category!" xml:space="preserve"><value>No categories found. Add your first category!</value></data>
+  <data name="Delete category {0}?" xml:space="preserve"><value>Delete category {0}?</value></data>
+  <data name="Seed Defaults" xml:space="preserve"><value>Seed Defaults</value></data>
+  <data name="— Select Category —" xml:space="preserve"><value>— Select Category —</value></data>
 </root>

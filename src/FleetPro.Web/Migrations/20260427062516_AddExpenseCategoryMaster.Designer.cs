@@ -4,6 +4,7 @@ using FleetPro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FleetPro.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260427062516_AddExpenseCategoryMaster")]
+    partial class AddExpenseCategoryMaster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,7 +279,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal?>("MonthlySalary")
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PanNumber")
                         .HasMaxLength(30)
@@ -414,6 +417,9 @@ namespace FleetPro.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -422,7 +428,7 @@ namespace FleetPro.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
                     b.ToTable("ExpenseCategories", (string)null);
@@ -727,7 +733,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("CargoWeightTons")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ClientName")
                         .HasMaxLength(200)
@@ -740,7 +746,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("DistanceKm")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
@@ -903,7 +909,7 @@ namespace FleetPro.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("LoadCapacityTons")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Make")
                         .HasMaxLength(50)
@@ -1089,6 +1095,17 @@ namespace FleetPro.Migrations
                     b.Navigation("Tenant");
 
                     b.Navigation("Trip");
+                });
+
+            modelBuilder.Entity("FleetPro.Models.Entities.ExpenseCategoryMaster", b =>
+                {
+                    b.HasOne("FleetPro.Models.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("FleetPro.Models.Entities.MenuItem", b =>

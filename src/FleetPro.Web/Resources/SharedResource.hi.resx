@@ -114,6 +114,25 @@
   <data name="Never" xml:space="preserve"><value>कभी नहीं</value></data>
   <data name="Unlimited" xml:space="preserve"><value>असीमित</value></data>
 
+  <!-- ── EXPENSE CATEGORIES ── -->
+  <data name="Expense Categories" xml:space="preserve"><value>व्यय श्रेणियां</value></data>
+  <data name="Add Category" xml:space="preserve"><value>श्रेणी जोड़ें</value></data>
+  <data name="Category Name *" xml:space="preserve"><value>श्रेणी का नाम *</value></data>
+  <data name="Icon" xml:space="preserve"><value>आइकन</value></data>
+  <data name="Select Icon" xml:space="preserve"><value>आइकन चुनें</value></data>
+  <data name="Font Awesome icon class" xml:space="preserve"><value>Font Awesome आइकन क्लास</value></data>
+  <data name="Color" xml:space="preserve"><value>रंग</value></data>
+  <data name="Sort Order" xml:space="preserve"><value>क्रम</value></data>
+  <data name="Order" xml:space="preserve"><value>क्रम</value></data>
+  <data name="Category List" xml:space="preserve"><value>श्रेणी सूची</value></data>
+  <data name="Categories are shared by all tenants" xml:space="preserve"><value>श्रेणियां सभी कंपनियों के लिए साझा हैं</value></data>
+  <data name="Deactivate categories to hide from selection" xml:space="preserve"><value>चयन से छिपाने के लिए श्रेणियां निष्क्रिय करें</value></data>
+  <data name="Categories with expenses cannot be deleted" xml:space="preserve"><value>व्यय वाली श्रेणियां हटाई नहीं जा सकतीं</value></data>
+  <data name="No categories found. Add your first category!" xml:space="preserve"><value>कोई श्रेणी नहीं मिली। अपनी पहली श्रेणी जोड़ें!</value></data>
+  <data name="Delete category {0}?" xml:space="preserve"><value>श्रेणी {0} हटाएं?</value></data>
+  <data name="Seed Defaults" xml:space="preserve"><value>डिफ़ॉल्ट बनाएं</value></data>
+  <data name="— Select Category —" xml:space="preserve"><value>— श्रेणी चुनें —</value></data>
+
   <!-- ── DASHBOARD ── -->
   <data name="Total Tenants" xml:space="preserve"><value>कुल किरायेदार</value></data>
   <data name="Active Trucks" xml:space="preserve"><value>सक्रिय ट्रक</value></data>
