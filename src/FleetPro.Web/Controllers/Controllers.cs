@@ -92,8 +92,9 @@ namespace FleetPro.Controllers;
 public class AccountController : Controller
 {
     private readonly IAuthService _auth;
+    private readonly IAuditService _audit;
     private readonly ILogger<AccountController> _log;
-    public AccountController(IAuthService auth, ILogger<AccountController> log) { _auth=auth; _log=log; }
+    public AccountController(IAuthService auth, IAuditService audit, ILogger<AccountController> log) { _auth=auth; _audit=audit; _log=log; }
 
     public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
     {
@@ -122,6 +123,7 @@ public class AccountController : Controller
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity), props);
         _log.LogInformation("User {Email} logged in",model.Email);
+        await _audit.LogAsync("Auth", "Login", $"User {model.Email} logged in");
         return LocalRedirect(model.ReturnUrl ?? "/Dashboard");
     }
     [HttpPost, ValidateAntiForgeryToken, Authorize]
@@ -132,6 +134,8 @@ public class AccountController : Controller
     }
     [HttpPost, ValidateAntiForgeryToken, Authorize]
     public async Task<IActionResult> Logout() {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        await _audit.LogAsync("Auth", "Logout", $"User {email} logged out");
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Login");
     }
@@ -712,6 +716,21 @@ public class AccountController : Controller
     public async Task<IActionResult> Refresh() {
         await _svc.RefreshAlertsAsync(); TempData["Success"]="Alerts refreshed.";
         return RedirectToAction(nameof(Index));
+    }
+}
+
+// AUDIT LOG
+[Authorize(Roles="SuperAdmin,TenantAdmin")] public class AuditController : BaseController {
+    private readonly IAuditService _svc;
+    public AuditController(IAuditService svc, AppDbContext db, ICurrentTenantService c) : base(db,c) => _svc=svc;
+
+    public async Task<IActionResult> Index(string? module, DateTime? from, DateTime? to) {
+        var logs = await _svc.GetLogsAsync(null, module, from, to, 200);
+        ViewBag.ModuleFilter = module;
+        ViewBag.FromDate = from;
+        ViewBag.ToDate = to;
+        ViewBag.Modules = await _db.AuditLogs.Select(a => a.Module).Distinct().OrderBy(m => m).ToListAsync();
+        return View(logs);
     }
 }
 

@@ -359,8 +359,9 @@ public static class DataSeeder
         var expenses  = new MenuItem { Title = "Expenses",   Icon = "fas fa-receipt",        SortOrder = 80, RequiredPermission = "expenses.view", IsActive = true };
         var reports   = new MenuItem { Title = "Reports",    Icon = "fas fa-chart-line",     SortOrder = 90, RequiredPermission = "reports.view",  IsActive = true };
         var alerts    = new MenuItem { Title = "Alerts",     Icon = "fas fa-bell",           Controller = "Alert",  Action = "Index", SortOrder = 100, RequiredPermission = "alerts.view", IsActive = true };
+        var auditLogs = new MenuItem { Title = "Audit Logs", Icon = "fas fa-history",        Controller = "Audit",  Action = "Index", SortOrder = 110, TenantAdminOrAbove = true, IsActive = true };
 
-        db.MenuItems.AddRange(dashboard, companies, roles, users, trucks, drivers, trips, expenses, reports, alerts);
+        db.MenuItems.AddRange(dashboard, companies, roles, users, trucks, drivers, trips, expenses, reports, alerts, auditLogs);
         await db.SaveChangesAsync();
 
         // Children

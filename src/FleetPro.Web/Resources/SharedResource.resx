@@ -118,4 +118,29 @@
   <data name="Delete category {0}?" xml:space="preserve"><value>Delete category {0}?</value></data>
   <data name="Seed Defaults" xml:space="preserve"><value>Seed Defaults</value></data>
   <data name="— Select Category —" xml:space="preserve"><value>— Select Category —</value></data>
+
+  <!-- AUDIT LOGS -->
+  <data name="Audit Logs" xml:space="preserve"><value>Audit Logs</value></data>
+  <data name="All Modules" xml:space="preserve"><value>All Modules</value></data>
+  <data name="Module" xml:space="preserve"><value>Module</value></data>
+  <data name="Date/Time" xml:space="preserve"><value>Date/Time</value></data>
+  <data name="IP Address" xml:space="preserve"><value>IP Address</value></data>
+  <data name="User" xml:space="preserve"><value>User</value></data>
+  <data name="Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Old Values" xml:space="preserve"><value>Old Values</value></data>
+  <data name="New Values" xml:space="preserve"><value>New Values</value></data>
+  <data name="User ID" xml:space="preserve"><value>User ID</value></data>
+  <data name="IP" xml:space="preserve"><value>IP</value></data>
+  <data name="No audit logs found." xml:space="preserve"><value>No audit logs found.</value></data>
+  <data name="Showing" xml:space="preserve"><value>Showing</value></data>
+  <data name="records" xml:space="preserve"><value>records</value></data>
+  <data name="View Details" xml:space="preserve"><value>View Details</value></data>
+  <data name="Date" xml:space="preserve"><value>Date</value></data>
+
+  <!-- DASHBOARD CHARTS -->
+  <data name="Revenue vs Expenses" xml:space="preserve"><value>Revenue vs Expenses</value></data>
+  <data name="Trip Status" xml:space="preserve"><value>Trip Status</value></data>
+  <data name="Expenses by Category" xml:space="preserve"><value>Expenses by Category</value></data>
+  <data name="Truck Status" xml:space="preserve"><value>Truck Status</value></data>
+  <data name="Profit" xml:space="preserve"><value>Profit</value></data>
 </root>

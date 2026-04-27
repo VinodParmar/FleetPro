@@ -909,6 +909,14 @@ public class DashboardStats
     public int TotalAlerts { get; set; }
     public List<Trip> RecentTrips { get; set; } = [];
     public List<Alert> UrgentAlerts { get; set; } = [];
+
+    // Chart Data
+    public List<string> ChartLabels { get; set; } = [];          // Last 6 months
+    public List<decimal> RevenueData { get; set; } = [];          // Revenue per month
+    public List<decimal> ExpenseData { get; set; } = [];          // Expenses per month
+    public Dictionary<string, int> TripStatusData { get; set; } = new();  // Trip status breakdown
+    public Dictionary<string, decimal> ExpenseCategoryData { get; set; } = new(); // Expense by category
+    public Dictionary<string, int> TruckStatusData { get; set; } = new(); // Truck status breakdown
 }
 
 public class DashboardService : IDashboardService
@@ -932,10 +940,47 @@ public class DashboardService : IDashboardService
                                  : _db.Trips.Include(t => t.Expenses).Include(t => t.Truck).Include(t => t.Driver)
                                      .Where(t => t.TenantId == tenantId);
         var alertQ = isSuperAdmin ? _db.Alerts : _db.Alerts.Where(a => a.TenantId == tenantId);
+        var expenseQ = isSuperAdmin ? _db.Expenses.Include(e => e.CategoryMaster) 
+                                    : _db.Expenses.Include(e => e.CategoryMaster).Where(e => e.TenantId == tenantId);
 
         var monthlyTrips = await tripQ.Where(t => t.StartDate >= monthStart).ToListAsync();
         var monthlyRevenue = monthlyTrips.Sum(t => t.Revenue);
         var monthlyExpenses = monthlyTrips.Sum(t => t.TotalExpenses);
+
+        // Chart data: Last 6 months
+        var chartLabels = new List<string>();
+        var revenueData = new List<decimal>();
+        var expenseData = new List<decimal>();
+
+        for (int i = 5; i >= 0; i--)
+        {
+            var date = now.AddMonths(-i);
+            var start = new DateTime(date.Year, date.Month, 1);
+            var end = start.AddMonths(1);
+
+            chartLabels.Add(start.ToString("MMM yyyy"));
+
+            var trips = await tripQ.Where(t => t.StartDate >= start && t.StartDate < end).ToListAsync();
+            revenueData.Add(trips.Sum(t => t.Revenue));
+            expenseData.Add(trips.Sum(t => t.TotalExpenses));
+        }
+
+        // Trip status breakdown
+        var allTrips = await tripQ.ToListAsync();
+        var tripStatusData = allTrips.GroupBy(t => t.Status.ToString())
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        // Truck status breakdown
+        var allTrucks = await truckQ.ToListAsync();
+        var truckStatusData = allTrucks.GroupBy(t => t.Status.ToString())
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        // Expense by category (last 6 months)
+        var sixMonthsAgo = now.AddMonths(-6);
+        var recentExpenses = await expenseQ.Where(e => e.ExpenseDate >= sixMonthsAgo).ToListAsync();
+        var expenseCategoryData = recentExpenses
+            .GroupBy(e => e.CategoryMaster?.Name ?? e.Category.ToString())
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
         return new DashboardStats
         {
@@ -951,7 +996,75 @@ public class DashboardService : IDashboardService
             TotalAlerts = await alertQ.CountAsync(a => !a.IsRead),
             RecentTrips = await tripQ.OrderByDescending(t => t.StartDate).Take(10).ToListAsync(),
             UrgentAlerts = await alertQ.Where(a => !a.IsRead)
-                .OrderBy(a => a.DaysRemaining).Take(5).ToListAsync()
+                .OrderBy(a => a.DaysRemaining).Take(5).ToListAsync(),
+            // Chart data
+            ChartLabels = chartLabels,
+            RevenueData = revenueData,
+            ExpenseData = expenseData,
+            TripStatusData = tripStatusData,
+            TruckStatusData = truckStatusData,
+            ExpenseCategoryData = expenseCategoryData
         };
+    }
+}
+
+// ═══════════════════════════════════════════════════
+//  AUDIT SERVICE
+// ═══════════════════════════════════════════════════
+public interface IAuditService
+{
+    Task LogAsync(string module, string action, string? description = null, object? oldValues = null, object? newValues = null);
+    Task<List<AuditLog>> GetLogsAsync(int? tenantId = null, string? module = null, DateTime? from = null, DateTime? to = null, int take = 100);
+}
+
+public class AuditService : IAuditService
+{
+    private readonly AppDbContext _db;
+    private readonly ICurrentTenantService _current;
+    private readonly IHttpContextAccessor _hca;
+
+    public AuditService(AppDbContext db, ICurrentTenantService current, IHttpContextAccessor hca)
+    {
+        _db = db;
+        _current = current;
+        _hca = hca;
+    }
+
+    public async Task LogAsync(string module, string action, string? description = null, object? oldValues = null, object? newValues = null)
+    {
+        var log = new AuditLog
+        {
+            TenantId = _current.TenantId,
+            UserId = _current.UserId > 0 ? _current.UserId : null,
+            Module = module,
+            Action = action,
+            Description = description,
+            IpAddress = _hca.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+            OldValues = oldValues != null ? System.Text.Json.JsonSerializer.Serialize(oldValues) : null,
+            NewValues = newValues != null ? System.Text.Json.JsonSerializer.Serialize(newValues) : null,
+            CreatedAt = DateTime.UtcNow
+        };
+        _db.AuditLogs.Add(log);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<List<AuditLog>> GetLogsAsync(int? tenantId = null, string? module = null, DateTime? from = null, DateTime? to = null, int take = 100)
+    {
+        var q = _db.AuditLogs.AsQueryable();
+
+        // Tenant filter (SuperAdmin can see all, others see only their tenant)
+        if (!_current.IsSuperAdmin && _current.TenantId.HasValue)
+            q = q.Where(a => a.TenantId == _current.TenantId);
+        else if (tenantId.HasValue)
+            q = q.Where(a => a.TenantId == tenantId);
+
+        if (!string.IsNullOrEmpty(module))
+            q = q.Where(a => a.Module == module);
+        if (from.HasValue)
+            q = q.Where(a => a.CreatedAt >= from.Value);
+        if (to.HasValue)
+            q = q.Where(a => a.CreatedAt <= to.Value.AddDays(1));
+
+        return await q.OrderByDescending(a => a.CreatedAt).Take(take).ToListAsync();
     }
 }

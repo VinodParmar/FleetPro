@@ -133,6 +133,31 @@
   <data name="Seed Defaults" xml:space="preserve"><value>डिफ़ॉल्ट बनाएं</value></data>
   <data name="— Select Category —" xml:space="preserve"><value>— श्रेणी चुनें —</value></data>
 
+  <!-- AUDIT LOGS -->
+  <data name="Audit Logs" xml:space="preserve"><value>ऑडिट लॉग</value></data>
+  <data name="All Modules" xml:space="preserve"><value>सभी मॉड्यूल</value></data>
+  <data name="Module" xml:space="preserve"><value>मॉड्यूल</value></data>
+  <data name="Date/Time" xml:space="preserve"><value>दिनांक/समय</value></data>
+  <data name="IP Address" xml:space="preserve"><value>IP पता</value></data>
+  <data name="User" xml:space="preserve"><value>उपयोगकर्ता</value></data>
+  <data name="Details" xml:space="preserve"><value>विवरण</value></data>
+  <data name="Old Values" xml:space="preserve"><value>पुराने मान</value></data>
+  <data name="New Values" xml:space="preserve"><value>नए मान</value></data>
+  <data name="User ID" xml:space="preserve"><value>उपयोगकर्ता ID</value></data>
+  <data name="IP" xml:space="preserve"><value>IP</value></data>
+  <data name="No audit logs found." xml:space="preserve"><value>कोई ऑडिट लॉग नहीं मिला।</value></data>
+  <data name="Showing" xml:space="preserve"><value>दिखा रहा है</value></data>
+  <data name="records" xml:space="preserve"><value>रिकॉर्ड</value></data>
+  <data name="View Details" xml:space="preserve"><value>विवरण देखें</value></data>
+  <data name="Date" xml:space="preserve"><value>दिनांक</value></data>
+
+  <!-- DASHBOARD CHARTS -->
+  <data name="Revenue vs Expenses" xml:space="preserve"><value>आय बनाम व्यय</value></data>
+  <data name="Trip Status" xml:space="preserve"><value>यात्रा स्थिति</value></data>
+  <data name="Expenses by Category" xml:space="preserve"><value>श्रेणी अनुसार व्यय</value></data>
+  <data name="Truck Status" xml:space="preserve"><value>ट्रक स्थिति</value></data>
+  <data name="Profit" xml:space="preserve"><value>लाभ</value></data>
+
   <!-- ── DASHBOARD ── -->
   <data name="Total Tenants" xml:space="preserve"><value>कुल किरायेदार</value></data>
   <data name="Active Trucks" xml:space="preserve"><value>सक्रिय ट्रक</value></data>

@@ -28,11 +28,20 @@ builder.Services.AddControllersWithViews(options =>
 })
 .AddViewLocalization();
 
-// EF Core
-builder.Services.AddDbContext<AppDbContext>(options =>
+// HttpContext accessor (needed before DbContext for audit interceptor)
+builder.Services.AddHttpContextAccessor();
+
+// Audit Interceptor
+builder.Services.AddScoped<AuditSaveChangesInterceptor>();
+
+// EF Core with Audit Interceptor
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        sql => sql.EnableRetryOnFailure(3)));
+        sql => sql.EnableRetryOnFailure(3));
+    options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+});
 
 // Cookie Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -50,9 +59,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
-// HttpContext accessor
-builder.Services.AddHttpContextAccessor();
-
 // Business Services
 builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -65,6 +71,7 @@ builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddSingleton<IIdProtector, IdProtector>();
 
