@@ -91,7 +91,6 @@
   <data name="Scheduled" xml:space="preserve"><value>निर्धारित</value></data>
   <data name="Cancelled" xml:space="preserve"><value>रद्द</value></data>
   <data name="Expired" xml:space="preserve"><value>समाप्त</value></data>
-  <data name="EXPIRED" xml:space="preserve"><value>समाप्त</value></data>
   <data name="Trial" xml:space="preserve"><value>परीक्षण</value></data>
   <data name="Suspended" xml:space="preserve"><value>निलंबित</value></data>
   <data name="Locked" xml:space="preserve"><value>बंद</value></data>
@@ -116,7 +115,6 @@
   <data name="Critical" xml:space="preserve"><value>गंभीर</value></data>
 
   <!-- ── DRIVER ── -->
-  <data name="Drivers" xml:space="preserve"><value>चालक</value></data>
   <data name="Driver" xml:space="preserve"><value>चालक</value></data>
   <data name="Edit Driver" xml:space="preserve"><value>चालक संपादित करें</value></data>
   <data name="Name / License #" xml:space="preserve"><value>नाम / लाइसेंस #</value></data>
@@ -140,7 +138,6 @@
   <data name="Delete driver {0}?" xml:space="preserve"><value>चालक {0} हटाएं?</value></data>
 
   <!-- ── TRUCK ── -->
-  <data name="Trucks" xml:space="preserve"><value>ट्रक</value></data>
   <data name="Truck" xml:space="preserve"><value>ट्रक</value></data>
   <data name="Edit Truck" xml:space="preserve"><value>ट्रक संपादित करें</value></data>
   <data name="Expiry Alerts" xml:space="preserve"><value>समाप्ति अलर्ट</value></data>
@@ -166,7 +163,6 @@
   <data name="Delete truck {0}?" xml:space="preserve"><value>ट्रक {0} हटाएं?</value></data>
 
   <!-- ── TRIP ── -->
-  <data name="Trips" xml:space="preserve"><value>यात्राएं</value></data>
   <data name="Trip" xml:space="preserve"><value>यात्रा</value></data>
   <data name="Edit Trip" xml:space="preserve"><value>यात्रा संपादित करें</value></data>
   <data name="Total Revenue" xml:space="preserve"><value>कुल आय</value></data>
@@ -174,8 +170,6 @@
   <data name="To" xml:space="preserve"><value>तक</value></data>
   <data name="Start" xml:space="preserve"><value>शुरू</value></data>
   <data name="End" xml:space="preserve"><value>समाप्त</value></data>
-  <data name="Expenses" xml:space="preserve"><value>व्यय</value></data>
-  <data name="Profit" xml:space="preserve"><value>लाभ</value></data>
   <data name="View expenses" xml:space="preserve"><value>व्यय देखें</value></data>
   <data name="No trips found." xml:space="preserve"><value>कोई यात्रा नहीं मिली।</value></data>
   <data name="Create first trip →" xml:space="preserve"><value>पहली यात्रा बनाएं →</value></data>
@@ -276,7 +270,6 @@
   <data name="{0} days" xml:space="preserve"><value>{0} दिन</value></data>
 
   <!-- ── USER ── -->
-  <data name="Users" xml:space="preserve"><value>उपयोगकर्ता</value></data>
   <data name="Last Login" xml:space="preserve"><value>अंतिम लॉगिन</value></data>
   <data name="Super Admin" xml:space="preserve"><value>सुपर व्यवस्थापक</value></data>
   <data name="Company Admin" xml:space="preserve"><value>कंपनी व्यवस्थापक</value></data>
@@ -320,7 +313,6 @@
   <data name="Save Permissions" xml:space="preserve"><value>अनुमतियां सहेजें</value></data>
 
   <!-- ── TENANT / COMPANY ── -->
-  <data name="Companies" xml:space="preserve"><value>कंपनियां</value></data>
   <data name="Edit Company" xml:space="preserve"><value>कंपनी संपादित करें</value></data>
   <data name="Subdomain" xml:space="preserve"><value>सबडोमेन</value></data>
   <data name="Contact" xml:space="preserve"><value>संपर्क</value></data>

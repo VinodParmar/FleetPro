@@ -81,7 +81,6 @@
   <data name="Scheduled" xml:space="preserve"><value>Scheduled</value></data>
   <data name="Cancelled" xml:space="preserve"><value>Cancelled</value></data>
   <data name="Expired" xml:space="preserve"><value>Expired</value></data>
-  <data name="EXPIRED" xml:space="preserve"><value>EXPIRED</value></data>
   <data name="Maintenance" xml:space="preserve"><value>Maintenance</value></data>
   <data name="Never" xml:space="preserve"><value>Never</value></data>
 </root>

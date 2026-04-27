@@ -36,7 +36,7 @@ public class MenuService : IMenuService
         var permClaims = user?.Claims
             .Where(c => c.Type == "permission")
             .Select(c => c.Value)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? new HashSet<string>();
+            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
         bool Can(string? key) => isSuperAdmin || (key != null && permClaims.Contains(key));
 
@@ -58,10 +58,9 @@ public class MenuService : IMenuService
         var result = new List<MenuItem>();
         foreach (var item in all.Where(m => m.ParentId == null && visibleIds.Contains(m.Id)))
         {
-            item.Children = all
+            item.Children = [.. all
                 .Where(c => c.ParentId == item.Id && visibleIds.Contains(c.Id))
-                .OrderBy(c => c.SortOrder)
-                .ToList();
+                .OrderBy(c => c.SortOrder)];
             result.Add(item);
         }
         return result;
@@ -103,13 +102,11 @@ public interface ICurrentTenantService
 public class CurrentTenantService : ICurrentTenantService
 {
     private readonly IHttpContextAccessor _hca;
-    private readonly AppDbContext _db;
     private List<string>? _cachedPermissions;
 
-    public CurrentTenantService(IHttpContextAccessor hca, AppDbContext db)
+    public CurrentTenantService(IHttpContextAccessor hca)
     {
         _hca = hca;
-        _db = db;
     }
 
     private ClaimsPrincipal? User => _hca.HttpContext?.User;
@@ -261,10 +258,9 @@ public interface ITenantService
 public class TenantService : ITenantService
 {
     private readonly AppDbContext _db;
-    private readonly ICurrentTenantService _current;
 
-    public TenantService(AppDbContext db, ICurrentTenantService current)
-    { _db = db; _current = current; }
+    public TenantService(AppDbContext db)
+    { _db = db; }
 
     public async Task<List<Tenant>> GetAllAsync() =>
         await _db.Tenants.OrderBy(t => t.CompanyName).ToListAsync();
@@ -364,7 +360,7 @@ public class UserService : IUserService
                         Id = up.Id,
                         UserId = up.UserId,
                         PermissionId = up.PermissionId,
-                        Permission = allPermissions.FirstOrDefault(p => p.Id == up.PermissionId),
+                        Permission = allPermissions.FirstOrDefault(p => p.Id == up.PermissionId)!,
                         IsGranted = up.IsGranted,
                         IsDeleted = up.IsDeleted,
                         CreatedAt = up.CreatedAt,
@@ -431,7 +427,7 @@ public class UserService : IUserService
             .Where(up => allPermissions.Any(p => p.Id == up.PermissionId))
             .Select(up => 
             {
-                var permission = allPermissions.FirstOrDefault(p => p.Id == up.PermissionId);
+                var permission = allPermissions.First(p => p.Id == up.PermissionId);
                 return new UserPermission
                 {
                     Id = up.Id,
@@ -769,10 +765,6 @@ public class AlertService : IAlertService
 
     public async Task RefreshAlertsAsync()
     {
-        var today = DateTime.Today;
-        var thresholdWarning = today.AddDays(30);
-        var thresholdInfo = today.AddDays(60);
-
         // Trucks
         var trucks = await _db.Trucks.Where(t => !t.IsDeleted).ToListAsync();
         foreach (var truck in trucks)
