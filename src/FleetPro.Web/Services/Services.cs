@@ -7,6 +7,68 @@ using Microsoft.EntityFrameworkCore;
 namespace FleetPro.Services;
 
 // ═══════════════════════════════════════════════════
+//  MENU SERVICE  (Scoped)
+// ═══════════════════════════════════════════════════
+public interface IMenuService
+{
+    Task<List<MenuItem>> GetMenuAsync();
+}
+
+public class MenuService : IMenuService
+{
+    private readonly AppDbContext _db;
+    private readonly ICurrentTenantService _current;
+    private readonly IHttpContextAccessor _hca;
+
+    public MenuService(AppDbContext db, ICurrentTenantService current, IHttpContextAccessor hca)
+    {
+        _db      = db;
+        _current = current;
+        _hca     = hca;
+    }
+
+    public async Task<List<MenuItem>> GetMenuAsync()
+    {
+        var isSuperAdmin   = _current.IsSuperAdmin;
+        var isTenantAdmin  = _current.UserRole == "TenantAdmin";
+
+        var user = _hca.HttpContext?.User;
+        var permClaims = user?.Claims
+            .Where(c => c.Type == "permission")
+            .Select(c => c.Value)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? new HashSet<string>();
+
+        bool Can(string? key) => isSuperAdmin || (key != null && permClaims.Contains(key));
+
+        bool IsVisible(MenuItem m)
+        {
+            if (m.SuperAdminOnly && !isSuperAdmin) return false;
+            if (m.TenantAdminOrAbove && !isSuperAdmin && !isTenantAdmin) return false;
+            if (!Can(m.RequiredPermission)) return false;
+            return true;
+        }
+
+        var all = await _db.MenuItems
+            .Where(m => m.IsActive && !m.IsDeleted)
+            .OrderBy(m => m.SortOrder)
+            .ToListAsync();
+
+        var visibleIds = all.Where(IsVisible).Select(m => m.Id).ToHashSet();
+
+        var result = new List<MenuItem>();
+        foreach (var item in all.Where(m => m.ParentId == null && visibleIds.Contains(m.Id)))
+        {
+            item.Children = all
+                .Where(c => c.ParentId == item.Id && visibleIds.Contains(c.Id))
+                .OrderBy(c => c.SortOrder)
+                .ToList();
+            result.Add(item);
+        }
+        return result;
+    }
+}
+
+// ═══════════════════════════════════════════════════
 //  ID PROTECTOR  (Singleton — wraps DataProtection)
 // ═══════════════════════════════════════════════════
 public interface IIdProtector

@@ -64,6 +64,7 @@ builder.Services.AddScoped<ITripService, TripService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddSingleton<IIdProtector, IdProtector>();
 
 // Response caching & compression

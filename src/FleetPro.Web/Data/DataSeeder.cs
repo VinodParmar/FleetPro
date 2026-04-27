@@ -9,10 +9,45 @@ public static class DataSeeder
     public static async Task SeedAsync(AppDbContext db)
     {
         await db.Database.MigrateAsync();
+        await EnsureMenuItemsTableAsync(db);
         await SeedPermissionsAsync(db);
         await SeedRolePermissionsAsync(db);
         await SeedSuperAdminAsync(db);
         await SeedSampleTenantAsync(db);
+        await SeedMenuItemsAsync(db);
+    }
+
+    /// <summary>
+    /// Ensures the MenuItems table exists (for DBs created before migrations).
+    /// </summary>
+    private static async Task EnsureMenuItemsTableAsync(AppDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync(@"
+            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MenuItems')
+            BEGIN
+                CREATE TABLE [MenuItems] (
+                    [Id] int NOT NULL IDENTITY,
+                    [Title] nvarchar(100) NOT NULL,
+                    [Icon] nvarchar(max) NULL,
+                    [Controller] nvarchar(max) NULL,
+                    [Action] nvarchar(max) NULL,
+                    [ParentId] int NULL,
+                    [SortOrder] int NOT NULL,
+                    [RequiredPermission] nvarchar(max) NULL,
+                    [SuperAdminOnly] bit NOT NULL DEFAULT 0,
+                    [TenantAdminOrAbove] bit NOT NULL DEFAULT 0,
+                    [IsActive] bit NOT NULL DEFAULT 1,
+                    [CreatedAt] datetime2 NOT NULL DEFAULT GETUTCDATE(),
+                    [UpdatedAt] datetime2 NULL,
+                    [IsDeleted] bit NOT NULL DEFAULT 0,
+                    [CreatedBy] int NULL,
+                    [UpdatedBy] int NULL,
+                    CONSTRAINT [PK_MenuItems] PRIMARY KEY ([Id]),
+                    CONSTRAINT [FK_MenuItems_MenuItems_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [MenuItems] ([Id]) ON DELETE NO ACTION
+                );
+                CREATE INDEX [IX_MenuItems_ParentId] ON [MenuItems] ([ParentId]);
+            END
+        ");
     }
 
     // Public so it can be called on-demand from RoleController
@@ -305,6 +340,54 @@ public static class DataSeeder
                 ExpiryDate=DateTime.Today.AddDays(15), DaysRemaining=15 }
         );
 
+        await db.SaveChangesAsync();
+    }
+
+    public static async Task SeedMenuItemsAsync(AppDbContext db)
+    {
+        if (await db.MenuItems.AnyAsync()) return;
+
+        // Top-level groups / leaf items
+        var dashboard = new MenuItem { Title = "Dashboard", Icon = "fas fa-tachometer-alt", Controller = "Dashboard", Action = "Index", SortOrder = 10, IsActive = true };
+        var companies = new MenuItem { Title = "Companies",  Icon = "fas fa-building",       SortOrder = 20, SuperAdminOnly = true,   IsActive = true };
+        var roles     = new MenuItem { Title = "Roles",      Icon = "fas fa-shield-alt",     SortOrder = 30, SuperAdminOnly = true,   IsActive = true };
+        var users     = new MenuItem { Title = "Users",      Icon = "fas fa-users",          SortOrder = 40, TenantAdminOrAbove = true, RequiredPermission = "users.view",    IsActive = true };
+        var trucks    = new MenuItem { Title = "Trucks",     Icon = "fas fa-truck",          SortOrder = 50, RequiredPermission = "trucks.view",   IsActive = true };
+        var drivers   = new MenuItem { Title = "Drivers",    Icon = "fas fa-user-tie",       SortOrder = 60, RequiredPermission = "drivers.view",  IsActive = true };
+        var trips     = new MenuItem { Title = "Trips",      Icon = "fas fa-route",          SortOrder = 70, RequiredPermission = "trips.view",    IsActive = true };
+        var expenses  = new MenuItem { Title = "Expenses",   Icon = "fas fa-receipt",        SortOrder = 80, RequiredPermission = "expenses.view", IsActive = true };
+        var reports   = new MenuItem { Title = "Reports",    Icon = "fas fa-chart-line",     SortOrder = 90, RequiredPermission = "reports.view",  IsActive = true };
+        var alerts    = new MenuItem { Title = "Alerts",     Icon = "fas fa-bell",           Controller = "Alert",  Action = "Index", SortOrder = 100, RequiredPermission = "alerts.view", IsActive = true };
+
+        db.MenuItems.AddRange(dashboard, companies, roles, users, trucks, drivers, trips, expenses, reports, alerts);
+        await db.SaveChangesAsync();
+
+        // Children
+        db.MenuItems.AddRange(
+            // Companies
+            new MenuItem { Title = "Company List", Icon = "far fa-circle", Controller = "Tenant", Action = "Index",  ParentId = companies.Id, SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Add Company",  Icon = "far fa-circle", Controller = "Tenant", Action = "Create", ParentId = companies.Id, SortOrder = 2, IsActive = true },
+            // Roles
+            new MenuItem { Title = "Role List",    Icon = "far fa-circle", Controller = "Role",   Action = "Index",  ParentId = roles.Id,     SortOrder = 1, IsActive = true },
+            // Users
+            new MenuItem { Title = "User List",    Icon = "far fa-circle", Controller = "User",   Action = "Index",  ParentId = users.Id,     SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Add User",     Icon = "far fa-circle", Controller = "User",   Action = "Create", ParentId = users.Id,     SortOrder = 2, RequiredPermission = "users.create",    IsActive = true },
+            // Trucks
+            new MenuItem { Title = "Truck List",   Icon = "far fa-circle", Controller = "Truck",  Action = "Index",  ParentId = trucks.Id,    SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Add Truck",    Icon = "far fa-circle", Controller = "Truck",  Action = "Create", ParentId = trucks.Id,    SortOrder = 2, RequiredPermission = "trucks.create",   IsActive = true },
+            // Drivers
+            new MenuItem { Title = "Driver List",  Icon = "far fa-circle", Controller = "Driver", Action = "Index",  ParentId = drivers.Id,   SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Add Driver",   Icon = "far fa-circle", Controller = "Driver", Action = "Create", ParentId = drivers.Id,   SortOrder = 2, RequiredPermission = "drivers.create",  IsActive = true },
+            // Trips
+            new MenuItem { Title = "Trip List",    Icon = "far fa-circle", Controller = "Trip",   Action = "Index",  ParentId = trips.Id,     SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "New Trip",     Icon = "far fa-circle", Controller = "Trip",   Action = "Create", ParentId = trips.Id,     SortOrder = 2, RequiredPermission = "trips.create",    IsActive = true },
+            // Expenses
+            new MenuItem { Title = "Expense List", Icon = "far fa-circle", Controller = "Expense",Action = "Index",  ParentId = expenses.Id,  SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Add Expense",  Icon = "far fa-circle", Controller = "Expense",Action = "Create", ParentId = expenses.Id,  SortOrder = 2, RequiredPermission = "expenses.create", IsActive = true },
+            // Reports
+            new MenuItem { Title = "P&L Report",          Icon = "far fa-circle", Controller = "Report", Action = "Index",            ParentId = reports.Id, SortOrder = 1, IsActive = true },
+            new MenuItem { Title = "Export Trips (Excel)", Icon = "far fa-circle", Controller = "Report", Action = "ExportTripsExcel", ParentId = reports.Id, SortOrder = 2, RequiredPermission = "reports.export", IsActive = true }
+        );
         await db.SaveChangesAsync();
     }
 }

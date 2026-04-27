@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<Expense> Expenses => Set<Expense>();
     public DbSet<Alert> Alerts => Set<Alert>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<MenuItem> MenuItems => Set<MenuItem>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -177,6 +178,17 @@ public class AppDbContext : DbContext
         {
             e.ToTable("AuditLogs");
             e.HasKey(x => x.Id);
+        });
+
+        // ── MenuItem ──────────────────────────────────────────
+        mb.Entity<MenuItem>(e =>
+        {
+            e.ToTable("MenuItems");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Title).IsRequired().HasMaxLength(100);
+            e.HasOne(x => x.Parent).WithMany(x => x.Children)
+             .HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
+            e.HasQueryFilter(x => !x.IsDeleted);
         });
     }
 

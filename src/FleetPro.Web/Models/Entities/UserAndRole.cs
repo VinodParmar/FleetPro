@@ -93,6 +93,23 @@ public class RolePermission : BaseEntity
 }
 
 // ─────────────────────────────────────────────────────────────
+public class MenuItem : BaseEntity
+{
+    public string Title { get; set; } = string.Empty;       // Also used as L10n key
+    public string? Icon { get; set; }                        // e.g. "fas fa-truck"
+    public string? Controller { get; set; }
+    public string? Action { get; set; }
+    public int? ParentId { get; set; }
+    public MenuItem? Parent { get; set; }
+    public ICollection<MenuItem> Children { get; set; } = new List<MenuItem>();
+    public int SortOrder { get; set; }
+    public string? RequiredPermission { get; set; }          // e.g. "trucks.view"
+    public bool SuperAdminOnly { get; set; }
+    public bool TenantAdminOrAbove { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+// ─────────────────────────────────────────────────────────────
 public class UserPermission : BaseEntity
 {
     public int UserId { get; set; }

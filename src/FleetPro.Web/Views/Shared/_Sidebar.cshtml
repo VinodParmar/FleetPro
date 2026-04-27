@@ -1,235 +1,51 @@
+@inject FleetPro.Services.IMenuService _menuService
 @{
-    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
-    bool IsSuperAdmin  = User.IsInRole("SuperAdmin");
-    bool IsTenantAdmin = User.IsInRole("TenantAdmin");
-
-    // Build permission set from claims (populated at login by BuildClaimsAsync)
-    var permClaims = User.Claims
-        .Where(c => c.Type == "permission")
-        .Select(c => c.Value)
-        .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-    bool Can(string key) => IsSuperAdmin || permClaims.Contains(key);
+    var ctrl  = ViewContext.RouteData.Values["controller"]?.ToString();
+    var menus = await _menuService.GetMenuAsync();
 }
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-        @* Dashboard — always visible to authenticated users *@
-        <li class="nav-item">
-            <a asp-controller="Dashboard" asp-action="Index"
-               class="nav-link @(ctrl == "Dashboard" ? "active" : "")">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>@L["Dashboard"]</p>
-            </a>
-        </li>
-
-        @* Companies — SuperAdmin only *@
-        @if (IsSuperAdmin)
+        @foreach (var item in menus)
         {
-            <li class="nav-item @(ctrl == "Tenant" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Tenant" ? "active" : "")">
-                    <i class="nav-icon fas fa-building"></i>
-                    <p>@L["Companies"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Tenant" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Company List"]</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a asp-controller="Tenant" asp-action="Create" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Add Company"]</p>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        }
+            var hasChildren = item.Children.Any();
+            var isActive    = ctrl == item.Controller || item.Children.Any(c => c.Controller == ctrl);
 
-        @* Roles — SuperAdmin only *@
-        @if (IsSuperAdmin)
-        {
-            <li class="nav-item @(ctrl == "Role" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Role" ? "active" : "")">
-                    <i class="nav-icon fas fa-shield-alt"></i>
-                    <p>@L["Roles"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Role" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Role List"]</p>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        }
-
-        @* Users — requires users.view permission *@
-        @if ((IsSuperAdmin || IsTenantAdmin) && Can("users.view"))
-        {
-            <li class="nav-item @(ctrl == "User" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "User" ? "active" : "")">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>@L["Users"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="User" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["User List"]</p>
-                        </a>
-                    </li>
-                    @if (Can("users.create"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="User" asp-action="Create" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["Add User"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Trucks — requires trucks.view *@
-        @if (Can("trucks.view"))
-        {
-            <li class="nav-item @(ctrl == "Truck" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Truck" ? "active" : "")">
-                    <i class="nav-icon fas fa-truck"></i>
-                    <p>@L["Trucks"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Truck" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Truck List"]</p>
-                        </a>
-                    </li>
-                    @if (Can("trucks.create"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Truck" asp-action="Create" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["Add Truck"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Drivers — requires drivers.view *@
-        @if (Can("drivers.view"))
-        {
-            <li class="nav-item @(ctrl == "Driver" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Driver" ? "active" : "")">
-                    <i class="nav-icon fas fa-user-tie"></i>
-                    <p>@L["Drivers"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Driver" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Driver List"]</p>
-                        </a>
-                    </li>
-                    @if (Can("drivers.create"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Driver" asp-action="Create" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["Add Driver"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Trips — requires trips.view *@
-        @if (Can("trips.view"))
-        {
-            <li class="nav-item @(ctrl == "Trip" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Trip" ? "active" : "")">
-                    <i class="nav-icon fas fa-route"></i>
-                    <p>@L["Trips"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Trip" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Trip List"]</p>
-                        </a>
-                    </li>
-                    @if (Can("trips.create"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Trip" asp-action="Create" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["New Trip"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Expenses — requires expenses.view *@
-        @if (Can("expenses.view"))
-        {
-            <li class="nav-item @(ctrl == "Expense" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Expense" ? "active" : "")">
-                    <i class="nav-icon fas fa-receipt"></i>
-                    <p>@L["Expenses"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Expense" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["Expense List"]</p>
-                        </a>
-                    </li>
-                    @if (Can("expenses.create"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Expense" asp-action="Create" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["Add Expense"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Reports — requires reports.view *@
-        @if (Can("reports.view"))
-        {
-            <li class="nav-item @(ctrl == "Report" ? "menu-open" : "")">
-                <a href="#" class="nav-link @(ctrl == "Report" ? "active" : "")">
-                    <i class="nav-icon fas fa-chart-line"></i>
-                    <p>@L["Reports"] <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a asp-controller="Report" asp-action="Index" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i><p>@L["P&L Report"]</p>
-                        </a>
-                    </li>
-                    @if (Can("reports.export"))
-                    {
-                        <li class="nav-item">
-                            <a asp-controller="Report" asp-action="ExportTripsExcel" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i><p>@L["Export Trips (Excel)"]</p>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
-
-        @* Alerts — requires alerts.view *@
-        @if (Can("alerts.view"))
-        {
-            <li class="nav-item">
-                <a asp-controller="Alert" asp-action="Index"
-                   class="nav-link @(ctrl == "Alert" ? "active" : "")">
-                    <i class="nav-icon fas fa-bell"></i>
-                    <p>@L["Alerts"] <span class="badge badge-danger ml-2">@(ViewBag.AlertCount ?? "")</span></p>
-                </a>
-            </li>
+            @if (!hasChildren)
+            {
+                <li class="nav-item">
+                    <a asp-controller="@item.Controller" asp-action="@item.Action"
+                       class="nav-link @(isActive ? "active" : "")">
+                        <i class="nav-icon @item.Icon"></i>
+                        <p>
+                            @L[item.Title]
+                            @if (item.Controller == "Alert")
+                            {
+                                <span class="badge badge-danger ml-2">@(ViewBag.AlertCount ?? "")</span>
+                            }
+                        </p>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item @(isActive ? "menu-open" : "")">
+                    <a href="#" class="nav-link @(isActive ? "active" : "")">
+                        <i class="nav-icon @item.Icon"></i>
+                        <p>@L[item.Title] <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @foreach (var child in item.Children)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="@child.Controller" asp-action="@child.Action" class="nav-link">
+                                    <i class="@child.Icon nav-icon"></i><p>@L[child.Title]</p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
         }
 
     </ul>
