@@ -59,6 +59,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 
+// Storage Settings (from appsettings.json)
+var storageSettings = builder.Configuration.GetSection("Storage").Get<StorageSettings>() ?? new StorageSettings();
+builder.Services.AddSingleton(storageSettings);
+builder.Services.AddScoped<IStorageService, StorageService>();
+
 // Business Services
 builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
