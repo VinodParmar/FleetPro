@@ -37,14 +37,18 @@
                     {
                         <tr>
                             <td class="action-btn">
-                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-warning" title="@L["Edit"]"><i class="fas fa-edit"></i></a>
                                 @if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
                                 {
-                                    <a asp-action="Permissions" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-info" title="Permissions"><i class="fas fa-key"></i></a>
+                                    <a asp-action="Permissions" asp-route-eid="@Ids.Protect(u.Id)" class="btn btn-xs btn-info" title="@L["Permissions"]"><i class="fas fa-key"></i></a>
+                                    <button type="button" class="btn btn-xs btn-secondary" title="@L["Reset Password"]" 
+                                            onclick="openResetPasswordModal('@Ids.Protect(u.Id)', '@u.FullName.Replace("'", "\\'")','@u.Email')">
+                                        <i class="fas fa-unlock-alt"></i>
+                                    </button>
                                 }
                                 <form asp-action="Delete" asp-route-eid="@Ids.Protect(u.Id)" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete user {0}?", u.FullName]" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete user {0}?", u.FullName]" title="@L["Delete"]"><i class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                             <td>
@@ -57,7 +61,18 @@
                             </td>
                             <td>@u.Email</td>
                             @if (User.IsInRole("SuperAdmin"))
-                            { <td>@(u.Tenant?.CompanyName ?? "<span class='badge badge-dark'>Super Admin</span>")</td> }
+                            {
+                                <td>
+                                    @if (u.Tenant != null)
+                                    {
+                                        @u.Tenant.CompanyName
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-dark">@L["Super Admin"]</span>
+                                    }
+                                </td>
+                            }
                             <td>
                                 @foreach (var ur in u.UserRoles)
                                 {
@@ -89,3 +104,87 @@
         </div>
     </div>
 </div></section>
+
+@if (User.IsInRole("SuperAdmin") || User.IsInRole("TenantAdmin"))
+{
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="resetPasswordForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="resetPasswordModalLabel"><i class="fas fa-key mr-2"></i>@L["Reset Password"]</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="callout callout-info py-2">
+                        <strong id="modalUserName"></strong><br>
+                        <small class="text-muted" id="modalUserEmail"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L["New Password *"]</label>
+                        <input type="password" name="NewPassword" id="newPassword" class="form-control" 
+                               placeholder="@L["Min 8 characters"]" minlength="8" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L["Confirm Password *"]</label>
+                        <input type="password" name="ConfirmPassword" id="confirmPassword" class="form-control" 
+                               placeholder="@L["Re-enter password"]" minlength="8" required />
+                        <small class="text-danger d-none" id="passwordMismatch">@L["Passwords do not match"]</small>
+                    </div>
+
+                    <div class="callout callout-warning py-2">
+                        <small><i class="fas fa-exclamation-triangle mr-1"></i>@L["The user will need to use this new password to login."]</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@L["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary" id="btnResetPassword">
+                        <i class="fas fa-save mr-1"></i>@L["Reset Password"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openResetPasswordModal(eid, userName, userEmail) {
+        document.getElementById('modalUserName').textContent = userName;
+        document.getElementById('modalUserEmail').textContent = userEmail;
+        document.getElementById('resetPasswordForm').action = '@Url.Action("ResetPassword", "User")' + '?eid=' + eid;
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        document.getElementById('passwordMismatch').classList.add('d-none');
+        $('#resetPasswordModal').modal('show');
+    }
+
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+        var pwd = document.getElementById('newPassword').value;
+        var confirm = this.value;
+        var mismatch = document.getElementById('passwordMismatch');
+        if (confirm && pwd !== confirm) {
+            mismatch.classList.remove('d-none');
+        } else {
+            mismatch.classList.add('d-none');
+        }
+    });
+
+    document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+        var pwd = document.getElementById('newPassword').value;
+        var confirm = document.getElementById('confirmPassword').value;
+        if (pwd !== confirm) {
+            e.preventDefault();
+            document.getElementById('passwordMismatch').classList.remove('d-none');
+            return false;
+        }
+    });
+</script>
+}
+}

@@ -47,6 +47,7 @@
   <!-- COMMON -->
   <data name="Actions" xml:space="preserve"><value>Actions</value></data>
   <data name="Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Owner" xml:space="preserve"><value>Owner</value></data>
   <data name="Name" xml:space="preserve"><value>Name</value></data>
   <data name="Email" xml:space="preserve"><value>Email</value></data>
   <data name="Phone" xml:space="preserve"><value>Phone</value></data>
@@ -74,6 +75,21 @@
   <data name="Email *" xml:space="preserve"><value>Email *</value></data>
   <data name="Company *" xml:space="preserve"><value>Company *</value></data>
   <data name="Password *" xml:space="preserve"><value>Password *</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+
+  <!-- PASSWORD RESET -->
+  <data name="Reset Password" xml:space="preserve"><value>Reset Password</value></data>
+  <data name="New Password *" xml:space="preserve"><value>New Password *</value></data>
+  <data name="Confirm Password *" xml:space="preserve"><value>Confirm Password *</value></data>
+  <data name="Re-enter password" xml:space="preserve"><value>Re-enter password</value></data>
+  <data name="Passwords do not match" xml:space="preserve"><value>Passwords do not match</value></data>
+  <data name="The user will need to use this new password to login." xml:space="preserve"><value>The user will need to use this new password to login.</value></data>
+  <data name="Password Guidelines" xml:space="preserve"><value>Password Guidelines</value></data>
+  <data name="Minimum 8 characters" xml:space="preserve"><value>Minimum 8 characters</value></data>
+  <data name="Mix of letters and numbers recommended" xml:space="preserve"><value>Mix of letters and numbers recommended</value></data>
+  <data name="Avoid common passwords" xml:space="preserve"><value>Avoid common passwords</value></data>
+  <data name="The user should change this password after first login" xml:space="preserve"><value>The user should change this password after first login</value></data>
+  <data name="View permission is denied - other permissions are automatically denied" xml:space="preserve"><value>View permission is denied - other permissions are automatically denied</value></data>
 
   <!-- STATUS -->
   <data name="Completed" xml:space="preserve"><value>Completed</value></data>

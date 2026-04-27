@@ -16,6 +16,23 @@ public class LoginViewModel
     public string? ReturnUrl { get; set; }
 }
 
+public class ResetPasswordViewModel
+{
+    public int UserId { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "New password is required")]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+    [DataType(DataType.Password)]
+    public string NewPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Please confirm the password")]
+    [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
+    [DataType(DataType.Password)]
+    public string ConfirmPassword { get; set; } = string.Empty;
+}
+
 // ── TENANT ────────────────────────────────────────────────────
 public class TenantViewModel
 {

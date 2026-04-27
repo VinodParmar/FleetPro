@@ -34,7 +34,7 @@ public class MenuService : IMenuService
 
         var user = _hca.HttpContext?.User;
         var permClaims = user?.Claims
-            .Where(c => c.Type == "permission")
+            .Where(c => c.Type == "Permission")
             .Select(c => c.Value)
             .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
@@ -325,7 +325,9 @@ public class UserService : IUserService
 
     public async Task<List<ApplicationUser>> GetUsersAsync(int? tenantId = null)
     {
-        var q = _db.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).AsQueryable();
+        var q = _db.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Include(u => u.Tenant)
+            .AsQueryable();
         if (tenantId.HasValue) q = q.Where(u => u.TenantId == tenantId);
         else if (!_current.IsSuperAdmin && _current.TenantId.HasValue)
             q = q.Where(u => u.TenantId == _current.TenantId);

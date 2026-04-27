@@ -35,7 +35,9 @@
                 <thead>
                     <tr>
                         <th style="width:110px;">@L["Actions"]</th>
-                        <th>@L["Company"]</th><th>@L["Subdomain"]</th><th>@L["Contact"]</th><th>@L["Plan"]</th>
+                        <th>@L["Company"]</th><th>@L["Subdomain"]</th>
+                        <th>@L["Owner"]</th>
+                        <th>@L["Contact"]</th><th>@L["Plan"]</th>
                         <th>@L["Trucks"]</th><th>@L["Drivers"]</th><th>@L["Users"]</th><th>@L["Status"]</th><th>@L["City"]</th>
                     </tr>
                 </thead>
@@ -63,6 +65,17 @@
                                 </div>
                             </td>
                             <td><small class="text-info">@(t.Subdomain).fleetpro.in</small></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(t.OwnerName))
+                                {
+                                    <strong>@t.OwnerName</strong>
+                                    <br><small class="text-muted">@t.OwnerEmail</small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
                             <td>
                                 <strong>@t.ContactPerson</strong>
                                 @if (!string.IsNullOrEmpty(t.Email))
@@ -92,7 +105,7 @@
                         </tr>
                     }
                     @if (!Model.Any())
-                    { <tr><td colspan="10" class="text-center text-muted py-4">@L["No companies found."]</td></tr> }
+                    { <tr><td colspan="11" class="text-center text-muted py-4">@L["No companies found."]</td></tr> }
                 </tbody>
             </table>
         </div>

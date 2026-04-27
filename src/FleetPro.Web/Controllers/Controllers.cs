@@ -155,13 +155,23 @@ public class AccountController : Controller
         var stats = await _db.Tenants.Select(t=>new{t.Id,
             TC=t.Trucks.Count(x=>!x.IsDeleted), DC=t.Drivers.Count(x=>!x.IsDeleted), UC=t.Users.Count(x=>!x.IsDeleted)
         }).ToListAsync();
+
+        // Get TenantAdmin (owner) for each tenant
+        var adminRoleId = await _db.Roles.Where(r => r.Name == "TenantAdmin").Select(r => r.Id).FirstOrDefaultAsync();
+        var owners = await _db.Users
+            .Where(u => !u.IsDeleted && u.TenantId.HasValue && u.UserRoles.Any(ur => ur.RoleId == adminRoleId))
+            .Select(u => new { u.TenantId, u.FullName, u.Email })
+            .ToListAsync();
+
         return View(tenants.Select(t=>new TenantViewModel{
             Id=t.Id,CompanyName=t.CompanyName,Subdomain=t.Subdomain,ContactPerson=t.ContactPerson,
             Email=t.Email,Phone=t.Phone,Plan=t.Plan,Status=t.Status,City=t.City,State=t.State,
             GstNumber=t.GstNumber,MaxTrucks=t.MaxTrucks,MaxUsers=t.MaxUsers,
             TruckCount=stats.FirstOrDefault(s=>s.Id==t.Id)?.TC??0,
             DriverCount=stats.FirstOrDefault(s=>s.Id==t.Id)?.DC??0,
-            UserCount=stats.FirstOrDefault(s=>s.Id==t.Id)?.UC??0
+            UserCount=stats.FirstOrDefault(s=>s.Id==t.Id)?.UC??0,
+            OwnerName=owners.FirstOrDefault(o=>o.TenantId==t.Id)?.FullName??"",
+            OwnerEmail=owners.FirstOrDefault(o=>o.TenantId==t.Id)?.Email??""
         }).ToList());
     }
     public IActionResult Create() => View(new TenantViewModel{MaxTrucks=10,MaxUsers=5});
@@ -302,6 +312,24 @@ public class AccountController : Controller
             .ToDictionary(kv=>int.Parse(kv.Key.Replace("perm_","")),kv=>kv.Value=="grant");
         await _svc.UpdatePermissionsAsync(id,overrides);
         TempData["Success"]="Permissions updated."; return RedirectToAction(nameof(Permissions),new{eid=EId(id)});
+    }
+
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles="SuperAdmin,TenantAdmin")]
+    public async Task<IActionResult> ResetPassword(string eid, string NewPassword, string ConfirmPassword) {
+        var id=DId(eid); if(id==0) return NotFound();
+        if (string.IsNullOrEmpty(NewPassword) || NewPassword.Length < 8) {
+            TempData["Error"]="Password must be at least 8 characters.";
+            return RedirectToAction(nameof(Index));
+        }
+        if (NewPassword != ConfirmPassword) {
+            TempData["Error"]="Passwords do not match.";
+            return RedirectToAction(nameof(Index));
+        }
+        var u=await _svc.GetByIdAsync(id); if(u==null) return NotFound();
+        u.PasswordHash=BCrypt.Net.BCrypt.HashPassword(NewPassword);
+        await _svc.UpdateAsync(u);
+        TempData["Success"]=$"Password reset for {u.FullName}.";
+        return RedirectToAction(nameof(Index));
     }
 
     private async Task Dropdowns() {
@@ -542,7 +570,9 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Index(int? tripId, ExpenseCategory? category) {
         var expenses=await _svc.GetAllAsync(tripId,category);
-        ViewBag.TripFilter=tripId; ViewBag.CategoryFilter=category; return View(expenses);
+        ViewBag.TripFilter=tripId; ViewBag.CategoryFilter=category;
+        await PopE(); // Load trips dropdown for modal
+        return View(expenses);
     }
     public async Task<IActionResult> Create(int? tripId) {
         if (CheckPermission("expenses.create") is { } r) return r;
@@ -551,7 +581,11 @@ public class AccountController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ExpenseViewModel vm) {
         if (CheckPermission("expenses.create") is { } r) return r;
-        if (!ModelState.IsValid){await PopE();return View(vm);}
+        if (!ModelState.IsValid){
+            // If from modal, show errors and redirect back
+            TempData["Error"]="Please fill all required fields.";
+            return RedirectToAction(nameof(Index));
+        }
         var e=new Expense{TripId=vm.TripId,Category=vm.Category,Amount=vm.Amount,ExpenseDate=vm.ExpenseDate,
             Description=vm.Description,VendorName=vm.VendorName,BillNumber=vm.BillNumber,TenantId=_current.TenantId??0};
         if (vm.Receipt is{Length:>0}){
@@ -561,7 +595,7 @@ public class AccountController : Controller
             e.ReceiptPath=$"/uploads/receipts/{fn}"; e.HasReceipt=true;
         }
         await _svc.CreateAsync(e); TempData["Success"]="Expense added.";
-        return vm.TripId>0?RedirectToAction("Details","Trip",new{id=vm.TripId}):RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(string eid) {
         if (CheckPermission("expenses.edit") is { } r) return r;

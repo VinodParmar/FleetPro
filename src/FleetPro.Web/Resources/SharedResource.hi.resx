@@ -47,6 +47,7 @@
   <!-- ── COMMON WORDS ── -->
   <data name="Actions" xml:space="preserve"><value>कार्रवाई</value></data>
   <data name="Action" xml:space="preserve"><value>कार्रवाई</value></data>
+  <data name="Owner" xml:space="preserve"><value>मालिक</value></data>
   <data name="Name" xml:space="preserve"><value>नाम</value></data>
   <data name="Email" xml:space="preserve"><value>ईमेल</value></data>
   <data name="Phone" xml:space="preserve"><value>फ़ोन</value></data>
@@ -84,6 +85,21 @@
   <data name="Password *" xml:space="preserve"><value>पासवर्ड *</value></data>
   <data name="All" xml:space="preserve"><value>सभी</value></data>
   <data name="Size" xml:space="preserve"><value>आकार</value></data>
+  <data name="Delete" xml:space="preserve"><value>हटाएं</value></data>
+
+  <!-- ── PASSWORD RESET ── -->
+  <data name="Reset Password" xml:space="preserve"><value>पासवर्ड रीसेट करें</value></data>
+  <data name="New Password *" xml:space="preserve"><value>नया पासवर्ड *</value></data>
+  <data name="Confirm Password *" xml:space="preserve"><value>पासवर्ड की पुष्टि करें *</value></data>
+  <data name="Re-enter password" xml:space="preserve"><value>पासवर्ड दोबारा दर्ज करें</value></data>
+  <data name="Passwords do not match" xml:space="preserve"><value>पासवर्ड मेल नहीं खाते</value></data>
+  <data name="The user will need to use this new password to login." xml:space="preserve"><value>उपयोगकर्ता को लॉगिन के लिए इस नए पासवर्ड का उपयोग करना होगा।</value></data>
+  <data name="Password Guidelines" xml:space="preserve"><value>पासवर्ड दिशानिर्देश</value></data>
+  <data name="Minimum 8 characters" xml:space="preserve"><value>न्यूनतम 8 अक्षर</value></data>
+  <data name="Mix of letters and numbers recommended" xml:space="preserve"><value>अक्षरों और संख्याओं का मिश्रण अनुशंसित</value></data>
+  <data name="Avoid common passwords" xml:space="preserve"><value>सामान्य पासवर्ड से बचें</value></data>
+  <data name="The user should change this password after first login" xml:space="preserve"><value>उपयोगकर्ता को पहले लॉगिन के बाद यह पासवर्ड बदलना चाहिए</value></data>
+  <data name="View permission is denied - other permissions are automatically denied" xml:space="preserve"><value>देखने की अनुमति अस्वीकृत है - अन्य अनुमतियां स्वचालित रूप से अस्वीकृत हैं</value></data>
 
   <!-- ── STATUS BADGES ── -->
   <data name="Completed" xml:space="preserve"><value>पूर्ण</value></data>

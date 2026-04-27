@@ -106,7 +106,9 @@
                     <tbody>
                         @foreach (var group in Model.Groups)
                         {
-                            <tr>
+                            var viewPerm = group.Permissions.FirstOrDefault(p => p.Action == "View");
+                            var viewPermId = viewPerm?.PermissionId ?? 0;
+                            <tr data-module="@group.Module" data-view-perm-id="@viewPermId">
                                         <td class="module-col">
                                     <i class="fas @(group.Module switch {
                                         "Trucks"   => "fa-truck",
@@ -134,18 +136,21 @@
                                         var state = perm.IsOverriddenByUser == true ? "grant"
                                                   : perm.IsOverriddenByUser == false ? "deny"
                                                   : "inherit";
+                                        var isViewPerm = action == "View";
                                         <td class="action-col">
-                                            <div class="perm-pill" id="pill_@perm.PermissionId">
+                                            <div class="perm-pill" id="pill_@perm.PermissionId" 
+                                                 data-is-view="@isViewPerm.ToString().ToLower()" 
+                                                 data-module="@group.Module">
                                                 <button type="button" class="pp-btn @(state=="grant"?"active-grant":"")"
-                                                        title="Grant — always allow" onclick="setPerm(@perm.PermissionId,'grant')">
+                                                        title="Grant — always allow" onclick="setPerm(@perm.PermissionId,'grant',@isViewPerm.ToString().ToLower())">
                                                     <i class="fas fa-check"></i> Grant
                                                 </button>
                                                 <button type="button" class="pp-btn @(state=="inherit"?"active-inherit":"")"
-                                                        title="Inherit role baseline" onclick="setPerm(@perm.PermissionId,'inherit')">
+                                                        title="Inherit role baseline" onclick="setPerm(@perm.PermissionId,'inherit',@isViewPerm.ToString().ToLower())">
                                                     <i class="fas fa-minus"></i> Role
                                                 </button>
                                                 <button type="button" class="pp-btn @(state=="deny"?"active-deny":"")"
-                                                        title="Deny — always block" onclick="setPerm(@perm.PermissionId,'deny')">
+                                                        title="Deny — always block" onclick="setPerm(@perm.PermissionId,'deny',@isViewPerm.ToString().ToLower())">
                                                     <i class="fas fa-times"></i> Deny
                                                 </button>
                                             </div>
@@ -188,9 +193,71 @@
 
 @section Scripts {
 <script>
+// Check if View permission is denied for a module
+function isViewDenied(module) {
+    var row = document.querySelector('tr[data-module="' + module + '"]');
+    if (!row) return false;
+    var viewPermId = row.getAttribute('data-view-perm-id');
+    if (!viewPermId || viewPermId === '0') return false;
+    var viewInput = document.getElementById('perm_' + viewPermId);
+    return viewInput && viewInput.value === 'deny';
+}
+
+// Check if View permission is granted (explicitly or via role)
+function isViewGrantedOrInherited(module) {
+    var row = document.querySelector('tr[data-module="' + module + '"]');
+    if (!row) return true;
+    var viewPermId = row.getAttribute('data-view-perm-id');
+    if (!viewPermId || viewPermId === '0') return true;
+    var viewInput = document.getElementById('perm_' + viewPermId);
+    return viewInput && viewInput.value !== 'deny';
+}
+
+// Update the disabled state of non-View permissions in a module
+function updateModulePermissionStates(module) {
+    var viewDenied = isViewDenied(module);
+    var row = document.querySelector('tr[data-module="' + module + '"]');
+    if (!row) return;
+
+    row.querySelectorAll('.perm-pill').forEach(function(pill) {
+        var isView = pill.getAttribute('data-is-view') === 'true';
+        if (isView) return; // Don't disable View permission itself
+
+        var buttons = pill.querySelectorAll('.pp-btn');
+        var permId = pill.id.replace('pill_', '');
+        var input = document.getElementById('perm_' + permId);
+
+        if (viewDenied) {
+            // Disable buttons and force deny
+            buttons.forEach(function(b) { 
+                b.disabled = true; 
+                b.style.opacity = '0.5';
+                b.style.cursor = 'not-allowed';
+            });
+            pill.style.opacity = '0.6';
+            pill.title = '@L["View permission is denied - other permissions are automatically denied"]';
+            // Set to deny
+            buttons.forEach(function(b) { b.classList.remove('active-grant','active-inherit','active-deny'); });
+            buttons[2].classList.add('active-deny'); // Deny button
+            input.value = 'deny';
+        } else {
+            // Enable buttons
+            buttons.forEach(function(b) { 
+                b.disabled = false; 
+                b.style.opacity = '1';
+                b.style.cursor = 'pointer';
+            });
+            pill.style.opacity = '1';
+            pill.title = '';
+        }
+    });
+}
+
 // Activate a pill button and update hidden input
-function setPerm(permId, val) {
+function setPerm(permId, val, isViewPerm) {
     var pill = document.getElementById('pill_' + permId);
+    var module = pill.getAttribute('data-module');
+
     pill.querySelectorAll('.pp-btn').forEach(function(b) {
         b.classList.remove('active-grant','active-inherit','active-deny');
     });
@@ -198,27 +265,57 @@ function setPerm(permId, val) {
     var idx = val === 'grant' ? 0 : val === 'inherit' ? 1 : 2;
     pill.querySelectorAll('.pp-btn')[idx].classList.add(cls);
     document.getElementById('perm_' + permId).value = val;
+
+    // If this is a View permission, update other permissions in the same module
+    if (isViewPerm) {
+        updateModulePermissionStates(module);
+    }
 }
 
 // Set all permissions in a module row
 function setRow(module, val) {
-    document.querySelectorAll('input[type=hidden][name^="permissionValues"]').forEach(function(inp) {
-        var permId = inp.id.replace('perm_','');
-        var pill = document.getElementById('pill_' + permId);
-        if (pill && pill.closest('tr') &&
-            pill.closest('tr').querySelector('.module-col') &&
-            pill.closest('tr').querySelector('.module-col').textContent.trim().includes(module)) {
-            setPerm(permId, val);
-        }
-    });
+    // If setting to deny, set View first so other permissions get auto-denied
+    // If setting to grant/inherit, set View first so other permissions get enabled
+    var row = document.querySelector('tr[data-module="' + module + '"]');
+    if (!row) return;
+    var viewPermId = row.getAttribute('data-view-perm-id');
+
+    if (viewPermId && viewPermId !== '0') {
+        setPerm(viewPermId, val, true);
+    }
+
+    // Only set other permissions if not denying (they'll be auto-denied by view)
+    if (val !== 'deny') {
+        document.querySelectorAll('input[type=hidden][name^="permissionValues"]').forEach(function(inp) {
+            var permId = inp.id.replace('perm_','');
+            var pill = document.getElementById('pill_' + permId);
+            if (pill && pill.getAttribute('data-module') === module && pill.getAttribute('data-is-view') !== 'true') {
+                setPerm(permId, val, false);
+            }
+        });
+    }
 }
 
 // Set all permissions globally
 function setAll(val) {
-    document.querySelectorAll('input[type=hidden][name^="permissionValues"]').forEach(function(inp) {
-        setPerm(inp.id.replace('perm_',''), val);
+    // Get all unique modules
+    var modules = [];
+    document.querySelectorAll('tr[data-module]').forEach(function(row) {
+        var m = row.getAttribute('data-module');
+        if (m && modules.indexOf(m) === -1) modules.push(m);
+    });
+
+    modules.forEach(function(module) {
+        setRow(module, val);
     });
 }
+
+// Initialize: check all modules on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('tr[data-module]').forEach(function(row) {
+        updateModulePermissionStates(row.getAttribute('data-module'));
+    });
+});
 </script>
 }
 
