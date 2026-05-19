@@ -3,6 +3,7 @@ using FleetPro.Middleware;
 using FleetPro.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,13 +35,15 @@ builder.Services.AddHttpContextAccessor();
 // Audit Interceptor
 builder.Services.AddScoped<AuditSaveChangesInterceptor>();
 
-// EF Core with Audit Interceptor
+// EF Core with Audit Interceptor - suppress migration warning
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sql => sql.EnableRetryOnFailure(3));
     options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+    // Suppress pending model changes warning - we use SQL script for DB creation
+    options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 });
 
 // Cookie Auth
@@ -69,6 +72,7 @@ builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAgentService, AgentService>();
 builder.Services.AddScoped<ITruckService, TruckService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ITripService, TripService>();
@@ -100,12 +104,18 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Log.Information("Starting database seeding for: {Database}", db.Database.GetConnectionString());
         await DataSeeder.SeedAsync(db);
-        Log.Information("Database seeded successfully.");
+
+        // Verify seed
+        var userCount = await db.Users.CountAsync();
+        var tenantCount = await db.Tenants.CountAsync();
+        Log.Information("Database seeded: {Users} users, {Tenants} tenants", userCount, tenantCount);
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Database seeding failed.");
+        Log.Error(ex, "Database seeding failed: {Message}", ex.Message);
+        throw; // Re-throw to see the error on startup
     }
 }
 

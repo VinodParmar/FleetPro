@@ -1,0 +1,59 @@
+@* Partial: _ExpenseList.cshtml - Shows expenses for a trip *@
+@model FleetPro.Models.ViewModels.TripViewModel
+@{
+    var expenses = ViewBag.Expenses as List<FleetPro.Models.Entities.Expense> ?? new List<FleetPro.Models.Entities.Expense>();
+    var total = expenses.Where(e => !e.IsDeleted).Sum(e => e.Amount);
+}
+
+<table class="table table-sm table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th style="width:80px;"></th>
+            <th>@L["Date"]</th>
+            <th>@L["Category"]</th>
+            <th>@L["Amount"]</th>
+            <th>@L["Description"]</th>
+            <th>@L["Vendor"]</th>
+            <th>@L["Receipt"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in expenses.Where(x => !x.IsDeleted).OrderByDescending(x => x.ExpenseDate))
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Expense" asp-action="Edit" asp-route-eid="@Ids.Protect(e.Id)" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                    <form asp-controller="Expense" asp-action="Delete" asp-route-eid="@Ids.Protect(e.Id)" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete?"><i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+                <td>@e.ExpenseDate.ToString("dd MMM")</td>
+                <td><span class="badge badge-primary">@e.CategoryName</span></td>
+                <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N0")</td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">@e.Description</td>
+                <td>@(e.VendorName ?? "—")</td>
+                <td>
+                    @if (e.HasReceipt)
+                    {
+                        <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file"></i></a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!expenses.Any(e => !e.IsDeleted))
+        {
+            <tr><td colspan="7" class="text-center text-muted py-4">@L["No expenses added yet"]</td></tr>
+        }
+    </tbody>
+    <tfoot class="table-danger font-weight-bold">
+        <tr>
+            <td colspan="3" class="text-right">@L["Total Expenses"]:</td>
+            <td colspan="4">₹@total.ToString("N0")</td>
+        </tr>
+    </tfoot>
+</table>

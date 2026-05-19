@@ -30,6 +30,10 @@ public class Truck : TenantBaseEntity
     public DateTime? TaxExpiry { get; set; }
     public DateTime? PermitExpiry { get; set; }
 
+    // New fields for Authorization and PUC
+    public DateTime? AuthorizationExpiry { get; set; }  // National Permit
+    public DateTime? PUCExpiry { get; set; }            // Pollution Under Control
+
     [MaxLength(50)]
     public string? InsurancePolicyNumber { get; set; }
 
@@ -96,7 +100,44 @@ public class Driver : TenantBaseEntity
 public enum DriverStatus { Active = 1, OnLeave = 2, Inactive = 3 }
 
 // ═══════════════════════════════════════════════════
-//  TRIP
+//  AGENT (Broker/Transport Agent)
+// ═══════════════════════════════════════════════════
+public class Agent : TenantBaseEntity
+{
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [MaxLength(20)]
+    public string? Phone { get; set; }
+
+    [MaxLength(150)]
+    public string? Email { get; set; }
+
+    [MaxLength(200)]
+    public string? CompanyName { get; set; }
+
+    [MaxLength(500)]
+    public string? Address { get; set; }
+
+    [MaxLength(30)]
+    public string? GSTNumber { get; set; }
+
+    [MaxLength(30)]
+    public string? PanNumber { get; set; }
+
+    public AgentStatus Status { get; set; } = AgentStatus.Active;
+
+    [MaxLength(500)]
+    public string? Notes { get; set; }
+
+    // Navigation
+    public ICollection<TripPhase> TripPhases { get; set; } = [];
+}
+
+public enum AgentStatus { Active = 1, Inactive = 2 }
+
+// ═══════════════════════════════════════════════════
+//  TRIP (Container for Phases & Payments)
 // ═══════════════════════════════════════════════════
 public class Trip : TenantBaseEntity
 {
@@ -109,31 +150,6 @@ public class Trip : TenantBaseEntity
     public int DriverId { get; set; }
     public Driver Driver { get; set; } = null!;
 
-    [Required, MaxLength(200)]
-    public string FromLocation { get; set; } = string.Empty;
-
-    [Required, MaxLength(200)]
-    public string ToLocation { get; set; } = string.Empty;
-
-    public DateTime StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-
-    public decimal? DistanceKm { get; set; }
-
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal Revenue { get; set; }
-
-    [MaxLength(200)]
-    public string? CargoDescription { get; set; }
-
-    public decimal? CargoWeightTons { get; set; }
-
-    [MaxLength(200)]
-    public string? ClientName { get; set; }
-
-    [MaxLength(100)]
-    public string? LRNumber { get; set; }   // Lorry Receipt
-
     public TripStatus Status { get; set; } = TripStatus.Scheduled;
 
     [MaxLength(500)]
@@ -142,16 +158,185 @@ public class Trip : TenantBaseEntity
     // Navigation
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
     public ICollection<TripDocument> Documents { get; set; } = new List<TripDocument>();
+    public ICollection<TripPhase> Phases { get; set; } = new List<TripPhase>();
+    public ICollection<TripPayment> Payments { get; set; } = new List<TripPayment>();
 
-    // Computed (not mapped)
+    // ═══ COMPUTED PROPERTIES (from Phases) ═══
+    [NotMapped]
+    public TripPhase? UpPhase => Phases?.FirstOrDefault(p => p.PhaseType == TripPhaseType.Up && !p.IsDeleted);
+
+    [NotMapped]
+    public TripPhase? DownPhase => Phases?.FirstOrDefault(p => p.PhaseType == TripPhaseType.Down && !p.IsDeleted);
+
+    // Route display (from phases)
+    [NotMapped]
+    public string FromLocation => UpPhase?.FromLocation ?? "";
+
+    [NotMapped]
+    public string ToLocation => UpPhase?.ToLocation ?? "";
+
+    [NotMapped]
+    public DateTime StartDate => UpPhase?.StartDate ?? CreatedAt;
+
+    [NotMapped]
+    public DateTime? EndDate => DownPhase?.EndDate ?? UpPhase?.EndDate;
+
+    [NotMapped]
+    public string Route => UpPhase != null 
+        ? $"{UpPhase.FromLocation} → {UpPhase.ToLocation}" + (DownPhase != null ? $" → {DownPhase.ToLocation}" : "")
+        : "";
+
+    // Distance (sum of all phases)
+    [NotMapped]
+    public decimal TotalDistance => Phases?.Where(p => !p.IsDeleted).Sum(p => p.CalculatedKm) ?? 0;
+
+    // Deal Amount (sum of all phases)
+    [NotMapped]
+    public decimal TotalDealAmount => Phases?.Where(p => !p.IsDeleted).Sum(p => p.DealAmount) ?? 0;
+
+    // Weight (sum of all phases)
+    [NotMapped]
+    public decimal TotalNetWeight => Phases?.Where(p => !p.IsDeleted).Sum(p => p.NetWeight ?? 0) ?? 0;
+
+    // ═══ COMPUTED PROPERTIES (from Payments & Expenses) ═══
     [NotMapped]
     public decimal TotalExpenses => Expenses?.Where(e => !e.IsDeleted).Sum(e => e.Amount) ?? 0;
 
     [NotMapped]
-    public decimal NetProfit => Revenue - TotalExpenses;
+    public decimal TotalPaymentsIn => Payments?.Where(p => !p.IsDeleted && p.PaymentType == PaymentType.Received).Sum(p => p.Amount) ?? 0;
+
+    [NotMapped]
+    public decimal TotalPaymentsOut => Payments?.Where(p => !p.IsDeleted && p.PaymentType == PaymentType.Paid).Sum(p => p.Amount) ?? 0;
+
+    // Profit = Deal Amount - Expenses - Payments Out (to drivers, agents, etc.)
+    [NotMapped]
+    public decimal NetProfit => TotalDealAmount - TotalExpenses - TotalPaymentsOut;
+
+    // Payment Balance = Received - Paid Out
+    [NotMapped]
+    public decimal PaymentBalance => TotalPaymentsIn - TotalPaymentsOut;
+
+    // Pending Amount = Deal Amount - Received
+    [NotMapped]
+    public decimal PendingAmount => TotalDealAmount - TotalPaymentsIn;
+
+    // Display helpers
+    [NotMapped]
+    public string AgentDisplay => UpPhase?.Agent?.Name ?? "";
+
+    [NotMapped]
+    public decimal GrossWeight => (UpPhase?.GrossWeight ?? 0) + (DownPhase?.GrossWeight ?? 0);
 }
 
 public enum TripStatus { Scheduled = 1, InProgress = 2, Completed = 3, Cancelled = 4 }
+
+// ═══════════════════════════════════════════════════
+//  TRIP PHASE (UP / DOWN)
+// ═══════════════════════════════════════════════════
+public class TripPhase : TenantBaseEntity
+{
+    public int TripId { get; set; }
+    public Trip Trip { get; set; } = null!;
+
+    public TripPhaseType PhaseType { get; set; }  // Up or Down
+
+    [Required, MaxLength(200)]
+    public string FromLocation { get; set; } = string.Empty;
+
+    [Required, MaxLength(200)]
+    public string ToLocation { get; set; } = string.Empty;
+
+    // Meter readings for automatic KM calculation
+    [Column(TypeName = "decimal(12,2)")]
+    public decimal StartMeterReading { get; set; }
+
+    [Column(TypeName = "decimal(12,2)")]
+    public decimal? EndMeterReading { get; set; }
+
+    // Auto-calculated from meter readings
+    [NotMapped]
+    public decimal CalculatedKm => EndMeterReading.HasValue ? EndMeterReading.Value - StartMeterReading : 0;
+
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+
+    // Agent (Broker) - FK to Agent master
+    public int? AgentId { get; set; }
+    public Agent? Agent { get; set; }
+
+    [MaxLength(100)]
+    public string? LRNumber { get; set; }
+
+    [MaxLength(200)]
+    public string? CargoDescription { get; set; }
+
+    // Weight fields (per phase)
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? TareWeight { get; set; }       // Empty truck weight (tons)
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? NetWeight { get; set; }        // Cargo weight (tons)
+
+    [NotMapped]
+    public decimal GrossWeight => (TareWeight ?? 0) + (NetWeight ?? 0);
+
+    // ═══ RATE & DEAL AMOUNT ═══
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Rate { get; set; }              // Rate per ton (₹/ton)
+
+    // Deal Amount = Rate × NetWeight (auto-calculated, but stored for reporting)
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal DealAmount { get; set; }
+
+    // Auto-calculate DealAmount from Rate × NetWeight
+    [NotMapped]
+    public decimal CalculatedDealAmount => Rate * (NetWeight ?? 0);
+
+    public TripPhaseStatus Status { get; set; } = TripPhaseStatus.Pending;
+
+    [MaxLength(500)]
+    public string? Notes { get; set; }
+
+    // Navigation - Expenses can be linked to a specific phase
+    public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+}
+
+public enum TripPhaseType { Up = 1, Down = 2 }
+public enum TripPhaseStatus { Pending = 1, InProgress = 2, Completed = 3, Cancelled = 4 }
+
+
+// ═══════════════════════════════════════════════════
+//  TRIP PAYMENT (LEDGER)
+// ═══════════════════════════════════════════════════
+public class TripPayment : TenantBaseEntity
+{
+    public int TripId { get; set; }
+    public Trip Trip { get; set; } = null!;
+
+    public PaymentType PaymentType { get; set; }  // Received or Paid
+
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Amount { get; set; }
+
+    public DateTime PaymentDate { get; set; }
+
+    public PaymentMode PaymentMode { get; set; }  // Cash, Bank, UPI, Cheque
+
+    [MaxLength(100)]
+    public string? ReferenceNumber { get; set; }  // Cheque No, UTR, etc.
+
+    [MaxLength(200)]
+    public string? PayerPayee { get; set; }  // Who paid / received
+
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    [MaxLength(500)]
+    public string? ReceiptPath { get; set; }  // Attached receipt/voucher
+}
+
+public enum PaymentType { Received = 1, Paid = 2 }
+public enum PaymentMode { Cash = 1, BankTransfer = 2, UPI = 3, Cheque = 4, Other = 5 }
 
 // ═══════════════════════════════════════════════════
 //  TRIP DOCUMENT
@@ -184,6 +369,10 @@ public class Expense : TenantBaseEntity
     public int TripId { get; set; }
     public Trip Trip { get; set; } = null!;
 
+    // Optional: Link expense to a specific phase (UP/DOWN)
+    public int? TripPhaseId { get; set; }
+    public TripPhase? TripPhase { get; set; }
+
     // Dynamic category from master table
     public int? CategoryId { get; set; }
     public ExpenseCategoryMaster? CategoryMaster { get; set; }
@@ -210,6 +399,10 @@ public class Expense : TenantBaseEntity
 
     // Helper to get category name (from master or enum)
     public string CategoryName => CategoryMaster?.Name ?? Category.ToString();
+
+    // Helper to get phase type name
+    [NotMapped]
+    public string PhaseName => TripPhase?.PhaseType.ToString() ?? "General";
 }
 
 // ═══════════════════════════════════════════════════

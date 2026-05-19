@@ -38,9 +38,18 @@
                         @foreach (var child in item.Children)
                         {
                             <li class="nav-item">
-                                <a asp-controller="@child.Controller" asp-action="@child.Action" class="nav-link">
-                                    <i class="@child.Icon nav-icon"></i><p>@L[child.Title]</p>
-                                </a>
+                                @if (!string.IsNullOrEmpty(child.OnClick))
+                                {
+                                    <a href="javascript:void(0);" onclick="@child.OnClick" class="nav-link">
+                                        <i class="@child.Icon nav-icon"></i><p>@L[child.Title]</p>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="@child.Controller" asp-action="@child.Action" class="nav-link">
+                                        <i class="@child.Icon nav-icon"></i><p>@L[child.Title]</p>
+                                    </a>
+                                }
                             </li>
                         }
                     </ul>

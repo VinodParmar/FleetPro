@@ -2,14 +2,13 @@
 @model List<FleetPro.Models.Entities.Trip>
 @{
     ViewData["Title"] = L["Trips"].Value;
+    var totalDealAmount = Model.Sum(t => t.TotalDealAmount);
 }
 
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@L["Trips"]
-                <a asp-action="Create" class="btn btn-primary btn-sm ml-2"><i class="fas fa-plus mr-1"></i>@L["New Trip"]</a>
-            </h1>
+            <h1 class="m-0">@L["Trips"]</h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -21,16 +20,15 @@
 </div></div>
 
 <section class="content"><div class="container-fluid">
-
     <div class="row mb-3">
         <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-info"><i class="fas fa-route"></i></span><div class="info-box-content"><span class="info-box-text">@L["Total"]</span><span class="info-box-number">@Model.Count</span></div></div></div>
         <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-warning"><i class="fas fa-spinner"></i></span><div class="info-box-content"><span class="info-box-text">@L["In Progress"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.InProgress)</span></div></div></div>
         <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-success"><i class="fas fa-check-double"></i></span><div class="info-box-content"><span class="info-box-text">@L["Completed"]</span><span class="info-box-number">@Model.Count(t => t.Status == FleetPro.Models.Entities.TripStatus.Completed)</span></div></div></div>
-        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-primary"><i class="fas fa-rupee-sign"></i></span><div class="info-box-content"><span class="info-box-text">@L["Total Revenue"]</span><span class="info-box-number">₹@Model.Sum(t => t.Revenue).ToString("N0")</span></div></div></div>
+        <div class="col-md-3"><div class="info-box mb-0"><span class="info-box-icon bg-primary"><i class="fas fa-rupee-sign"></i></span><div class="info-box-content"><span class="info-box-text">@L["Deal Amount"]</span><span class="info-box-number">₹@totalDealAmount.ToString("N0")</span></div></div></div>
     </div>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
             <form method="get" class="form-inline flex-wrap" style="gap:6px;">
                 <input name="from" type="date" value="@Context.Request.Query["from"]" class="form-control form-control-sm">
                 <input name="to"   type="date" value="@Context.Request.Query["to"]"   class="form-control form-control-sm">
@@ -42,65 +40,67 @@
                 <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / location…"]">
                 <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-filter mr-1"></i>@L["Filter"]</button>
                 <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Clear"]</a>
-                <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-sm btn-success ml-auto"><i class="fas fa-file-excel mr-1"></i>@L["Export Excel"]</a>
+                <a asp-controller="Report" asp-action="ExportTripsExcel" class="btn btn-sm btn-success"><i class="fas fa-file-excel mr-1"></i>@L["Export"]</a>
             </form>
+            <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>@L["New Trip"]</a>
         </div>
         <div class="card-body p-0">
             <table class="table table-sm table-hover mb-0">
                 <thead>
                     <tr>
                         <th style="width:110px;">@L["Actions"]</th>
-                        <th>@L["Trip #"]</th><th>@L["From"]</th><th>@L["To"]</th><th>@L["Driver"]</th><th>@L["Truck"]</th>
-                        <th>@L["Start"]</th><th>@L["End"]</th><th>@L["Revenue"]</th><th>@L["Expenses"]</th><th>@L["Profit"]</th><th>@L["Status"]</th>
+                        <th>@L["Trip #"]</th><th>@L["Route"]</th><th>@L["Driver"]</th><th>@L["Truck"]</th>
+                        <th>@L["Date"]</th><th>@L["KM"]</th><th>@L["Deal Amt"]</th><th>@L["Expenses"]</th><th>@L["Profit"]</th><th>@L["Status"]</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var t in Model)
                     {
-                        var profit = t.Revenue - t.TotalExpenses;
+                        var hasUp = t.Phases?.Any(p => p.PhaseType == FleetPro.Models.Entities.TripPhaseType.Up && !p.IsDeleted) ?? false;
+                        var hasDown = t.Phases?.Any(p => p.PhaseType == FleetPro.Models.Entities.TripPhaseType.Down && !p.IsDeleted) ?? false;
                         <tr>
-                            <td class="action-btn">
+                            <td class="action-btn" style="white-space:nowrap;">
                                 <a asp-action="Details" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
                                 <a asp-action="Edit" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
-                                <form asp-action="Delete" asp-route-eid="@Ids.Protect(t.Id)" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete trip {0}?", t.TripNumber]" title="Delete"><i class="fas fa-trash"></i></button>
-                                </form>
+                                <a asp-controller="Expense" asp-action="Create" asp-route-tripId="@t.Id" class="btn btn-xs btn-danger" title="Add Expense"><i class="fas fa-receipt"></i></a>
                             </td>
-                            <td><strong>@t.TripNumber</strong></td>
-                            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@t.FromLocation</td>
-                            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@t.ToLocation</td>
+                            <td><a asp-action="Details" asp-route-eid="@Ids.Protect(t.Id)"><strong>@t.TripNumber</strong></a></td>
+                            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="@t.Route">@t.Route</td>
                             <td>@t.Driver?.FullName</td>
                             <td>@t.Truck?.NumberPlate</td>
-                            <td>@t.StartDate.ToString("dd/MM/yy")</td>
-                            <td>@(t.EndDate?.ToString("dd/MM/yy") ?? "—")</td>
-                            <td class="text-success font-weight-bold">₹@t.Revenue.ToString("N0")</td>
-                            <td><a asp-controller="Expense" asp-action="Index" asp-route-tripId="@t.Id" class="text-danger font-weight-bold" title="@L["View expenses"]">₹@t.TotalExpenses.ToString("N0")</a></td>
-                            <td class="@(profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@profit.ToString("N0")</td>
+                            <td>@t.StartDate.ToString("dd/MM")</td>
+                            <td>@t.TotalDistance.ToString("N0")</td>
+                            <td class="text-info font-weight-bold">₹@t.TotalDealAmount.ToString("N0")</td>
+                            <td><a asp-controller="Expense" asp-action="Index" asp-route-tripId="@t.Id" class="text-danger font-weight-bold" title="View expenses">₹@t.TotalExpenses.ToString("N0")</a></td>
+                            <td class="@(t.NetProfit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@t.NetProfit.ToString("N0")</td>
                             <td>
                                 @switch (t.Status)
                                 {
-                                    case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">@L["Completed"]</span>  break;
-                                    case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">@L["In Progress"]</span> break;
-                                    case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">@L["Scheduled"]</span>    break;
-                                    case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">@L["Cancelled"]</span>   break;
+                                    case FleetPro.Models.Entities.TripStatus.Completed:  <span class="badge badge-success">✓</span>  break;
+                                    case FleetPro.Models.Entities.TripStatus.InProgress: <span class="badge badge-warning">▶</span> break;
+                                    case FleetPro.Models.Entities.TripStatus.Scheduled:  <span class="badge badge-info">◷</span>    break;
+                                    case FleetPro.Models.Entities.TripStatus.Cancelled:  <span class="badge badge-danger">✕</span>   break;
                                 }
+                                @if (hasUp) { <span class="badge badge-success" title="UP Phase">↑</span> }
+                                @if (hasDown) { <span class="badge badge-danger" title="DOWN Phase">↓</span> }
                             </td>
                         </tr>
                     }
                     @if (!Model.Any())
                     {
-                        <tr><td colspan="12" class="text-center text-muted py-4">@L["No trips found."] <a asp-action="Create">@L["Create first trip →"]</a></td></tr>
+                        <tr><td colspan="11" class="text-center text-muted py-4">@L["No trips found."] <a asp-action="Create">@L["Create first trip →"]</a></td></tr>
                     }
                 </tbody>
                 @if (Model.Any())
                 {
+                    var totalExp = Model.Sum(t => t.TotalExpenses);
+                    var totalProfit = Model.Sum(t => t.NetProfit);
                     <tfoot class="bg-light font-weight-bold">
                         <tr>
-                            <td colspan="8" class="text-right">@L["Totals:"]</td>
-                            <td class="text-success">₹@Model.Sum(t => t.Revenue).ToString("N0")</td>
-                            <td class="text-danger">₹@Model.Sum(t => t.TotalExpenses).ToString("N0")</td>
-                            <td class="text-primary">₹@Model.Sum(t => t.NetProfit).ToString("N0")</td>
+                            <td colspan="7" class="text-right">@L["Totals:"]</td>
+                            <td class="text-info">₹@totalDealAmount.ToString("N0")</td>
+                            <td class="text-danger">₹@totalExp.ToString("N0")</td>
+                            <td class="text-primary">₹@totalProfit.ToString("N0")</td>
                             <td></td>
                         </tr>
                     </tfoot>

@@ -17,119 +17,258 @@
 </div></div>
 
 <section class="content"><div class="container-fluid">
-<form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-eid="@Ids.Protect(Model.Id)" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>@L["Trip Details"]</h3>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label asp-for="TruckId" class="font-weight-bold">@L["Truck"] *</label>
-                            <select asp-for="TruckId" asp-items="ViewBag.Trucks" class="form-control">
-                                <option value="">@L["— Select Truck —"]</option>
-                            </select>
-                            <span asp-validation-for="TruckId" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="DriverId" class="font-weight-bold">@L["Driver"] *</label>
-                            <select asp-for="DriverId" asp-items="ViewBag.Drivers" class="form-control">
-                                <option value="">@L["— Select Driver —"]</option>
-                            </select>
-                            <span asp-validation-for="DriverId" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="FromLocation" class="font-weight-bold">@L["From Location *"]</label>
-                            <input asp-for="FromLocation" class="form-control" placeholder="Mumbai, Maharashtra">
-                            <span asp-validation-for="FromLocation" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="ToLocation" class="font-weight-bold">@L["To Location *"]</label>
-                            <input asp-for="ToLocation" class="form-control" placeholder="Delhi, NCR">
-                            <span asp-validation-for="ToLocation" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <label asp-for="StartDate" class="font-weight-bold">@L["Start Date *"]</label>
-                            <input asp-for="StartDate" type="date" class="form-control">
-                            <span asp-validation-for="StartDate" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <label asp-for="EndDate">@L["End Date"]</label>
-                            <input asp-for="EndDate" type="date" class="form-control">
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <label asp-for="DistanceKm">@L["Distance (km)"]</label>
-                            <input asp-for="DistanceKm" type="number" step="0.1" class="form-control" placeholder="1421">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="CargoDescription">@L["Cargo Description"]</label>
-                            <input asp-for="CargoDescription" class="form-control" placeholder="FMCG Goods">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label asp-for="CargoWeightTons">@L["Cargo Weight (Tons)"]</label>
-                            <input asp-for="CargoWeightTons" type="number" step="0.5" class="form-control">
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label asp-for="Status" class="font-weight-bold">@L["Status"]</label>
-                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TripStatus>()" class="form-control"></select>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="ClientName">@L["Client Name"]</label>
-                            <input asp-for="ClientName" class="form-control" placeholder="Reliance Retail">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label asp-for="LRNumber">@L["LR Number (Lorry Receipt)"]</label>
-                            <input asp-for="LRNumber" class="form-control" placeholder="LR-2025-001">
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <label asp-for="Notes">@L["Notes"]</label>
-                            <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
-                        </div>
+@if (isCreate)
+{
+    <!-- ═══════════════════ CREATE MODE: Basic Info Only ═══════════════════ -->
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title"><i class="fas fa-truck-moving mr-2"></i>@L["Step 1: Create Trip"]</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label asp-for="TruckId" class="font-weight-bold">@L["Truck"] *</label>
+                        <select asp-for="TruckId" asp-items="ViewBag.Trucks" class="form-control">
+                            <option value="">@L["— Select Truck —"]</option>
+                        </select>
+                        <span asp-validation-for="TruckId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="DriverId" class="font-weight-bold">@L["Driver"] *</label>
+                        <select asp-for="DriverId" asp-items="ViewBag.Drivers" class="form-control">
+                            <option value="">@L["— Select Driver —"]</option>
+                        </select>
+                        <span asp-validation-for="DriverId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Status" class="font-weight-bold">@L["Status"]</label>
+                        <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.TripStatus>()" class="form-control"></select>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label asp-for="Notes">@L["Description"]</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Trip description, cargo details, special instructions..."></textarea>
                     </div>
                 </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
+                <button type="submit" class="btn btn-primary float-right"><i class="fas fa-save mr-1"></i>@L["Create & Continue"]</button>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h3 class="card-title"><i class="fas fa-rupee-sign mr-2"></i>@L["Revenue"]</h3>
+        
+        <div class="callout callout-info">
+            <h5><i class="fas fa-info-circle mr-1"></i> @L["Next Steps"]</h5>
+            <p class="mb-0">After creating the trip, you can add:</p>
+            <ul class="mb-0">
+                <li><strong>↑ UP Phase</strong> - Outbound journey (जाना)</li>
+                <li><strong>↓ DOWN Phase</strong> - Return journey (वापसी)</li>
+                <li><strong>₹ Payments</strong> - Received & Paid amounts</li>
+                <li><strong>📄 Expenses</strong> - Fuel, Toll, etc.</li>
+            </ul>
+        </div>
+    </form>
+}
+else
+{
+    <!-- ═══════════════════ EDIT MODE: Full Tabs ═══════════════════ -->
+    <div class="row">
+        <!-- Left: Trip Info (Read-only) -->
+        <div class="col-md-3">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-info-circle mr-1"></i>@L["Trip Info"]</h3>
                 </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label asp-for="Revenue" class="font-weight-bold">@L["Revenue Amount (₹) *"]</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend"><span class="input-group-text">₹</span></div>
-                            <input asp-for="Revenue" type="number" step="0.01" min="0" class="form-control form-control-lg" placeholder="45000">
-                        </div>
-                        <span asp-validation-for="Revenue" class="text-danger small"></span>
-                    </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr><th class="text-muted">@L["Trip #"]</th><td><strong>@Model.TripNumber</strong></td></tr>
+                        <tr><th class="text-muted">@L["Truck"]</th><td>🚚 @Model.TruckPlate</td></tr>
+                        <tr><th class="text-muted">@L["Driver"]</th><td>👤 @Model.DriverName</td></tr>
+                        <tr><th class="text-muted">@L["Notes"]</th><td><small>@(Model.Notes ?? "—")</small></td></tr>
+                    </table>
+                </div>
+                <div class="card-footer p-2">
+                    <form asp-action="UpdateStatus" asp-route-eid="@Ids.Protect(Model.Id)" method="post" class="form-inline">
+                        @Html.AntiForgeryToken()
+                        <select name="status" class="form-control form-control-sm mr-2" style="width:auto;">
+                            @foreach (var s in Enum.GetValues<FleetPro.Models.Entities.TripStatus>())
+                            {
+                                <option value="@((int)s)" selected="@(Model.Status == s ? "selected" : null)">@s</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-save"></i></button>
+                    </form>
                 </div>
             </div>
 
+            <!-- Quick Summary -->
             <div class="card">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>@L["Quick Tips"]</h3></div>
-                <div class="card-body text-muted small">
-                    <ul class="pl-3 mb-0">
-                        <li>@L["Add expenses after creating the trip"]</li>
-                        <li>@L["Upload documents (LR, Invoice) in trip details"]</li>
-                        <li>@L["P&L is auto-calculated from Revenue − Expenses"]</li>
+                <div class="card-header bg-dark text-white py-2">
+                    <h3 class="card-title"><i class="fas fa-calculator mr-1"></i>@L["Summary"]</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr><td>@L["Total KM"]</td><td class="text-right"><strong>@Model.TotalDistance.ToString("N0")</strong> km</td></tr>
+                        <tr class="table-info"><td>@L["Deal Amount"]</td><td class="text-right text-info font-weight-bold">₹@Model.TotalDealAmount.ToString("N0")</td></tr>
+                        <tr class="table-success"><td>@L["Received"]</td><td class="text-right text-success font-weight-bold">₹@Model.TotalPaymentsIn.ToString("N0")</td></tr>
+                        <tr class="table-danger"><td>@L["Expenses"]</td><td class="text-right text-danger font-weight-bold">₹@Model.TotalExpenses.ToString("N0")</td></tr>
+                        <tr class="table-warning"><td>@L["Pending"]</td><td class="text-right text-warning font-weight-bold">₹@Model.PendingAmount.ToString("N0")</td></tr>
+                        <tr class="@(Model.NetProfit >= 0 ? "table-primary" : "table-danger")">
+                            <td class="font-weight-bold">@L["Profit"]</td>
+                            <td class="text-right font-weight-bold @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">₹@Model.NetProfit.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fas fa-arrow-left mr-1"></i>@L["Back to List"]</a>
+        </div>
+
+        <!-- Right: Tabs for UP, DOWN, Payments, Expenses -->
+        <div class="col-md-9">
+            <div class="card card-primary card-outline card-tabs">
+                <div class="card-header p-0">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tabUp"><i class="fas fa-arrow-up text-success mr-1"></i>@L["Up Phase"]</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabDown"><i class="fas fa-arrow-down text-danger mr-1"></i>@L["Down Phase"]</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabPayments"><i class="fas fa-rupee-sign text-primary mr-1"></i>@L["Payments"]</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tabExpenses"><i class="fas fa-receipt text-warning mr-1"></i>@L["Expenses"]</a></li>
                     </ul>
                 </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- TAB: UP Phase -->
+                        <div class="tab-pane fade show active" id="tabUp">
+                            <form asp-action="SavePhase" asp-route-eid="@Ids.Protect(Model.Id)" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="PhaseType" value="1">
+                                <input type="hidden" name="PhaseId" value="@Model.UpPhase?.Id">
+                                @await Html.PartialAsync("_PhaseForm", Model.UpPhase ?? new FleetPro.Models.ViewModels.TripPhaseViewModel(), new ViewDataDictionary(ViewData) { { "Prefix", "UpPhase" }, { "Color", "success" } })
+                                <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i>@L["Save UP Phase"]</button>
+                            </form>
+                        </div>
+                        
+                        <!-- TAB: DOWN Phase -->
+                        <div class="tab-pane fade" id="tabDown">
+                            <form asp-action="SavePhase" asp-route-eid="@Ids.Protect(Model.Id)" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="PhaseType" value="2">
+                                <input type="hidden" name="PhaseId" value="@Model.DownPhase?.Id">
+                                @await Html.PartialAsync("_PhaseForm", Model.DownPhase ?? new FleetPro.Models.ViewModels.TripPhaseViewModel(), new ViewDataDictionary(ViewData) { { "Prefix", "DownPhase" }, { "Color", "danger" } })
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-save mr-1"></i>@L["Save DOWN Phase"]</button>
+                            </form>
+                        </div>
+                        
+                        <!-- TAB: Payments -->
+                        <div class="tab-pane fade" id="tabPayments">
+                            <!-- Add Payment Form -->
+                            <form asp-action="AddPayment" asp-route-eid="@Ids.Protect(Model.Id)" method="post" class="mb-3">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="TripId" value="@Model.Id">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <select name="PaymentType" class="form-control">
+                                            <option value="1">Received</option>
+                                            <option value="2">Paid</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" name="Amount" class="form-control" placeholder="Amount" step="1" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="date" name="PaymentDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select name="PaymentMode" class="form-control">
+                                            <option value="1">Cash</option>
+                                            <option value="2">Bank</option>
+                                            <option value="3">UPI</option>
+                                            <option value="4">Cheque</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" name="PayerPayee" class="form-control" placeholder="Payer/Payee">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-plus"></i> Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <!-- Payment Ledger -->
+                            @await Html.PartialAsync("_PaymentLedger", Model)
+                        </div>
+                        
+                        <!-- TAB: Expenses -->
+                        <div class="tab-pane fade" id="tabExpenses">
+                            <div class="mb-3">
+                                <a asp-controller="Expense" asp-action="Create" asp-route-tripId="@Model.Id" class="btn btn-danger"><i class="fas fa-plus mr-1"></i>@L["Add Expense"]</a>
+                            </div>
+                            @await Html.PartialAsync("_ExpenseList", Model)
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+}
 
-    <div class="text-right mb-3">
-        <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@(isCreate ? L["Create Trip"].Value : L["Save Changes"].Value)</button>
-    </div>
-</form>
 </div></section>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts { 
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            function calculatePhaseValues(prefix) {
+                // Calculate KM
+                var startInput = document.querySelector('input[name="' + prefix + '.StartMeterReading"]');
+                var endInput = document.querySelector('input[name="' + prefix + '.EndMeterReading"]');
+                var calcKmField = document.querySelector('.calc-km[data-prefix="' + prefix + '"]');
+
+                if (startInput && endInput && calcKmField) {
+                    var start = parseFloat(startInput.value) || 0;
+                    var end = parseFloat(endInput.value) || 0;
+                    calcKmField.value = Math.max(0, end - start).toFixed(0);
+                }
+
+                // Calculate Deal Amount = Rate × NetWeight
+                var netInput = document.querySelector('input[name="' + prefix + '.NetWeight"]');
+                var rateInput = document.querySelector('input[name="' + prefix + '.Rate"]');
+                var dealField = document.querySelector('.calc-deal[data-prefix="' + prefix + '"]');
+                var dealHidden = document.querySelector('.deal-amount-hidden[data-prefix="' + prefix + '"]');
+
+                if (netInput && rateInput && dealField) {
+                    var net = parseFloat(netInput.value) || 0;
+                    var rate = parseFloat(rateInput.value) || 0;
+                    var deal = rate * net;
+                    dealField.value = deal.toLocaleString('en-IN', {maximumFractionDigits: 0});
+                    if (dealHidden) dealHidden.value = deal.toFixed(2);
+                }
+            }
+
+            // Attach event listeners
+            document.querySelectorAll('.phase-meter, .phase-calc').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    var prefix = this.dataset.prefix;
+                    calculatePhaseValues(prefix);
+                });
+            });
+
+            // Initial calculation on page load
+            ['UpPhase', 'DownPhase'].forEach(calculatePhaseValues);
+
+            // Swap button for DOWN phase
+            document.getElementById('btnSwap')?.addEventListener('click', function() {
+                var upFrom = document.querySelector('input[name="UpPhase.FromLocation"]');
+                var upTo = document.querySelector('input[name="UpPhase.ToLocation"]');
+                document.querySelector('input[name="DownPhase.FromLocation"]').value = upTo?.value || '';
+                document.querySelector('input[name="DownPhase.ToLocation"]').value = upFrom?.value || '';
+            });
+        });
+    </script>
+}

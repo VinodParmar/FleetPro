@@ -218,19 +218,18 @@
                             <tbody>
                                 @foreach (var t in Model.RecentTrips)
                                 {
-                                    var profit = t.Revenue - t.TotalExpenses;
                                     <tr>
                                         <td class="action-btn">
                                             <a asp-controller="Trip" asp-action="Details" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
                                             <a asp-controller="Trip" asp-action="Edit" asp-route-eid="@Ids.Protect(t.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
                                         </td>
                                         <td><strong>@t.TripNumber</strong></td>
-                                        <td class="small">@t.FromLocation → @t.ToLocation</td>
+                                        <td class="small">@t.Route</td>
                                         <td><span class="badge badge-secondary">@t.Truck?.NumberPlate</span></td>
                                         <td>@t.Driver?.FullName</td>
-                                        <td class="text-success font-weight-bold">₹@t.Revenue.ToString("N0")</td>
+                                        <td class="text-info font-weight-bold">₹@t.TotalDealAmount.ToString("N0")</td>
                                         <td class="text-danger">₹@t.TotalExpenses.ToString("N0")</td>
-                                        <td class="@(profit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@profit.ToString("N0")</td>
+                                        <td class="@(t.NetProfit >= 0 ? "text-primary" : "text-danger") font-weight-bold">₹@t.NetProfit.ToString("N0")</td>
                                         <td>
                                             @switch (t.Status)
                                             {

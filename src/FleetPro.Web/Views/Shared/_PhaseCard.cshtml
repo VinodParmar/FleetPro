@@ -1,0 +1,60 @@
+@* Partial view for Phase Card *@
+@model FleetPro.Models.Entities.TripPhase?
+@{
+    var phaseType = ViewData["PhaseType"]?.ToString() ?? "Up";
+    var phaseColor = ViewData["PhaseColor"]?.ToString() ?? "success";
+    var tripId = ViewData["TripId"];
+    var icon = phaseType == "Up" ? "arrow-up" : "arrow-down";
+    var label = phaseType == "Up" ? "Up Phase (जाना)" : "Down Phase (वापसी)";
+}
+
+<div class="card card-outline card-@phaseColor">
+    <div class="card-header py-2">
+        <h3 class="card-title"><i class="fas fa-@icon text-@phaseColor mr-1"></i>@label</h3>
+    </div>
+    @if (Model != null)
+    {
+        <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+                <tr><td class="text-muted" style="width:35%">@L["Route"]</td><td><strong>@Model.FromLocation → @Model.ToLocation</strong></td></tr>
+                <tr><td class="text-muted">@L["Date"]</td><td>@Model.StartDate.ToString("dd MMM") @(Model.EndDate.HasValue ? "→ " + Model.EndDate.Value.ToString("dd MMM") : "")</td></tr>
+                <tr><td class="text-muted">@L["Meter"]</td><td>@Model.StartMeterReading.ToString("N0") → @(Model.EndMeterReading?.ToString("N0") ?? "—") km</td></tr>
+                <tr class="table-info"><td class="font-weight-bold">@L["Distance"]</td><td class="font-weight-bold text-primary">@Model.CalculatedKm.ToString("N0") km</td></tr>
+                @if (Model.Agent != null)
+                {
+                    <tr><td class="text-muted">@L["Agent"]</td><td>@Model.Agent.Name</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.LRNumber))
+                {
+                    <tr><td class="text-muted">@L["LR #"]</td><td>@Model.LRNumber</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.CargoDescription))
+                {
+                    <tr><td class="text-muted">@L["Cargo"]</td><td>@Model.CargoDescription</td></tr>
+                }
+                @if (Model.NetWeight.HasValue)
+                {
+                    <tr><td class="text-muted">@L["Weight"]</td><td>Net: <strong>@Model.NetWeight?.ToString("N2")</strong> tons</td></tr>
+                }
+                <tr><td class="text-muted">@L["Rate"]</td><td>₹@Model.Rate.ToString("N0") /ton</td></tr>
+                <tr class="table-info"><td class="font-weight-bold">@L["Deal Amount"]</td><td class="font-weight-bold text-info">₹@Model.DealAmount.ToString("N0")</td></tr>
+                <tr><td class="text-muted">@L["Status"]</td><td>
+                    @switch (Model.Status)
+                    {
+                        case FleetPro.Models.Entities.TripPhaseStatus.Completed: <span class="badge badge-success">Completed</span> break;
+                        case FleetPro.Models.Entities.TripPhaseStatus.InProgress: <span class="badge badge-warning">In Progress</span> break;
+                        case FleetPro.Models.Entities.TripPhaseStatus.Pending: <span class="badge badge-info">Pending</span> break;
+                        case FleetPro.Models.Entities.TripPhaseStatus.Cancelled: <span class="badge badge-danger">Cancelled</span> break;
+                    }
+                </td></tr>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="card-body text-center text-muted py-4">
+            <i class="fas fa-@icon fa-2x mb-2 text-@phaseColor"></i><br>
+            @L["No"] @phaseType.ToLower() @L["phase added yet"]
+        </div>
+    }
+</div>

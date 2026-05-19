@@ -186,6 +186,8 @@ public class TruckViewModel
     public DateTime? InsuranceExpiry { get; set; }
     public DateTime? TaxExpiry { get; set; }
     public DateTime? PermitExpiry { get; set; }
+    public DateTime? AuthorizationExpiry { get; set; }  // National Permit
+    public DateTime? PUCExpiry { get; set; }            // Pollution Under Control
 
     [MaxLength(50)]
     public string? InsurancePolicyNumber { get; set; }
@@ -244,43 +246,53 @@ public class DriverViewModel
     public int TripCount { get; set; }
 }
 
+// ── AGENT ─────────────────────────────────────────────────────
+public class AgentViewModel
+{
+    public int Id { get; set; }
+
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [MaxLength(20)]
+    public string? Phone { get; set; }
+
+    [EmailAddress, MaxLength(150)]
+    public string? Email { get; set; }
+
+    [MaxLength(200)]
+    public string? CompanyName { get; set; }
+
+    [MaxLength(500)]
+    public string? Address { get; set; }
+
+    [MaxLength(30)]
+    public string? GSTNumber { get; set; }
+
+    [MaxLength(30)]
+    public string? PanNumber { get; set; }
+
+    public AgentStatus Status { get; set; } = AgentStatus.Active;
+
+    [MaxLength(500)]
+    public string? Notes { get; set; }
+
+    public int? TenantId { get; set; }
+    public string? TenantName { get; set; }
+}
+
 // ── TRIP ──────────────────────────────────────────────────────
+// Simplified: Trip only links Truck + Driver. All details in Phases.
 public class TripViewModel
 {
     public int Id { get; set; }
     public string TripNumber { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Please select a truck")]
     public int TruckId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Please select a driver")]
     public int DriverId { get; set; }
-
-    [Required, MaxLength(200)]
-    public string FromLocation { get; set; } = string.Empty;
-
-    [Required, MaxLength(200)]
-    public string ToLocation { get; set; } = string.Empty;
-
-    [Required]
-    public DateTime StartDate { get; set; } = DateTime.Today;
-
-    public DateTime? EndDate { get; set; }
-    public decimal? DistanceKm { get; set; }
-
-    [Required, Range(0, double.MaxValue)]
-    public decimal Revenue { get; set; }
-
-    [MaxLength(200)]
-    public string? CargoDescription { get; set; }
-
-    public decimal? CargoWeightTons { get; set; }
-
-    [MaxLength(200)]
-    public string? ClientName { get; set; }
-
-    [MaxLength(100)]
-    public string? LRNumber { get; set; }
 
     public TripStatus Status { get; set; } = TripStatus.Scheduled;
 
@@ -289,12 +301,104 @@ public class TripViewModel
 
     public int? TenantId { get; set; }
 
-    // Display
+    // Phase data (UP = outbound, DOWN = return)
+    public TripPhaseViewModel UpPhase { get; set; } = new() { PhaseType = TripPhaseType.Up };
+    public TripPhaseViewModel DownPhase { get; set; } = new() { PhaseType = TripPhaseType.Down };
+
+    // Display / Computed (from phases)
     public string? TruckPlate { get; set; }
     public string? DriverName { get; set; }
     public string? TenantName { get; set; }
+    public decimal TotalDealAmount { get; set; }
     public decimal TotalExpenses { get; set; }
     public decimal NetProfit { get; set; }
+    public decimal TotalDistance { get; set; }
+    public decimal PendingAmount { get; set; }
+    public decimal TotalPaymentsIn { get; set; }
+    public string? Route { get; set; }  // e.g., "Mumbai → Delhi → Mumbai"
+}
+
+// ── TRIP PHASE ────────────────────────────────────────────────
+public class TripPhaseViewModel
+{
+    public int Id { get; set; }
+
+    [Required]
+    public int TripId { get; set; }
+
+    [Required]
+    public TripPhaseType PhaseType { get; set; }
+
+    [MaxLength(200)]
+    public string FromLocation { get; set; } = string.Empty;
+
+    [MaxLength(200)]
+    public string ToLocation { get; set; } = string.Empty;
+
+    public decimal StartMeterReading { get; set; }
+    public decimal? EndMeterReading { get; set; }
+
+    public DateTime StartDate { get; set; } = DateTime.Today;
+    public DateTime? EndDate { get; set; }
+
+    // Agent FK
+    public int? AgentId { get; set; }
+    public string? AgentName { get; set; }  // For display only
+
+    [MaxLength(100)]
+    public string? LRNumber { get; set; }
+
+    [MaxLength(200)]
+    public string? CargoDescription { get; set; }
+
+    // Weight fields (per phase) - in tons
+    public decimal? TareWeight { get; set; }
+    public decimal? NetWeight { get; set; }
+
+    // Rate & Deal Amount
+    public decimal Rate { get; set; }           // ₹ per ton
+    public decimal DealAmount { get; set; }     // Rate × NetWeight
+
+    public TripPhaseStatus Status { get; set; } = TripPhaseStatus.Pending;
+
+    [MaxLength(500)]
+    public string? Notes { get; set; }
+
+    // Computed Display
+    public decimal CalculatedKm => EndMeterReading.HasValue ? EndMeterReading.Value - StartMeterReading : 0;
+    public decimal GrossWeight => (TareWeight ?? 0) + (NetWeight ?? 0);
+    public decimal CalculatedDealAmount => Rate * (NetWeight ?? 0);
+}
+
+// ── TRIP PAYMENT ──────────────────────────────────────────────
+public class TripPaymentViewModel
+{
+    public int Id { get; set; }
+
+    [Required]
+    public int TripId { get; set; }
+
+
+    [Required]
+    public PaymentType PaymentType { get; set; }
+
+    [Required, Range(0.01, double.MaxValue)]
+    public decimal Amount { get; set; }
+
+    [Required]
+    public DateTime PaymentDate { get; set; } = DateTime.Today;
+
+    [Required]
+    public PaymentMode PaymentMode { get; set; } = PaymentMode.Cash;
+
+    [MaxLength(100)]
+    public string? ReferenceNumber { get; set; }
+
+    [MaxLength(200)]
+    public string? PayerPayee { get; set; }
+
+    [MaxLength(500)]
+    public string? Description { get; set; }
 }
 
 // ── EXPENSE ───────────────────────────────────────────────────

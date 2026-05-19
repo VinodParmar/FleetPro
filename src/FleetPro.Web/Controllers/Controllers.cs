@@ -388,6 +388,7 @@ public class AccountController : Controller
         t.NumberPlate=vm.NumberPlate;t.Model=vm.Model;t.Make=vm.Make;t.ManufacturingYear=vm.ManufacturingYear;
         t.EngineNumber=vm.EngineNumber;t.ChassisNumber=vm.ChassisNumber;t.FitnessExpiry=vm.FitnessExpiry;
         t.InsuranceExpiry=vm.InsuranceExpiry;t.TaxExpiry=vm.TaxExpiry;t.PermitExpiry=vm.PermitExpiry;
+        t.AuthorizationExpiry=vm.AuthorizationExpiry;t.PUCExpiry=vm.PUCExpiry;
         t.InsurancePolicyNumber=vm.InsurancePolicyNumber;t.Status=vm.Status;
         t.LoadCapacityTons=vm.LoadCapacityTons;t.Notes=vm.Notes;
         await _svc.UpdateAsync(t); TempData["Success"]="Truck updated.";
@@ -404,12 +405,14 @@ public class AccountController : Controller
         NumberPlate=vm.NumberPlate,Model=vm.Model,Make=vm.Make,ManufacturingYear=vm.ManufacturingYear,
         EngineNumber=vm.EngineNumber,ChassisNumber=vm.ChassisNumber,FitnessExpiry=vm.FitnessExpiry,
         InsuranceExpiry=vm.InsuranceExpiry,TaxExpiry=vm.TaxExpiry,PermitExpiry=vm.PermitExpiry,
+        AuthorizationExpiry=vm.AuthorizationExpiry,PUCExpiry=vm.PUCExpiry,
         InsurancePolicyNumber=vm.InsurancePolicyNumber,Status=vm.Status,LoadCapacityTons=vm.LoadCapacityTons,
         Notes=vm.Notes,TenantId=_current.IsSuperAdmin?(vm.TenantId??0):_current.TenantId!.Value};
     private static TruckViewModel ToVM(Truck t) => new(){Id=t.Id,NumberPlate=t.NumberPlate,Model=t.Model,
         Make=t.Make,ManufacturingYear=t.ManufacturingYear,EngineNumber=t.EngineNumber,ChassisNumber=t.ChassisNumber,
         FitnessExpiry=t.FitnessExpiry,InsuranceExpiry=t.InsuranceExpiry,TaxExpiry=t.TaxExpiry,
-        PermitExpiry=t.PermitExpiry,InsurancePolicyNumber=t.InsurancePolicyNumber,Status=t.Status,
+        PermitExpiry=t.PermitExpiry,AuthorizationExpiry=t.AuthorizationExpiry,PUCExpiry=t.PUCExpiry,
+        InsurancePolicyNumber=t.InsurancePolicyNumber,Status=t.Status,
         LoadCapacityTons=t.LoadCapacityTons,Notes=t.Notes,TenantId=t.TenantId,TenantName=t.Tenant?.CompanyName};
     private async Task PopT() { if(_current.IsSuperAdmin) ViewBag.Tenants=new SelectList(await _db.Tenants.OrderBy(t=>t.CompanyName).ToListAsync(),"Id","CompanyName"); }
 }
@@ -476,6 +479,64 @@ public class AccountController : Controller
     private async Task PopD() { if(_current.IsSuperAdmin) ViewBag.Tenants=new SelectList(await _db.Tenants.OrderBy(t=>t.CompanyName).ToListAsync(),"Id","CompanyName"); }
 }
 
+// AGENT (Broker/Transport Agent)
+[Authorize] public class AgentController : BaseController {
+    private readonly IAgentService _svc;
+    public AgentController(IAgentService svc, AppDbContext db, ICurrentTenantService c) : base(db,c) => _svc=svc;
+
+    public async Task<IActionResult> Index() => View(await _svc.GetAllAsync());
+
+    [HttpGet]
+    public async Task<IActionResult> GetAgent(string eid) {
+        var id=DId(eid); if(id==0) return NotFound();
+        var a=await _svc.GetByIdAsync(id); if(a==null) return NotFound();
+        return Json(new { id=a.Id, name=a.Name, companyName=a.CompanyName, phone=a.Phone, status=a.Status.ToString() });
+    }
+
+    public async Task<IActionResult> Create() {
+        if (CheckPermission("agents.create") is { } r) return r;
+        await PopA(); return View(new AgentViewModel());
+    }
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(AgentViewModel vm) {
+        if (CheckPermission("agents.create") is { } r) return r;
+        if (!ModelState.IsValid) { await PopA(); return View(vm); }
+        await _svc.CreateAsync(ToEntity(vm)); TempData["Success"]="Agent created.";
+        return RedirectToAction(nameof(Index));
+    }
+    public async Task<IActionResult> Edit(string eid) {
+        if (CheckPermission("agents.edit") is { } r) return r;
+        var id=DId(eid); if(id==0) return NotFound();
+        var a=await _svc.GetByIdAsync(id); if(a==null) return NotFound();
+        await PopA(); return View("Create",ToVM(a));
+    }
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(string eid, AgentViewModel vm) {
+        if (CheckPermission("agents.edit") is { } r) return r;
+        var id=DId(eid); if(id==0) return NotFound();
+        if (!ModelState.IsValid) { await PopA(); return View("Create",vm); }
+        var a=await _svc.GetByIdAsync(id); if(a==null) return NotFound();
+        a.Name=vm.Name;a.Phone=vm.Phone;a.Email=vm.Email;a.CompanyName=vm.CompanyName;
+        a.Address=vm.Address;a.GSTNumber=vm.GSTNumber;a.PanNumber=vm.PanNumber;a.Status=vm.Status;a.Notes=vm.Notes;
+        await _svc.UpdateAsync(a); TempData["Success"]="Agent updated.";
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string eid) {
+        if (CheckPermission("agents.delete") is { } r) return r;
+        var id=DId(eid); if(id==0) return NotFound();
+        await _svc.DeleteAsync(id); TempData["Success"]="Agent deleted.";
+        return RedirectToAction(nameof(Index));
+    }
+    private Agent ToEntity(AgentViewModel vm) => new(){Name=vm.Name,Phone=vm.Phone,Email=vm.Email,
+        CompanyName=vm.CompanyName,Address=vm.Address,GSTNumber=vm.GSTNumber,PanNumber=vm.PanNumber,
+        Status=vm.Status,Notes=vm.Notes,TenantId=_current.IsSuperAdmin?(vm.TenantId??0):_current.TenantId!.Value};
+    private static AgentViewModel ToVM(Agent a) => new(){Id=a.Id,Name=a.Name,Phone=a.Phone,Email=a.Email,
+        CompanyName=a.CompanyName,Address=a.Address,GSTNumber=a.GSTNumber,PanNumber=a.PanNumber,
+        Status=a.Status,Notes=a.Notes,TenantId=a.TenantId};
+    private async Task PopA() { if(_current.IsSuperAdmin) ViewBag.Tenants=new SelectList(await _db.Tenants.OrderBy(t=>t.CompanyName).ToListAsync(),"Id","CompanyName"); }
+}
+
 // TRIP
 [Authorize] public class TripController : BaseController {
     private readonly ITripService _svc;
@@ -497,44 +558,133 @@ public class AccountController : Controller
     }
     public async Task<IActionResult> Create() {
         if (CheckPermission("trips.create") is { } r) return r;
-        await PopDD(); return View(new TripViewModel{StartDate=DateTime.Today});
+        await PopDD(); 
+        return View(new TripViewModel());
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TripViewModel vm) {
         if (CheckPermission("trips.create") is { } r) return r;
         if (!ModelState.IsValid) { await PopDD(); return View(vm); }
-        var trip=new Trip{TruckId=vm.TruckId,DriverId=vm.DriverId,FromLocation=vm.FromLocation,
-            ToLocation=vm.ToLocation,StartDate=vm.StartDate,EndDate=vm.EndDate,DistanceKm=vm.DistanceKm,
-            Revenue=vm.Revenue,CargoDescription=vm.CargoDescription,CargoWeightTons=vm.CargoWeightTons,
-            ClientName=vm.ClientName,LRNumber=vm.LRNumber,Status=vm.Status,Notes=vm.Notes,
-            TenantId=_current.TenantId??0};
-        await _svc.CreateAsync(trip); TempData["Success"]=$"Trip {trip.TripNumber} created.";
-        return RedirectToAction(nameof(Index));
+
+        // Create trip with basic info only (details in phases)
+        var trip = new Trip {
+            TruckId = vm.TruckId,
+            DriverId = vm.DriverId,
+            Status = vm.Status,
+            Notes = vm.Notes,
+            TenantId = _current.TenantId ?? 0
+        };
+        await _svc.CreateAsync(trip);
+
+        TempData["Success"] = $"Trip {trip.TripNumber} created. Now add phases and payments.";
+        return RedirectToAction(nameof(Edit), new { eid = EId(trip.Id) });
     }
+
     public async Task<IActionResult> Edit(string eid) {
         if (CheckPermission("trips.edit") is { } r) return r;
         var id=DId(eid); if(id==0) return NotFound();
         var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
+
+        var upPhase = t.Phases?.FirstOrDefault(p => p.PhaseType == TripPhaseType.Up && !p.IsDeleted);
+        var downPhase = t.Phases?.FirstOrDefault(p => p.PhaseType == TripPhaseType.Down && !p.IsDeleted);
+
         await PopDD();
-        return View("Create",new TripViewModel{Id=t.Id,TripNumber=t.TripNumber,TruckId=t.TruckId,
-            DriverId=t.DriverId,FromLocation=t.FromLocation,ToLocation=t.ToLocation,
-            StartDate=t.StartDate,EndDate=t.EndDate,DistanceKm=t.DistanceKm,Revenue=t.Revenue,
-            CargoDescription=t.CargoDescription,CargoWeightTons=t.CargoWeightTons,
-            ClientName=t.ClientName,LRNumber=t.LRNumber,Status=t.Status,Notes=t.Notes});
+        ViewBag.Payments = t.Payments?.Where(p => !p.IsDeleted).ToList() ?? new List<TripPayment>();
+        ViewBag.Expenses = t.Expenses?.Where(e => !e.IsDeleted).ToList() ?? new List<Expense>();
+
+        return View("Create", new TripViewModel {
+            Id = t.Id, TripNumber = t.TripNumber, TruckId = t.TruckId, DriverId = t.DriverId,
+            Status = t.Status, Notes = t.Notes,
+            TruckPlate = t.Truck?.NumberPlate, DriverName = t.Driver?.FullName,
+            TotalDealAmount = t.TotalDealAmount, TotalExpenses = t.TotalExpenses, 
+            NetProfit = t.NetProfit, TotalDistance = t.TotalDistance,
+            TotalPaymentsIn = t.TotalPaymentsIn, PendingAmount = t.PendingAmount,
+            UpPhase = upPhase != null ? MapPhaseToVm(upPhase) : new TripPhaseViewModel { PhaseType = TripPhaseType.Up, StartDate = DateTime.Today },
+            DownPhase = downPhase != null ? MapPhaseToVm(downPhase) : new TripPhaseViewModel { PhaseType = TripPhaseType.Down, StartDate = DateTime.Today }
+        });
     }
+
+    private static TripPhaseViewModel MapPhaseToVm(TripPhase p) => new() {
+        Id = p.Id, PhaseType = p.PhaseType, FromLocation = p.FromLocation, ToLocation = p.ToLocation,
+        StartMeterReading = p.StartMeterReading, EndMeterReading = p.EndMeterReading,
+        StartDate = p.StartDate, EndDate = p.EndDate, AgentId = p.AgentId, AgentName = p.Agent?.Name, 
+        LRNumber = p.LRNumber, CargoDescription = p.CargoDescription, TareWeight = p.TareWeight, NetWeight = p.NetWeight,
+        Rate = p.Rate, DealAmount = p.DealAmount, Status = p.Status, Notes = p.Notes
+    };
+
+    // Save Phase (UP or DOWN)
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string eid, TripViewModel vm) {
+    public async Task<IActionResult> SavePhase(string eid, int PhaseType, int PhaseId, TripPhaseViewModel UpPhase, TripPhaseViewModel DownPhase) {
         if (CheckPermission("trips.edit") is { } r) return r;
-        var id=DId(eid); if(id==0) return NotFound();
-        if (!ModelState.IsValid) { await PopDD(); return View("Create",vm); }
-        var t=await _svc.GetByIdAsync(id); if(t==null) return NotFound();
-        t.TruckId=vm.TruckId;t.DriverId=vm.DriverId;t.FromLocation=vm.FromLocation;t.ToLocation=vm.ToLocation;
-        t.StartDate=vm.StartDate;t.EndDate=vm.EndDate;t.DistanceKm=vm.DistanceKm;t.Revenue=vm.Revenue;
-        t.CargoDescription=vm.CargoDescription;t.CargoWeightTons=vm.CargoWeightTons;
-        t.ClientName=vm.ClientName;t.LRNumber=vm.LRNumber;t.Status=vm.Status;t.Notes=vm.Notes;
-        await _svc.UpdateAsync(t); TempData["Success"]="Trip updated.";
-        return RedirectToAction(nameof(Index));
+        var tripId = DId(eid); if (tripId == 0) return NotFound();
+        var t = await _svc.GetByIdAsync(tripId); if (t == null) return NotFound();
+
+        var phaseVm = PhaseType == 1 ? UpPhase : DownPhase;
+        var phaseType = PhaseType == 1 ? TripPhaseType.Up : TripPhaseType.Down;
+
+        if (string.IsNullOrWhiteSpace(phaseVm.FromLocation))
+        {
+            TempData["Error"] = "From Location is required.";
+            return RedirectToAction(nameof(Edit), new { eid });
+        }
+
+        if (PhaseId > 0)
+        {
+            // Update existing phase
+            var existing = t.Phases?.FirstOrDefault(p => p.Id == PhaseId && !p.IsDeleted);
+            if (existing != null)
+            {
+                existing.FromLocation = phaseVm.FromLocation;
+                existing.ToLocation = phaseVm.ToLocation ?? "";
+                existing.StartMeterReading = phaseVm.StartMeterReading;
+                existing.EndMeterReading = phaseVm.EndMeterReading;
+                existing.StartDate = phaseVm.StartDate;
+                existing.EndDate = phaseVm.EndDate;
+                existing.AgentId = phaseVm.AgentId;
+                existing.LRNumber = phaseVm.LRNumber;
+                existing.CargoDescription = phaseVm.CargoDescription;
+                existing.TareWeight = phaseVm.TareWeight;
+                existing.NetWeight = phaseVm.NetWeight;
+                existing.Rate = phaseVm.Rate;
+                existing.DealAmount = phaseVm.Rate * (phaseVm.NetWeight ?? 0);  // Auto-calculate
+                existing.Status = phaseVm.Status;
+                existing.Notes = phaseVm.Notes;
+                await _svc.UpdatePhaseAsync(existing);
+            }
+        }
+        else
+        {
+            // Create new phase
+            var newPhase = new TripPhase {
+                TripId = tripId, PhaseType = phaseType,
+                FromLocation = phaseVm.FromLocation, ToLocation = phaseVm.ToLocation ?? "",
+                StartMeterReading = phaseVm.StartMeterReading, EndMeterReading = phaseVm.EndMeterReading,
+                StartDate = phaseVm.StartDate, EndDate = phaseVm.EndDate,
+                AgentId = phaseVm.AgentId, LRNumber = phaseVm.LRNumber,
+                CargoDescription = phaseVm.CargoDescription,
+                TareWeight = phaseVm.TareWeight, NetWeight = phaseVm.NetWeight,
+                Rate = phaseVm.Rate, DealAmount = phaseVm.Rate * (phaseVm.NetWeight ?? 0),  // Auto-calculate
+                Status = phaseVm.Status, Notes = phaseVm.Notes
+            };
+            await _svc.AddPhaseAsync(newPhase);
+        }
+
+        TempData["Success"] = $"{phaseType} Phase saved.";
+        return RedirectToAction(nameof(Edit), new { eid });
     }
+
+    // Update Status only
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateStatus(string eid, int status) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        var id = DId(eid); if (id == 0) return NotFound();
+        var t = await _svc.GetByIdAsync(id); if (t == null) return NotFound();
+        t.Status = (TripStatus)status;
+        await _svc.UpdateAsync(t);
+        TempData["Success"] = "Status updated.";
+        return RedirectToAction(nameof(Edit), new { eid });
+    }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string eid) {
         if (CheckPermission("trips.delete") is { } r) return r;
@@ -542,10 +692,11 @@ public class AccountController : Controller
         await _svc.DeleteAsync(id); TempData["Success"]="Trip deleted.";
         return RedirectToAction(nameof(Index));
     }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadDocument(int tripId, IFormFile file, string documentType) {
         if (CheckPermission("trips.attachdocument") is { } r) return r;
-        if (file==null||file.Length==0){TempData["Error"]="No file.";return RedirectToAction(nameof(Details),new{id=tripId});}
+        if (file==null||file.Length==0){TempData["Error"]="No file.";return RedirectToAction(nameof(Details),new{eid=EId(tripId)});}
         var dir=Path.Combine(_env.WebRootPath,"uploads","trips",tripId.ToString());
         Directory.CreateDirectory(dir);
         var fn=$"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
@@ -554,14 +705,81 @@ public class AccountController : Controller
             FilePath=$"/uploads/trips/{tripId}/{fn}",FileType=Path.GetExtension(file.FileName),
             FileSizeBytes=file.Length,DocumentType=documentType});
         await _db.SaveChangesAsync();
-        TempData["Success"]="Document uploaded."; return RedirectToAction(nameof(Details),new{id=tripId});
+        TempData["Success"]="Document uploaded."; return RedirectToAction(nameof(Details),new{eid=EId(tripId)});
     }
+
+    // ── PHASE ACTIONS ──
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddPhase(TripPhaseViewModel vm) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        if (!ModelState.IsValid) { TempData["Error"]="Please fill all required fields."; return RedirectToAction(nameof(Details),new{eid=EId(vm.TripId)}); }
+        var phase = new TripPhase {
+            TripId = vm.TripId, PhaseType = vm.PhaseType, FromLocation = vm.FromLocation, ToLocation = vm.ToLocation,
+            StartMeterReading = vm.StartMeterReading, EndMeterReading = vm.EndMeterReading,
+            StartDate = vm.StartDate, EndDate = vm.EndDate, AgentId = vm.AgentId, LRNumber = vm.LRNumber,
+            CargoDescription = vm.CargoDescription, TareWeight = vm.TareWeight, NetWeight = vm.NetWeight,
+            Status = vm.Status, Notes = vm.Notes
+        };
+        await _svc.AddPhaseAsync(phase);
+        TempData["Success"] = $"{vm.PhaseType} phase added.";
+        return RedirectToAction(nameof(Details), new { eid = EId(vm.TripId) });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdatePhase(TripPhaseViewModel vm) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        var phase = await _db.TripPhases.FindAsync(vm.Id);
+        if (phase == null) return NotFound();
+        phase.FromLocation = vm.FromLocation; phase.ToLocation = vm.ToLocation;
+        phase.StartMeterReading = vm.StartMeterReading; phase.EndMeterReading = vm.EndMeterReading;
+        phase.StartDate = vm.StartDate; phase.EndDate = vm.EndDate;
+        phase.AgentId = vm.AgentId; phase.LRNumber = vm.LRNumber;
+        phase.CargoDescription = vm.CargoDescription; phase.TareWeight = vm.TareWeight;
+        phase.NetWeight = vm.NetWeight; phase.Status = vm.Status; phase.Notes = vm.Notes;
+        await _svc.UpdatePhaseAsync(phase);
+        TempData["Success"] = "Phase updated.";
+        return RedirectToAction(nameof(Details), new { eid = EId(vm.TripId) });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePhase(int phaseId, int tripId) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        await _svc.DeletePhaseAsync(phaseId);
+        TempData["Success"] = "Phase deleted.";
+        return RedirectToAction(nameof(Details), new { eid = EId(tripId) });
+    }
+
+    // ── PAYMENT ACTIONS ──
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddPayment(TripPaymentViewModel vm) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        if (!ModelState.IsValid) { TempData["Error"]="Please fill all required fields."; return RedirectToAction(nameof(Details),new{eid=EId(vm.TripId)}); }
+        var payment = new TripPayment {
+            TripId = vm.TripId, PaymentType = vm.PaymentType, Amount = vm.Amount,
+            PaymentDate = vm.PaymentDate, PaymentMode = vm.PaymentMode,
+            ReferenceNumber = vm.ReferenceNumber, PayerPayee = vm.PayerPayee, Description = vm.Description
+        };
+        await _svc.AddPaymentAsync(payment);
+        TempData["Success"] = $"Payment of ₹{vm.Amount:N0} recorded.";
+        return RedirectToAction(nameof(Details), new { eid = EId(vm.TripId) });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePayment(int paymentId, int tripId) {
+        if (CheckPermission("trips.edit") is { } r) return r;
+        await _svc.DeletePaymentAsync(paymentId);
+        TempData["Success"] = "Payment deleted.";
+        return RedirectToAction(nameof(Details), new { eid = EId(tripId) });
+    }
+
     private async Task PopDD() {
         var tId=_current.TenantId;
         ViewBag.Trucks=new SelectList(await _db.Trucks.Where(t=>!t.IsDeleted&&(_current.IsSuperAdmin||t.TenantId==tId))
             .Select(t=>new{t.Id,Label=t.NumberPlate+" — "+t.Model}).ToListAsync(),"Id","Label");
         ViewBag.Drivers=new SelectList(await _db.Drivers.Where(d=>!d.IsDeleted&&(_current.IsSuperAdmin||d.TenantId==tId))
             .Select(d=>new{d.Id,d.FullName}).ToListAsync(),"Id","FullName");
+        ViewBag.Agents=await _db.Agents.Where(a=>!a.IsDeleted&&(_current.IsSuperAdmin||a.TenantId==tId))
+            .OrderBy(a=>a.Name).ToListAsync();
     }
 }
 
@@ -578,6 +796,16 @@ public class AccountController : Controller
         await PopE(); // Load trips and categories dropdown for modal
         return View(expenses);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetExpense(string eid) {
+        var id=DId(eid); if(id==0) return NotFound();
+        var e=await _svc.GetByIdAsync(id); if(e==null) return NotFound();
+        return Json(new { id=e.Id, tripId=e.TripId, categoryId=e.CategoryId, amount=e.Amount,
+            expenseDate=e.ExpenseDate.ToString("yyyy-MM-dd"), description=e.Description,
+            vendorName=e.VendorName, billNumber=e.BillNumber, receiptPath=e.ReceiptPath });
+    }
+
     public async Task<IActionResult> Create(int? tripId) {
         if (CheckPermission("expenses.create") is { } r) return r;
         await PopE(); return View(new ExpenseViewModel{TripId=tripId??0,ExpenseDate=DateTime.Today});
@@ -744,13 +972,13 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> PL(ReportFilterViewModel f) {
         var tId=_current.TenantId;
-        var q=_current.IsSuperAdmin?_db.Trips.Include(t=>t.Expenses).AsQueryable()
-            :_db.Trips.Include(t=>t.Expenses).Where(t=>t.TenantId==tId);
-        if (f.FromDate.HasValue) q=q.Where(t=>t.StartDate>=f.FromDate);
-        if (f.ToDate.HasValue) q=q.Where(t=>t.StartDate<=f.ToDate);
+        var q=_current.IsSuperAdmin?_db.Trips.Include(t=>t.Expenses).Include(t=>t.Phases).AsQueryable()
+            :_db.Trips.Include(t=>t.Expenses).Include(t=>t.Phases).Where(t=>t.TenantId==tId);
+        if (f.FromDate.HasValue) q=q.Where(t=>t.CreatedAt>=f.FromDate);
+        if (f.ToDate.HasValue) q=q.Where(t=>t.CreatedAt<=f.ToDate);
         var trips=await q.ToListAsync();
         var vm=new PLReportViewModel{
-            TripRevenue=trips.Sum(t=>t.Revenue),
+            TripRevenue=trips.Sum(t=>t.TotalDealAmount),
             FuelExpenses=trips.Sum(t=>t.Expenses.Where(e=>!e.IsDeleted&&e.Category==ExpenseCategory.Fuel).Sum(e=>e.Amount)),
             MaintenanceExpenses=trips.Sum(t=>t.Expenses.Where(e=>!e.IsDeleted&&e.Category==ExpenseCategory.Maintenance).Sum(e=>e.Amount)),
             TollExpenses=trips.Sum(t=>t.Expenses.Where(e=>!e.IsDeleted&&e.Category==ExpenseCategory.Toll).Sum(e=>e.Amount)),
@@ -759,20 +987,20 @@ public class AccountController : Controller
                 &&e.Category!=ExpenseCategory.Maintenance&&e.Category!=ExpenseCategory.Toll
                 &&e.Category!=ExpenseCategory.Wages).Sum(e=>e.Amount)),
             TripBreakdown=trips.Select(t=>new TripPLViewModel{TripNumber=t.TripNumber,
-                Route=$"{t.FromLocation} → {t.ToLocation}",Revenue=t.Revenue,Expenses=t.TotalExpenses}).ToList()};
+                Route=t.Route,Revenue=t.TotalDealAmount,Expenses=t.TotalExpenses}).ToList()};
         vm.TotalRevenue=vm.TripRevenue+vm.OtherRevenue;
         vm.TotalExpenses=vm.FuelExpenses+vm.MaintenanceExpenses+vm.TollExpenses+vm.WagesExpenses+vm.OtherExpenses;
         return View("PL",vm);
     }
     public async Task<IActionResult> ExportTripsExcel(DateTime? from, DateTime? to) {
         var tId=_current.TenantId;
-        var trips=await _db.Trips.Include(t=>t.Truck).Include(t=>t.Driver).Include(t=>t.Expenses)
+        var trips=await _db.Trips.Include(t=>t.Truck).Include(t=>t.Driver).Include(t=>t.Expenses).Include(t=>t.Phases)
             .Where(t=>!t.IsDeleted&&(_current.IsSuperAdmin||t.TenantId==tId))
-            .Where(t=>(!from.HasValue||t.StartDate>=from)&&(!to.HasValue||t.StartDate<=to))
-            .OrderByDescending(t=>t.StartDate).ToListAsync();
+            .Where(t=>(!from.HasValue||t.CreatedAt>=from)&&(!to.HasValue||t.CreatedAt<=to))
+            .OrderByDescending(t=>t.CreatedAt).ToListAsync();
         using var wb=new ClosedXML.Excel.XLWorkbook();
         var ws=wb.Worksheets.Add("Trips");
-        var hdr=new[]{"Trip#","From","To","Driver","Truck","Start","End","Dist(km)","Revenue","Expenses","Profit","Status"};
+        var hdr=new[]{"Trip#","From","To","Driver","Truck","Start","End","Dist(km)","DealAmt","Expenses","Profit","Status"};
         for(int i=0;i<hdr.Length;i++){ws.Cell(1,i+1).Value=hdr[i];ws.Cell(1,i+1).Style.Font.Bold=true;
             ws.Cell(1,i+1).Style.Fill.BackgroundColor=ClosedXML.Excel.XLColor.DarkBlue;
             ws.Cell(1,i+1).Style.Font.FontColor=ClosedXML.Excel.XLColor.White;}
@@ -780,7 +1008,7 @@ public class AccountController : Controller
             ws.Cell(row,1).Value=t.TripNumber;ws.Cell(row,2).Value=t.FromLocation;ws.Cell(row,3).Value=t.ToLocation;
             ws.Cell(row,4).Value=t.Driver?.FullName;ws.Cell(row,5).Value=t.Truck?.NumberPlate;
             ws.Cell(row,6).Value=t.StartDate.ToString("dd/MM/yyyy");ws.Cell(row,7).Value=t.EndDate?.ToString("dd/MM/yyyy");
-            ws.Cell(row,8).Value=(double?)t.DistanceKm;ws.Cell(row,9).Value=(double)t.Revenue;
+            ws.Cell(row,8).Value=(double)t.TotalDistance;ws.Cell(row,9).Value=(double)t.TotalDealAmount;
             ws.Cell(row,10).Value=(double)t.TotalExpenses;ws.Cell(row,11).Value=(double)t.NetProfit;ws.Cell(row,12).Value=t.Status.ToString();}
         ws.Columns().AdjustToContents();
         using var ms=new MemoryStream(); wb.SaveAs(ms);

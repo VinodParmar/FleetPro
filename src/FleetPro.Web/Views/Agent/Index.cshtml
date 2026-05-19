@@ -1,0 +1,148 @@
+@* ══════════════════ Views/Agent/Index.cshtml ══════════════════ *@
+@model IEnumerable<FleetPro.Models.Entities.Agent>
+@{
+    ViewData["Title"] = L["Agents"];
+}
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0"><i class="fas fa-user-tie mr-2"></i>@L["Agents"]</h1></div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active">@L["Agents"]</li>
+            </ol>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <div class="card">
+        <div class="card-header d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" onclick="openAgentModal()">
+                <i class="fas fa-plus mr-1"></i>@L["Add Agent"]
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:100px;">@L["Actions"]</th>
+                        <th>@L["Name"]</th>
+                        <th>@L["Company"]</th>
+                        <th>@L["Phone"]</th>
+                        <th>@L["Status"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td class="action-btn">
+                                <button type="button" class="btn btn-xs btn-warning" onclick="openAgentModal('@Ids.Protect(a.Id)')" title="Edit"><i class="fas fa-edit"></i></button>
+                                <form asp-action="Delete" asp-route-eid="@Ids.Protect(a.Id)" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete this agent?"]" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                            <td>
+                                <strong>@a.Name</strong>
+                                @if (!string.IsNullOrEmpty(a.Email))
+                                { <br><small class="text-muted">@a.Email</small> }
+                            </td>
+                            <td>@(a.CompanyName ?? "—")</td>
+                            <td>@(a.Phone ?? "—")</td>
+                            <td>
+                                @if (a.Status == FleetPro.Models.Entities.AgentStatus.Active)
+                                { <span class="badge badge-success">@L["Active"]</span> }
+                                else
+                                { <span class="badge badge-secondary">@L["Inactive"]</span> }
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">@L["No agents found. Add your first agent!"]</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div></section>
+
+<!-- Agent Modal (Simple Form) -->
+<div class="modal fade" id="agentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="agentForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="agentId" name="Id" value="0" />
+                <input type="hidden" id="agentEid" name="eid" value="" />
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-user-tie mr-2"></i><span id="modalTitle">@L["Add Agent"]</span></h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="font-weight-bold">@L["Name"] <span class="text-danger">*</span></label>
+                        <input type="text" id="agentName" name="Name" class="form-control" placeholder="Agent / Broker Name" required maxlength="100" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Company Name"]</label>
+                        <input type="text" id="agentCompany" name="CompanyName" class="form-control" placeholder="Transport Company" maxlength="200" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Phone"]</label>
+                        <input type="text" id="agentPhone" name="Phone" class="form-control" placeholder="+91 98765 43210" maxlength="20" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Status"]</label>
+                        <select id="agentStatus" name="Status" class="form-control">
+                            <option value="Active">@L["Active"]</option>
+                            <option value="Inactive">@L["Inactive"]</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i>@L["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>@L["Save"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openAgentModal(eid) {
+        // Reset form
+        $('#agentForm')[0].reset();
+        $('#agentId').val(0);
+        $('#agentEid').val('');
+        $('#agentStatus').val('Active');
+
+        if (eid) {
+            // Edit mode - fetch agent data
+            $('#modalTitle').text('@L["Edit Agent"]');
+            $('#agentForm').attr('action', '@Url.Action("Edit")' + '?eid=' + eid);
+            $('#agentEid').val(eid);
+
+            // Load agent data via AJAX
+            $.get('@Url.Action("GetAgent")' + '?eid=' + eid, function(data) {
+                $('#agentId').val(data.id);
+                $('#agentName').val(data.name);
+                $('#agentCompany').val(data.companyName);
+                $('#agentPhone').val(data.phone);
+                $('#agentStatus').val(data.status);
+            });
+        } else {
+            // Add mode
+            $('#modalTitle').text('@L["Add Agent"]');
+            $('#agentForm').attr('action', '@Url.Action("Create")');
+        }
+
+        $('#agentModal').modal('show');
+    }
+</script>
+}

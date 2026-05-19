@@ -1,0 +1,71 @@
+@* Partial: _PaymentLedger.cshtml - Shows payment ledger for a trip *@
+@model FleetPro.Models.ViewModels.TripViewModel
+@{
+    // Get payments from trip - this partial expects TripViewModel with Payments loaded
+    var payments = ViewBag.Payments as List<FleetPro.Models.Entities.TripPayment> ?? new List<FleetPro.Models.Entities.TripPayment>();
+    var totalIn = payments.Where(p => !p.IsDeleted && p.PaymentType == FleetPro.Models.Entities.PaymentType.Received).Sum(p => p.Amount);
+    var totalOut = payments.Where(p => !p.IsDeleted && p.PaymentType == FleetPro.Models.Entities.PaymentType.Paid).Sum(p => p.Amount);
+    var balance = totalIn - totalOut;
+}
+
+<table class="table table-sm table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th style="width:50px;"></th>
+            <th>@L["Date"]</th>
+            <th>@L["Type"]</th>
+            <th>@L["Amount"]</th>
+            <th>@L["Mode"]</th>
+            <th>@L["Payer/Payee"]</th>
+            <th>@L["Balance"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ decimal runningBalance = 0; }
+        @foreach (var p in payments.Where(x => !x.IsDeleted).OrderBy(x => x.PaymentDate).ThenBy(x => x.Id))
+        {
+            runningBalance += p.PaymentType == FleetPro.Models.Entities.PaymentType.Received ? p.Amount : -p.Amount;
+            <tr>
+                <td>
+                    <form asp-action="DeletePayment" asp-route-eid="@Ids.Protect(Model.Id)" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="paymentId" value="@p.Id">
+                        <input type="hidden" name="tripId" value="@Model.Id">
+                        <button type="submit" class="btn btn-xs btn-outline-danger" data-confirm="Delete?"><i class="fas fa-times"></i></button>
+                    </form>
+                </td>
+                <td>@p.PaymentDate.ToString("dd MMM")</td>
+                <td>
+                    @if (p.PaymentType == FleetPro.Models.Entities.PaymentType.Received)
+                    {
+                        <span class="badge badge-success"><i class="fas fa-arrow-down mr-1"></i>Received</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger"><i class="fas fa-arrow-up mr-1"></i>Paid</span>
+                    }
+                </td>
+                <td class="font-weight-bold @(p.PaymentType == FleetPro.Models.Entities.PaymentType.Received ? "text-success" : "text-danger")">
+                    @(p.PaymentType == FleetPro.Models.Entities.PaymentType.Received ? "+" : "-")₹@p.Amount.ToString("N0")
+                </td>
+                <td><span class="badge badge-secondary">@p.PaymentMode</span></td>
+                <td>@(p.PayerPayee ?? "—")</td>
+                <td class="font-weight-bold @(runningBalance >= 0 ? "text-primary" : "text-danger")">₹@runningBalance.ToString("N0")</td>
+            </tr>
+        }
+        @if (!payments.Any(x => !x.IsDeleted))
+        {
+            <tr><td colspan="7" class="text-center text-muted py-4">@L["No payments recorded yet"]</td></tr>
+        }
+    </tbody>
+    <tfoot class="table-light font-weight-bold">
+        <tr>
+            <td colspan="3" class="text-right">@L["Total"]:</td>
+            <td colspan="4">
+                <span class="text-success">+₹@totalIn.ToString("N0")</span> |
+                <span class="text-danger">-₹@totalOut.ToString("N0")</span> =
+                <span class="@(balance >= 0 ? "text-primary" : "text-danger")">₹@balance.ToString("N0")</span>
+            </td>
+        </tr>
+    </tfoot>
+</table>

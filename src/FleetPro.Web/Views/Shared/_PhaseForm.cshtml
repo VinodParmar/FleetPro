@@ -1,0 +1,109 @@
+@* Partial: _PhaseForm.cshtml - Form fields for a trip phase *@
+@model FleetPro.Models.ViewModels.TripPhaseViewModel
+@{
+    var prefix = ViewData["Prefix"]?.ToString() ?? "Phase";
+    var color = ViewData["Color"]?.ToString() ?? "primary";
+    var isUp = prefix == "UpPhase";
+    var agents = ViewBag.Agents as IEnumerable<FleetPro.Models.Entities.Agent> ?? [];
+}
+
+<div class="row">
+    <!-- Route -->
+    <div class="col-md-3 form-group">
+        <label class="font-weight-bold">@L["From Location"] *</label>
+        <input type="text" name="@(prefix).FromLocation" class="form-control" value="@Model.FromLocation" placeholder="@(isUp ? "Mumbai" : "Delhi")">
+    </div>
+    <div class="col-md-3 form-group">
+        <label class="font-weight-bold">@L["To Location"]</label>
+        <div class="input-group">
+            <input type="text" name="@(prefix).ToLocation" class="form-control" value="@Model.ToLocation" placeholder="@(isUp ? "Delhi" : "Mumbai")">
+            @if (!isUp)
+            {
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary" id="btnSwap" title="Swap from UP phase"><i class="fas fa-exchange-alt"></i></button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["Start Date"]</label>
+        <input type="date" name="@(prefix).StartDate" class="form-control" value="@(Model.StartDate != default ? Model.StartDate.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))">
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["End Date"]</label>
+        <input type="date" name="@(prefix).EndDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")">
+    </div>
+
+    <!-- Agent & LR -->
+    <div class="col-md-3 form-group">
+        <label>@L["Agent"]</label>
+        <select name="@(prefix).AgentId" class="form-control">
+            <option value="">— @L["Select Agent"] —</option>
+            @foreach (var agent in agents)
+            {
+                <option value="@agent.Id" selected="@(Model.AgentId == agent.Id ? "selected" : null)">@agent.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["LR Number"]</label>
+        <input type="text" name="@(prefix).LRNumber" class="form-control" value="@Model.LRNumber" placeholder="LR-001">
+    </div>
+    <div class="col-md-6 form-group">
+        <label>@L["Cargo"]</label>
+        <input type="text" name="@(prefix).CargoDescription" class="form-control" value="@Model.CargoDescription" placeholder="FMCG / Cement / Empty">
+    </div>
+
+    <!-- Weight & Rate (Deal Calculation) -->
+    <div class="col-md-3 form-group">
+        <label>@L["Net Weight"] (tons) *</label>
+        <input type="number" name="@(prefix).NetWeight" class="form-control phase-calc" data-prefix="@prefix" data-field="net" step="0.01" value="@Model.NetWeight" placeholder="Cargo weight">
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["Rate"] (₹/ton) *</label>
+        <div class="input-group">
+            <div class="input-group-prepend"><span class="input-group-text">₹</span></div>
+            <input type="number" name="@(prefix).Rate" class="form-control phase-calc" data-prefix="@prefix" data-field="rate" step="0.01" value="@Model.Rate" placeholder="Rate per ton">
+        </div>
+    </div>
+    <div class="col-md-3 form-group">
+        <label class="font-weight-bold text-@color">@L["Deal Amount"]</label>
+        <div class="input-group">
+            <div class="input-group-prepend"><span class="input-group-text bg-@color text-white">₹</span></div>
+            <input type="text" class="form-control bg-light font-weight-bold calc-deal" data-prefix="@prefix" readonly value="@Model.DealAmount.ToString("N0")">
+            <input type="hidden" name="@(prefix).DealAmount" class="deal-amount-hidden" data-prefix="@prefix" value="@Model.DealAmount">
+        </div>
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["Status"]</label>
+        <select name="@(prefix).Status" class="form-control">
+            <option value="1" selected="@(Model.Status == FleetPro.Models.Entities.TripPhaseStatus.Pending ? "selected" : null)">Pending</option>
+            <option value="2" selected="@(Model.Status == FleetPro.Models.Entities.TripPhaseStatus.InProgress ? "selected" : null)">In Progress</option>
+            <option value="3" selected="@(Model.Status == FleetPro.Models.Entities.TripPhaseStatus.Completed ? "selected" : null)">Completed</option>
+        </select>
+    </div>
+
+    <!-- Meter & KM -->
+    <div class="col-md-3 form-group">
+        <label>@L["Start Meter"] (km)</label>
+        <input type="number" name="@(prefix).StartMeterReading" class="form-control phase-meter" data-prefix="@prefix" data-field="start" step="1" value="@Model.StartMeterReading">
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["End Meter"] (km)</label>
+        <input type="number" name="@(prefix).EndMeterReading" class="form-control phase-meter" data-prefix="@prefix" data-field="end" step="1" value="@Model.EndMeterReading">
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["Calculated KM"]</label>
+        <input type="text" class="form-control bg-light calc-km" data-prefix="@prefix" readonly value="@Model.CalculatedKm.ToString("N0")">
+    </div>
+    <div class="col-md-3 form-group">
+        <label>@L["Tare Weight"] (tons)</label>
+        <input type="number" name="@(prefix).TareWeight" class="form-control phase-weight" data-prefix="@prefix" data-field="tare" step="0.01" value="@Model.TareWeight" placeholder="Empty truck">
+    </div>
+
+    <!-- Notes -->
+    <div class="col-md-12 form-group">
+        <label>@L["Notes"]</label>
+        <input type="text" name="@(prefix).Notes" class="form-control" value="@Model.Notes" placeholder="Additional notes...">
+    </div>
+</div>

@@ -1,7 +1,11 @@
 @* ══════════════════ Views/Trip/Details.cshtml ══════════════════ *@
 @model FleetPro.Models.Entities.Trip
+@inject FleetPro.Services.IExpenseCategoryService ExpenseCategoryService
 @{
     ViewData["Title"] = "Trip — " + Model.TripNumber;
+    var upPhase = Model.Phases?.FirstOrDefault(p => p.PhaseType == FleetPro.Models.Entities.TripPhaseType.Up && !p.IsDeleted);
+    var downPhase = Model.Phases?.FirstOrDefault(p => p.PhaseType == FleetPro.Models.Entities.TripPhaseType.Down && !p.IsDeleted);
+    var expenseCategories = await ExpenseCategoryService.GetAllAsync();
 }
 
 <div class="content-header"><div class="container-fluid">
@@ -15,15 +19,7 @@
             </ol>
             <div class="text-right mt-1" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;">
                 <a asp-action="Edit" asp-route-eid="@Ids.Protect(Model.Id)" class="btn btn-warning btn-sm"><i class="fas fa-edit mr-1"></i>@L["Edit"]</a>
-                @if (Model.TruckId > 0)
-                {
-                    <a asp-controller="Truck" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.TruckId)" class="btn btn-sm btn-outline-primary"><i class="fas fa-truck mr-1"></i>@L["Truck"]</a>
-                }
-                @if (Model.DriverId > 0)
-                {
-                    <a asp-controller="Driver" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.DriverId)" class="btn btn-sm btn-outline-info"><i class="fas fa-user-tie mr-1"></i>@L["Driver"]</a>
-                }
-                <a asp-controller="Expense" asp-action="Index" asp-route-tripId="@Model.Id" class="btn btn-sm btn-outline-danger"><i class="fas fa-receipt mr-1"></i>@L["Expenses"]</a>
+                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#addExpenseModal"><i class="fas fa-plus mr-1"></i>@L["Add Expense"]</button>
                 <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i>@L["Back"]</a>
             </div>
         </div>
@@ -33,11 +29,12 @@
 <section class="content"><div class="container-fluid">
     <div class="row">
 
-        <!-- Left: Trip Info + P&L -->
-        <div class="col-md-5">
+        <!-- Left Column: Summary Cards -->
+        <div class="col-md-4">
+            <!-- Trip Overview -->
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="card-title"><i class="fas fa-route mr-2"></i>@L["Trip Information"]</h3>
+                    <h3 class="card-title"><i class="fas fa-truck-moving mr-2"></i>@L["Trip Overview"]</h3>
                     <div class="card-tools">
                         @switch (Model.Status)
                         {
@@ -50,167 +47,328 @@
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-sm table-borderless mb-0">
-                        <tr><th class="text-muted" style="width:40%">@L["Trip Number"]</th><td><strong>@Model.TripNumber</strong></td></tr>
-                        <tr><th class="text-muted">@L["Truck"]</th><td><a asp-controller="Truck" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.TruckId)" class="font-weight-bold">@Model.Truck?.NumberPlate</a> <span class="text-muted">(@Model.Truck?.Model)</span></td></tr>
-                        <tr><th class="text-muted">@L["Driver"]</th><td><a asp-controller="Driver" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.DriverId)" class="font-weight-bold">@Model.Driver?.FullName</a></td></tr>
-                        <tr><th class="text-muted">@L["From"]</th><td>@Model.FromLocation</td></tr>
-                        <tr><th class="text-muted">@L["To"]</th><td>@Model.ToLocation</td></tr>
-                        <tr><th class="text-muted">@L["Start Date"]</th><td>@Model.StartDate.ToString("dd MMM yyyy")</td></tr>
-                        <tr><th class="text-muted">@L["End Date"]</th><td>@(Model.EndDate?.ToString("dd MMM yyyy") ?? "—")</td></tr>
-                        <tr><th class="text-muted">@L["Distance"]</th><td>@(Model.DistanceKm?.ToString("N0") ?? "—") km</td></tr>
-                        <tr><th class="text-muted">@L["Cargo"]</th><td>@(Model.CargoDescription ?? "—")</td></tr>
-                        <tr><th class="text-muted">@L["Weight"]</th><td>@(Model.CargoWeightTons?.ToString("N1") ?? "—") tons</td></tr>
-                        <tr><th class="text-muted">@L["Client"]</th><td>@(Model.ClientName ?? "—")</td></tr>
-                        <tr><th class="text-muted">@L["LR Number"]</th><td>@(Model.LRNumber ?? "—")</td></tr>
+                        <tr><th class="text-muted" style="width:35%">@L["Trip #"]</th><td><strong>@Model.TripNumber</strong></td></tr>
+                        <tr><th class="text-muted">@L["Truck"]</th><td><a asp-controller="Truck" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.TruckId)">🚚 @Model.Truck?.NumberPlate</a> <small class="text-muted">@Model.Truck?.Model</small></td></tr>
+                        <tr><th class="text-muted">@L["Driver"]</th><td><a asp-controller="Driver" asp-action="Edit" asp-route-eid="@Ids.Protect(Model.DriverId)">👤 @Model.Driver?.FullName</a></td></tr>
+                        <tr><th class="text-muted">@L["Route"]</th><td>@Model.Route</td></tr>
+                        <tr><th class="text-muted">@L["Total KM"]</th><td><strong class="text-primary">@Model.TotalDistance.ToString("N0") km</strong></td></tr>
                         @if (!string.IsNullOrEmpty(Model.Notes))
-                        { <tr><th class="text-muted">@L["Notes"]</th><td>@Model.Notes</td></tr> }
+                        {
+                            <tr><th class="text-muted">@L["Notes"]</th><td><small>@Model.Notes</small></td></tr>
+                        }
                     </table>
                 </div>
             </div>
 
-            <!-- P&L Card -->
+            <!-- P&L Summary -->
             <div class="card">
                 <div class="card-header bg-dark text-white"><h3 class="card-title"><i class="fas fa-chart-line mr-2"></i>@L["Profit & Loss"]</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
-                        <tr class="table-success"><td class="font-weight-bold">@L["Revenue"]</td><td class="text-right font-weight-bold text-success">₹@Model.Revenue.ToString("N2")</td></tr>
-                        @foreach (var grp in Model.Expenses.Where(e=>!e.IsDeleted).GroupBy(e => e.Category).OrderBy(g => g.Key.ToString()))
-                        {
-                            <tr><td class="text-muted pl-3">@grp.Key</td><td class="text-right text-danger">−₹@grp.Sum(e => e.Amount).ToString("N2")</td></tr>
-                        }
-                        <tr class="table-danger"><td class="font-weight-bold">@L["Total Expenses"]</td><td class="text-right font-weight-bold text-danger">₹@Model.TotalExpenses.ToString("N2")</td></tr>
+                        <tr class="table-info"><td>@L["Deal Amount"]</td><td class="text-right text-info font-weight-bold">₹@Model.TotalDealAmount.ToString("N0")</td></tr>
+                        <tr class="table-danger"><td>@L["Total Expenses"]</td><td class="text-right text-danger font-weight-bold">₹@Model.TotalExpenses.ToString("N0")</td></tr>
                         <tr class="@(Model.NetProfit >= 0 ? "table-primary" : "table-warning")">
                             <td class="font-weight-bold">@L["Net Profit"]</td>
-                            <td class="text-right font-weight-bold @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">
-                                ₹@Model.NetProfit.ToString("N2")
-                                @if (Model.Revenue > 0)
-                                { <small class="badge @(Model.NetProfit >= 0 ? "badge-primary" : "badge-warning")">@((Model.NetProfit/Model.Revenue*100).ToString("N1"))%</small> }
-                            </td>
+                            <td class="text-right font-weight-bold @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">₹@Model.NetProfit.ToString("N0")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="card">
+                <div class="card-header bg-success text-white"><h3 class="card-title"><i class="fas fa-wallet mr-2"></i>@L["Payment Summary"]</h3></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tr class="table-success"><td>@L["Total Received"]</td><td class="text-right text-success font-weight-bold">₹@Model.TotalPaymentsIn.ToString("N0")</td></tr>
+                        <tr class="table-danger"><td>@L["Total Paid"]</td><td class="text-right text-danger font-weight-bold">₹@Model.TotalPaymentsOut.ToString("N0")</td></tr>
+                        <tr class="table-warning"><td>@L["Pending"]</td><td class="text-right text-warning font-weight-bold">₹@Model.PendingAmount.ToString("N0")</td></tr>
+                        <tr class="@(Model.PaymentBalance >= 0 ? "table-primary" : "table-warning")">
+                            <td class="font-weight-bold">@L["Balance"]</td>
+                            <td class="text-right font-weight-bold @(Model.PaymentBalance >= 0 ? "text-primary" : "text-danger")">₹@Model.PaymentBalance.ToString("N0")</td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Expenses + Documents -->
-        <div class="col-md-7">
-
-            <!-- Expenses -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-receipt mr-2"></i>@L["Expenses"]</h3>
-                    <div class="card-tools">
-                        <a asp-controller="Expense" asp-action="Create" asp-route-tripId="@Model.Id" class="btn btn-sm btn-danger">
-                            <i class="fas fa-plus mr-1"></i>@L["Add Expense"]
-                        </a>
-                    </div>
+        <!-- Right Column: Tabs -->
+        <div class="col-md-8">
+            <div class="card card-primary card-tabs">
+                <div class="card-header p-0">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#tabPhases"><i class="fas fa-exchange-alt mr-1"></i>@L["Trip Phases"]</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tabPayments"><i class="fas fa-rupee-sign mr-1"></i>@L["Payments"]</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tabExpenses"><i class="fas fa-receipt mr-1"></i>@L["Expenses"] <span class="badge badge-danger">@Model.Expenses.Count(e => !e.IsDeleted)</span></a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tabDocuments"><i class="fas fa-paperclip mr-1"></i>@L["Documents"]</a></li>
+                    </ul>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead>
-                            <tr>
-                                <th style="width:80px;">@L["Actions"]</th>
-                                <th>@L["Category"]</th><th>@L["Amount"]</th><th>@L["Date"]</th><th>@L["Description"]</th><th>@L["Bill"]</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var e in Model.Expenses.Where(x => !x.IsDeleted).OrderByDescending(x => x.ExpenseDate))
-                            {
-                                <tr>
-                                    <td class="action-btn">
-                                        <a asp-controller="Expense" asp-action="Edit" asp-route-eid="@Ids.Protect(e.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
-                                        <form asp-controller="Expense" asp-action="Delete" asp-route-eid="@Ids.Protect(e.Id)" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete this expense?"]" title="Delete"><i class="fas fa-trash"></i></button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        @{
-                                            var catColor = e.Category switch {
-                                                FleetPro.Models.Entities.ExpenseCategory.Fuel => "primary",
-                                                FleetPro.Models.Entities.ExpenseCategory.Maintenance => "danger",
-                                                FleetPro.Models.Entities.ExpenseCategory.Toll => "warning",
-                                                FleetPro.Models.Entities.ExpenseCategory.Wages => "purple",
-                                                _ => "secondary"
-                                            };
-                                        }
-                                        <span class="badge badge-@catColor">@e.Category</span>
-                                    </td>
-                                    <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N0")</td>
-                                    <td>@e.ExpenseDate.ToString("dd MMM")</td>
-                                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="@e.Description">@e.Description</td>
-                                    <td>
-                                        @if (e.HasReceipt && !string.IsNullOrEmpty(e.ReceiptPath))
-                                        { <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file-pdf"></i></a> }
-                                        else { <span class="text-muted">—</span> }
-                                    </td>
-                                </tr>
-                            }
-                            @if (!Model.Expenses.Any(e => !e.IsDeleted))
-                            { <tr><td colspan="6" class="text-center text-muted py-3">@L["No expenses added yet."]</td></tr> }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Documents -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-paperclip mr-2"></i>@L["Documents"]</h3>
-                    <div class="card-tools">
-                        <button class="btn btn-sm btn-info" data-toggle="collapse" data-target="#uploadForm">
-                            <i class="fas fa-upload mr-1"></i>@L["Upload"]
-                        </button>
-                    </div>
-                </div>
-                <div id="uploadForm" class="collapse">
-                    <div class="card-body border-bottom">
-                        <form asp-action="UploadDocument" method="post" enctype="multipart/form-data">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="tripId" value="@Model.Id">
-                            <div class="row align-items-end">
-                                <div class="col-md-5 form-group mb-0">
-                                    <label>@L["Document Type"]</label>
-                                    <select name="documentType" class="form-control form-control-sm">
-                                        <option>LR (Lorry Receipt)</option><option>Invoice</option>
-                                        <option>POD (Proof of Delivery)</option><option>Toll Receipt</option>
-                                        <option>Fuel Bill</option><option>Weighment Slip</option><option>Other</option>
-                                    </select>
+                <div class="card-body">
+                    <div class="tab-content">
+                        
+                        <!-- TAB: Phases -->
+                        <div class="tab-pane fade show active" id="tabPhases">
+                            <div class="row">
+                                <!-- UP Phase -->
+                                <div class="col-md-6">
+                                    @await Html.PartialAsync("_PhaseCard", upPhase, new ViewDataDictionary(ViewData) { { "PhaseType", "Up" }, { "PhaseColor", "success" }, { "TripId", Model.Id } })
                                 </div>
-                                <div class="col-md-5 form-group mb-0">
-                                    <label>@L["File"]</label>
-                                    <input type="file" name="file" class="form-control-file pt-1" accept=".pdf,.jpg,.jpeg,.png">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-info btn-sm w-100">@L["Upload"]</button>
+                                <!-- DOWN Phase -->
+                                <div class="col-md-6">
+                                    @await Html.PartialAsync("_PhaseCard", downPhase, new ViewDataDictionary(ViewData) { { "PhaseType", "Down" }, { "PhaseColor", "danger" }, { "TripId", Model.Id } })
                                 </div>
                             </div>
-                        </form>
+                            <div class="callout callout-info py-2">
+                                <strong>@L["Total Distance"]:</strong> @Model.TotalDistance.ToString("N0") km &nbsp;|&nbsp;
+                                <strong>@L["Deal Amount"]:</strong> ₹@Model.TotalDealAmount.ToString("N0")
+                            </div>
+                        </div>
+
+                        <!-- TAB: Payments -->
+                        <div class="tab-pane fade" id="tabPayments">
+                            <div class="mb-3 text-right">
+                                <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPaymentModal" data-payment-type="Received"><i class="fas fa-plus mr-1"></i>@L["Received"]</button>
+                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#addPaymentModal" data-payment-type="Paid"><i class="fas fa-minus mr-1"></i>@L["Paid"]</button>
+                            </div>
+                            <table class="table table-sm table-striped">
+                                <thead class="thead-dark">
+                                    <tr><th style="width:60px;"></th><th>@L["Date"]</th><th>@L["Type"]</th><th>@L["Amount"]</th><th>@L["Mode"]</th><th>@L["Reference"]</th><th>@L["Payer/Payee"]</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in (Model.Payments ?? new List<FleetPro.Models.Entities.TripPayment>()).Where(x => !x.IsDeleted).OrderByDescending(x => x.PaymentDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <form asp-action="DeletePayment" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="paymentId" value="@p.Id">
+                                                    <input type="hidden" name="tripId" value="@Model.Id">
+                                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete?"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                            <td>@p.PaymentDate.ToString("dd MMM")</td>
+                                            <td><span class="badge badge-@(p.PaymentType == FleetPro.Models.Entities.PaymentType.Received ? "success" : "danger")">@p.PaymentType</span></td>
+                                            <td class="font-weight-bold @(p.PaymentType == FleetPro.Models.Entities.PaymentType.Received ? "text-success" : "text-danger")">₹@p.Amount.ToString("N0")</td>
+                                            <td><span class="badge badge-secondary">@p.PaymentMode</span></td>
+                                            <td>@(p.ReferenceNumber ?? "—")</td>
+                                            <td>@(p.PayerPayee ?? "—")</td>
+                                        </tr>
+                                    }
+                                    @if (!(Model.Payments?.Any(x => !x.IsDeleted) ?? false))
+                                    {
+                                        <tr><td colspan="7" class="text-center text-muted py-4">@L["No payments recorded"]</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- TAB: Expenses -->
+                        <div class="tab-pane fade" id="tabExpenses">
+                            <div class="mb-3 text-right">
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#addExpenseModal"><i class="fas fa-plus mr-1"></i>@L["Add Expense"]</button>
+                            </div>
+                            <table class="table table-sm table-striped">
+                                <thead class="thead-dark">
+                                    <tr><th style="width:80px;"></th><th>@L["Date"]</th><th>@L["Category"]</th><th>@L["Amount"]</th><th>@L["Description"]</th><th>@L["Receipt"]</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var e in (Model.Expenses ?? new List<FleetPro.Models.Entities.Expense>()).Where(x => !x.IsDeleted).OrderByDescending(x => x.ExpenseDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Expense" asp-action="Edit" asp-route-eid="@Ids.Protect(e.Id)" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                                                <form asp-controller="Expense" asp-action="Delete" asp-route-eid="@Ids.Protect(e.Id)" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-xs btn-danger" data-confirm="Delete?"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                            <td>@e.ExpenseDate.ToString("dd MMM")</td>
+                                            <td><span class="badge badge-primary">@e.CategoryName</span></td>
+                                            <td class="font-weight-bold text-danger">₹@e.Amount.ToString("N0")</td>
+                                            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">@e.Description</td>
+                                            <td>@if (e.HasReceipt) { <a href="@e.ReceiptPath" target="_blank" class="btn btn-xs btn-outline-info"><i class="fas fa-file"></i></a> } else { <span class="text-muted">—</span> }</td>
+                                        </tr>
+                                    }
+                                    @if (!(Model.Expenses?.Any(e => !e.IsDeleted) ?? false))
+                                    {
+                                        <tr><td colspan="6" class="text-center text-muted py-4">@L["No expenses added"]</td></tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-danger">
+                                    <tr><td colspan="3" class="text-right font-weight-bold">@L["Total"]:</td><td colspan="3" class="font-weight-bold">₹@Model.TotalExpenses.ToString("N0")</td></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- TAB: Documents -->
+                        <div class="tab-pane fade" id="tabDocuments">
+                            <div class="mb-3">
+                                <form asp-action="UploadDocument" method="post" enctype="multipart/form-data" class="form-inline" style="gap:8px;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="tripId" value="@Model.Id">
+                                    <select name="documentType" class="form-control form-control-sm">
+                                        <option>LR</option><option>Invoice</option><option>POD</option><option>Toll Receipt</option><option>Fuel Bill</option><option>Weighment Slip</option><option>Other</option>
+                                    </select>
+                                    <input type="file" name="file" class="form-control-file" accept=".pdf,.jpg,.jpeg,.png" style="width:auto;">
+                                    <button type="submit" class="btn btn-info btn-sm"><i class="fas fa-upload mr-1"></i>@L["Upload"]</button>
+                                </form>
+                            </div>
+                            <table class="table table-sm table-striped">
+                                <thead class="thead-dark">
+                                    <tr><th style="width:80px;"></th><th>@L["Type"]</th><th>@L["File"]</th><th>@L["Size"]</th><th>@L["Uploaded"]</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var doc in (Model.Documents ?? new List<FleetPro.Models.Entities.TripDocument>()).Where(d => !d.IsDeleted))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@doc.FilePath" target="_blank" class="btn btn-xs btn-info"><i class="fas fa-eye"></i></a>
+                                                <a href="@doc.FilePath" download class="btn btn-xs btn-success"><i class="fas fa-download"></i></a>
+                                            </td>
+                                            <td><span class="badge badge-secondary">@doc.DocumentType</span></td>
+                                            <td>@doc.FileName</td>
+                                            <td>@((doc.FileSizeBytes / 1024.0).ToString("N0")) KB</td>
+                                            <td>@doc.CreatedAt.ToString("dd MMM HH:mm")</td>
+                                        </tr>
+                                    }
+                                    @if (!(Model.Documents?.Any(d => !d.IsDeleted) ?? false))
+                                    {
+                                        <tr><td colspan="5" class="text-center text-muted py-4">@L["No documents"]</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead><tr><th style="width:80px;">@L["Actions"]</th><th>@L["Type"]</th><th>@L["File"]</th><th>@L["Size"]</th><th>@L["Uploaded"]</th></tr></thead>
-                        <tbody>
-                            @foreach (var doc in Model.Documents.Where(d => !d.IsDeleted))
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="@doc.FilePath" target="_blank" class="btn btn-xs btn-info" title="View"><i class="fas fa-eye"></i></a>
-                                        <a href="@doc.FilePath" download class="btn btn-xs btn-secondary" title="Download"><i class="fas fa-download"></i></a>
-                                    </td>
-                                    <td><span class="badge badge-info">@doc.DocumentType</span></td>
-                                    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@doc.FileName</td>
-                                    <td>@(doc.FileSizeBytes / 1024) KB</td>
-                                    <td>@doc.CreatedAt.ToString("dd MMM")</td>
-                                </tr>
-                            }
-                            @if (!Model.Documents.Any(d => !d.IsDeleted))
-                            { <tr><td colspan="5" class="text-center text-muted py-3">@L["No documents uploaded."]</td></tr> }
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div></section>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddPayment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TripId" value="@Model.Id">
+                <input type="hidden" name="PaymentType" id="paymentTypeInput" value="1">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-rupee-sign mr-2"></i>@L["Add Payment"]</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>@L["Amount"] (₹) *</label>
+                            <input type="number" name="Amount" class="form-control" step="1" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Date"] *</label>
+                            <input type="date" name="PaymentDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Mode"]</label>
+                            <select name="PaymentMode" class="form-control">
+                                <option value="1">Cash</option>
+                                <option value="2">Bank Transfer</option>
+                                <option value="3">UPI</option>
+                                <option value="4">Cheque</option>
+                                <option value="5">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Reference #"]</label>
+                            <input type="text" name="ReferenceNumber" class="form-control" placeholder="UTR / Cheque #">
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <label>@L["Payer/Payee"]</label>
+                            <input type="text" name="PayerPayee" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@L["Cancel"]</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i>@L["Save"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Modal -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-controller="Trip" asp-action="AddExpense" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TripId" value="@Model.Id">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-receipt mr-2"></i>@L["Add Expense"]</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>@L["Category"] *</label>
+                            <select name="CategoryId" class="form-control" required>
+                                <option value="">-- @L["Select Category"] --</option>
+                                @foreach (var cat in expenseCategories)
+                                {
+                                    <option value="@cat.Id">@cat.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Amount"] (₹) *</label>
+                            <input type="number" name="Amount" class="form-control" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Date"] *</label>
+                            <input type="date" name="ExpenseDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Vendor Name"]</label>
+                            <input type="text" name="VendorName" class="form-control" placeholder="HP, Indian Oil, etc.">
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <label>@L["Description"]</label>
+                            <input type="text" name="Description" class="form-control" placeholder="Diesel 100L ₹85, Toll NH48, etc.">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Bill Number"]</label>
+                            <input type="text" name="BillNumber" class="form-control" placeholder="Invoice/Bill #">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>@L["Receipt"] (PDF/Image)</label>
+                            <input type="file" name="ReceiptFile" class="form-control-file" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@L["Cancel"]</button>
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-save mr-1"></i>@L["Save Expense"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Payment modal
+        $('#addPaymentModal').on('show.bs.modal', function(e) {
+            var type = $(e.relatedTarget).data('payment-type');
+            $('#paymentTypeInput').val(type === 'Paid' ? '2' : '1');
+            var header = type === 'Paid' ? 'bg-danger' : 'bg-success';
+            $(this).find('.modal-header').removeClass('bg-success bg-danger').addClass(header);
+            $(this).find('.modal-title').html('<i class="fas fa-rupee-sign mr-2"></i>' + type + ' Payment');
+        });
+
+        // Reset expense form when modal closes
+        $('#addExpenseModal').on('hidden.bs.modal', function() {
+            $(this).find('form')[0].reset();
+            $(this).find('input[name="ExpenseDate"]').val('@DateTime.Today.ToString("yyyy-MM-dd")');
+        });
+    </script>
+}

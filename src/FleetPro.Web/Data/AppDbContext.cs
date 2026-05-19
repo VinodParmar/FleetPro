@@ -17,7 +17,10 @@ public class AppDbContext : DbContext
     public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
     public DbSet<Truck> Trucks => Set<Truck>();
     public DbSet<Driver> Drivers => Set<Driver>();
+    public DbSet<Agent> Agents => Set<Agent>();
     public DbSet<Trip> Trips => Set<Trip>();
+    public DbSet<TripPhase> TripPhases => Set<TripPhase>();
+    public DbSet<TripPayment> TripPayments => Set<TripPayment>();
     public DbSet<TripDocument> TripDocuments => Set<TripDocument>();
     public DbSet<Expense> Expenses => Set<Expense>();
     public DbSet<ExpenseCategoryMaster> ExpenseCategories => Set<ExpenseCategoryMaster>();
@@ -129,15 +132,35 @@ public class AppDbContext : DbContext
             e.HasQueryFilter(x => !x.IsDeleted);
         });
 
-        // ── Trip ──────────────────────────────────────────────
+        // ── Agent (Broker) ─────────────────────────────────────
+        mb.Entity<Agent>(e =>
+        {
+            e.ToTable("Agents");
+            e.HasKey(x => x.Id);
+            e.HasOne(x => x.Tenant).WithMany()
+             .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
+            e.HasQueryFilter(x => !x.IsDeleted);
+        });
+
+        // ── Trip (Container for Phases & Payments) ───────────
         mb.Entity<Trip>(e =>
         {
             e.ToTable("Trips");
             e.HasKey(x => x.Id);
             e.HasIndex(x => new { x.TenantId, x.TripNumber }).IsUnique();
-            e.Property(x => x.Revenue).HasColumnType("decimal(18,2)");
-            e.Property(x => x.DistanceKm).HasColumnType("decimal(10,2)");
-            e.Property(x => x.CargoWeightTons).HasColumnType("decimal(10,2)");
+            // Ignore computed properties
+            e.Ignore(x => x.FromLocation);
+            e.Ignore(x => x.ToLocation);
+            e.Ignore(x => x.StartDate);
+            e.Ignore(x => x.EndDate);
+            e.Ignore(x => x.Route);
+            e.Ignore(x => x.TotalDistance);
+            e.Ignore(x => x.TotalDealAmount);
+            e.Ignore(x => x.TotalNetWeight);
+            e.Ignore(x => x.AgentDisplay);
+            e.Ignore(x => x.GrossWeight);
+            e.Ignore(x => x.PendingAmount);
+            // Relationships
             e.HasOne(x => x.Tenant).WithMany(t => t.Trips)
              .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Truck).WithMany(t => t.Trips)
@@ -146,6 +169,36 @@ public class AppDbContext : DbContext
              .HasForeignKey(x => x.DriverId).OnDelete(DeleteBehavior.Restrict);
             e.HasQueryFilter(x => !x.IsDeleted);
         });
+
+        // ── TripPhase (UP / DOWN) ─────────────────────────────
+        mb.Entity<TripPhase>(e =>
+        {
+            e.ToTable("TripPhases");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.StartMeterReading).HasColumnType("decimal(12,2)");
+            e.Property(x => x.EndMeterReading).HasColumnType("decimal(12,2)");
+            e.Property(x => x.TareWeight).HasColumnType("decimal(10,2)");
+            e.Property(x => x.NetWeight).HasColumnType("decimal(10,2)");
+            e.Property(x => x.Rate).HasColumnType("decimal(18,2)");
+            e.Property(x => x.DealAmount).HasColumnType("decimal(18,2)");
+            e.HasOne(x => x.Trip).WithMany(t => t.Phases)
+             .HasForeignKey(x => x.TripId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Agent).WithMany(a => a.TripPhases)
+             .HasForeignKey(x => x.AgentId).OnDelete(DeleteBehavior.SetNull);
+            e.HasQueryFilter(x => !x.IsDeleted);
+        });
+
+        // ── TripPayment (Ledger) ──────────────────────────────
+        mb.Entity<TripPayment>(e =>
+        {
+            e.ToTable("TripPayments");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Amount).HasColumnType("decimal(18,2)");
+            e.HasOne(x => x.Trip).WithMany(t => t.Payments)
+             .HasForeignKey(x => x.TripId).OnDelete(DeleteBehavior.Cascade);
+            e.HasQueryFilter(x => !x.IsDeleted);
+        });
+
 
         // ── TripDocument ──────────────────────────────────────
         mb.Entity<TripDocument>(e =>
@@ -165,6 +218,8 @@ public class AppDbContext : DbContext
             e.Property(x => x.Amount).HasColumnType("decimal(18,2)");
             e.HasOne(x => x.Trip).WithMany(t => t.Expenses)
              .HasForeignKey(x => x.TripId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.TripPhase).WithMany(p => p.Expenses)
+             .HasForeignKey(x => x.TripPhaseId).OnDelete(DeleteBehavior.NoAction);
             e.HasOne(x => x.CategoryMaster).WithMany(c => c.Expenses)
              .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.SetNull);
             e.HasQueryFilter(x => !x.IsDeleted);

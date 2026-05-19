@@ -13,30 +13,49 @@
   <data name="View All Alerts" xml:space="preserve"><value>View All Alerts</value></data>
   <data name="View All Alerts →" xml:space="preserve"><value>View All Alerts →</value></data>
 
-  <!-- SIDEBAR -->
-  <data name="Companies" xml:space="preserve"><value>Companies</value></data>
-  <data name="Company List" xml:space="preserve"><value>Company List</value></data>
-  <data name="Add Company" xml:space="preserve"><value>Add Company</value></data>
-  <data name="Roles" xml:space="preserve"><value>Roles</value></data>
-  <data name="Role List" xml:space="preserve"><value>Role List</value></data>
-  <data name="Users" xml:space="preserve"><value>Users</value></data>
-  <data name="User List" xml:space="preserve"><value>User List</value></data>
-  <data name="Add User" xml:space="preserve"><value>Add User</value></data>
-  <data name="Trucks" xml:space="preserve"><value>Trucks</value></data>
-  <data name="Truck List" xml:space="preserve"><value>Truck List</value></data>
-  <data name="Add Truck" xml:space="preserve"><value>Add Truck</value></data>
-  <data name="Drivers" xml:space="preserve"><value>Drivers</value></data>
-  <data name="Driver List" xml:space="preserve"><value>Driver List</value></data>
-  <data name="Add Driver" xml:space="preserve"><value>Add Driver</value></data>
+  <!-- MENU GROUPS -->
+  <data name="Operations" xml:space="preserve"><value>Operations</value></data>
+  <data name="Fleet" xml:space="preserve"><value>Fleet</value></data>
+  <data name="Partners" xml:space="preserve"><value>Partners</value></data>
+  <data name="Administration" xml:space="preserve"><value>Administration</value></data>
+
+  <!-- SIDEBAR - OPERATIONS -->
   <data name="Trips" xml:space="preserve"><value>Trips</value></data>
-  <data name="Trip List" xml:space="preserve"><value>Trip List</value></data>
   <data name="New Trip" xml:space="preserve"><value>New Trip</value></data>
   <data name="Expenses" xml:space="preserve"><value>Expenses</value></data>
-  <data name="Expense List" xml:space="preserve"><value>Expense List</value></data>
   <data name="Add Expense" xml:space="preserve"><value>Add Expense</value></data>
+  <data name="Edit Expense" xml:space="preserve"><value>Edit Expense</value></data>
+
+  <!-- SIDEBAR - FLEET -->
+  <data name="Trucks" xml:space="preserve"><value>Trucks</value></data>
+  <data name="Add Truck" xml:space="preserve"><value>Add Truck</value></data>
+  <data name="Drivers" xml:space="preserve"><value>Drivers</value></data>
+  <data name="Add Driver" xml:space="preserve"><value>Add Driver</value></data>
+
+  <!-- SIDEBAR - PARTNERS -->
+  <data name="Agents" xml:space="preserve"><value>Agents</value></data>
+  <data name="Add Agent" xml:space="preserve"><value>Add Agent</value></data>
+  <data name="Edit Agent" xml:space="preserve"><value>Edit Agent</value></data>
+
+  <!-- SIDEBAR - REPORTS -->
   <data name="Reports" xml:space="preserve"><value>Reports</value></data>
+  <data name="P&amp;L Summary" xml:space="preserve"><value>P&amp;L Summary</value></data>
   <data name="P&amp;L Report" xml:space="preserve"><value>P&amp;L Report</value></data>
+  <data name="Trip Report" xml:space="preserve"><value>Trip Report</value></data>
+  <data name="Export to Excel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="Export" xml:space="preserve"><value>Export</value></data>
   <data name="Export Trips (Excel)" xml:space="preserve"><value>Export Trips (Excel)</value></data>
+
+  <!-- SIDEBAR - ADMINISTRATION -->
+  <data name="Companies" xml:space="preserve"><value>Companies</value></data>
+  <data name="Add Company" xml:space="preserve"><value>Add Company</value></data>
+  <data name="Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Add User" xml:space="preserve"><value>Add User</value></data>
+  <data name="Roles" xml:space="preserve"><value>Roles</value></data>
+  <data name="Roles &amp; Permissions" xml:space="preserve"><value>Roles &amp; Permissions</value></data>
+  <data name="Manage system users and their roles" xml:space="preserve"><value>Manage system users and their roles</value></data>
+  <data name="Manage tenant companies and subscriptions" xml:space="preserve"><value>Manage tenant companies and subscriptions</value></data>
+  <data name="Manage transport agents and brokers" xml:space="preserve"><value>Manage transport agents and brokers</value></data>
 
   <!-- LOGIN -->
   <data name="Multi-tenant Fleet Management System" xml:space="preserve"><value>Multi-tenant Fleet Management System</value></data>
@@ -143,4 +162,36 @@
   <data name="Expenses by Category" xml:space="preserve"><value>Expenses by Category</value></data>
   <data name="Truck Status" xml:space="preserve"><value>Truck Status</value></data>
   <data name="Profit" xml:space="preserve"><value>Profit</value></data>
+
+  <!-- TRIP ENHANCEMENTS -->
+  <data name="Agent Name" xml:space="preserve"><value>Agent Name</value></data>
+  <data name="Agent" xml:space="preserve"><value>Agent</value></data>
+  <data name="Tare Weight" xml:space="preserve"><value>Tare Weight</value></data>
+  <data name="Net Weight" xml:space="preserve"><value>Net Weight</value></data>
+  <data name="Gross Weight" xml:space="preserve"><value>Gross Weight</value></data>
+  <data name="Tare Weight (tons)" xml:space="preserve"><value>Tare Weight (tons)</value></data>
+  <data name="Net Weight (tons)" xml:space="preserve"><value>Net Weight (tons)</value></data>
+  <data name="Gross Weight (tons)" xml:space="preserve"><value>Gross Weight (tons)</value></data>
+  <data name="Auto-calculated" xml:space="preserve"><value>Auto-calculated</value></data>
+  <data name="Trip Phases" xml:space="preserve"><value>Trip Phases</value></data>
+  <data name="Up Phase" xml:space="preserve"><value>Up Phase (Outbound)</value></data>
+  <data name="Down Phase" xml:space="preserve"><value>Down Phase (Return)</value></data>
+  <data name="Start Meter" xml:space="preserve"><value>Start Meter</value></data>
+  <data name="End Meter" xml:space="preserve"><value>End Meter</value></data>
+  <data name="Calculated KM" xml:space="preserve"><value>Calculated KM</value></data>
+  <data name="Payment Ledger" xml:space="preserve"><value>Payment Ledger</value></data>
+  <data name="Add Payment" xml:space="preserve"><value>Add Payment</value></data>
+  <data name="Payment Type" xml:space="preserve"><value>Payment Type</value></data>
+  <data name="Received" xml:space="preserve"><value>Received</value></data>
+  <data name="Paid" xml:space="preserve"><value>Paid</value></data>
+  <data name="Payment Mode" xml:space="preserve"><value>Payment Mode</value></data>
+  <data name="Reference #" xml:space="preserve"><value>Reference #</value></data>
+  <data name="Payer/Payee" xml:space="preserve"><value>Payer/Payee</value></data>
+  <data name="Total Received" xml:space="preserve"><value>Total Received</value></data>
+  <data name="Total Paid" xml:space="preserve"><value>Total Paid</value></data>
+  <data name="Balance" xml:space="preserve"><value>Balance</value></data>
+  <data name="Authorization Expiry" xml:space="preserve"><value>Authorization Expiry</value></data>
+  <data name="PUC Expiry" xml:space="preserve"><value>PUC Expiry</value></data>
+  <data name="National Permit" xml:space="preserve"><value>National Permit</value></data>
+  <data name="Pollution Under Control" xml:space="preserve"><value>Pollution Under Control</value></data>
 </root>

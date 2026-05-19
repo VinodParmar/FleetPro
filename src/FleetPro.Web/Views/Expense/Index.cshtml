@@ -8,11 +8,7 @@
 <div class="content-header"><div class="container-fluid">
     <div class="row mb-2">
         <div class="col-sm-6">
-            <h1 class="m-0">@L["Expenses"]
-                <button type="button" class="btn btn-danger btn-sm ml-2" onclick="openAddExpenseModal()">
-                    <i class="fas fa-plus mr-1"></i>@L["Add Expense"]
-                </button>
-            </h1>
+            <h1 class="m-0">@L["Expenses"]</h1>
         </div>
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -51,31 +47,34 @@
     </div>
 
     <div class="card">
-        <div class="card-header">
-            @if (tripFilterId != null)
-            {
-                var tripNum = Model.FirstOrDefault()?.Trip?.TripNumber ?? $"#{tripFilterId}";
-                <div class="mb-2">
-                    <span class="badge badge-info p-2"><i class="fas fa-filter mr-1"></i>@L["Trip filter:"] @tripNum</span>
-                    <a asp-action="Index" class="btn btn-xs btn-outline-secondary ml-1">@L["Remove filter"]</a>
-                </div>
-            }
-            <form method="get" class="form-inline" style="gap:6px;">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <div class="d-flex align-items-center flex-wrap" style="gap:6px;">
                 @if (tripFilterId != null)
                 {
-                    <input type="hidden" name="tripId" value="@tripFilterId">
+                    var tripNum = Model.FirstOrDefault()?.Trip?.TripNumber ?? $"#{tripFilterId}";
+                    <span class="badge badge-info p-2"><i class="fas fa-filter mr-1"></i>@L["Trip filter:"] @tripNum</span>
+                    <a asp-action="Index" class="btn btn-xs btn-outline-secondary">@L["Remove filter"]</a>
                 }
-                <select name="categoryId" class="form-control form-control-sm" onchange="this.form.submit()">
-                    <option value="">@L["All Categories"]</option>
-                    @foreach (var c in categories)
+                <form method="get" class="form-inline" style="gap:6px;">
+                    @if (tripFilterId != null)
                     {
-                        <option value="@c.Id" selected="@(Context.Request.Query["categoryId"] == c.Id.ToString() ? "selected" : null)">@c.Name</option>
+                        <input type="hidden" name="tripId" value="@tripFilterId">
                     }
-                </select>
-                <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / description…"]">
-                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
-                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Clear"]</a>
-            </form>
+                    <select name="categoryId" class="form-control form-control-sm" onchange="this.form.submit()">
+                        <option value="">@L["All Categories"]</option>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id" selected="@(Context.Request.Query["categoryId"] == c.Id.ToString() ? "selected" : null)">@c.Name</option>
+                        }
+                    </select>
+                    <input name="search" value="@Context.Request.Query["search"]" class="form-control form-control-sm" placeholder="@L["Trip# / description…"]">
+                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
+                    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Clear"]</a>
+                </form>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="openAddExpenseModal()">
+                <i class="fas fa-plus mr-1"></i>@L["Add Expense"]
+            </button>
         </div>
         <div class="card-body p-0">
             <table class="table table-sm table-hover mb-0">
@@ -90,7 +89,7 @@
                     {
                         <tr>
                             <td class="action-btn">
-                                <a asp-action="Edit" asp-route-eid="@Ids.Protect(e.Id)" class="btn btn-xs btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                                <button type="button" class="btn btn-xs btn-warning" onclick="openEditExpenseModal('@Ids.Protect(e.Id)')" title="Edit"><i class="fas fa-edit"></i></button>
                                 <form asp-action="Delete" asp-route-eid="@Ids.Protect(e.Id)" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-xs btn-danger" data-confirm="@L["Delete this expense?"]" title="Delete"><i class="fas fa-trash"></i></button>
@@ -136,22 +135,24 @@
                         </div>
                     </div></section>
 
-                    <!-- Add Expense Modal -->
-                    <div class="modal fade" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+                    <!-- Expense Modal (Add/Edit) -->
+                    <div class="modal fade" id="expenseModal" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
-                                <form asp-action="Create" method="post" enctype="multipart/form-data" id="addExpenseForm">
+                                <form id="expenseForm" method="post" enctype="multipart/form-data">
                                     @Html.AntiForgeryToken()
+                                    <input type="hidden" id="expenseId" name="Id" value="0" />
+                                    <input type="hidden" id="expenseEid" name="eid" value="" />
                                     <div class="modal-header bg-danger text-white">
-                                        <h5 class="modal-title" id="addExpenseModalLabel"><i class="fas fa-receipt mr-2"></i>@L["Add Expense"]</h5>
-                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                                        <h5 class="modal-title"><i class="fas fa-receipt mr-2"></i><span id="expenseModalTitle">@L["Add Expense"]</span></h5>
+                                        <button type="button" class="close text-white" data-dismiss="modal">
+                                            <span>&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-bold">@L["Trip *"]</label>
+                                                <label class="font-weight-bold">@L["Trip"] <span class="text-danger">*</span></label>
                                                 <select name="TripId" id="modalTripId" class="form-control" required>
                                                     <option value="">@L["— Select Trip —"]</option>
                                                     @if (ViewBag.Trips != null)
@@ -164,26 +165,26 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                    <label class="font-weight-bold">@L["Category *"]</label>
-                                                    <select name="CategoryId" id="modalCategory" class="form-control" required>
-                                                        <option value="">@L["— Select Category —"]</option>
-                                                        @foreach (var c in categories)
-                                                        {
-                                                            <option value="@c.Id">@c.Name</option>
-                                                        }
-                                                    </select>
-                                                </div>
+                                                <label class="font-weight-bold">@L["Category"] <span class="text-danger">*</span></label>
+                                                <select name="CategoryId" id="modalCategory" class="form-control" required>
+                                                    <option value="">@L["— Select Category —"]</option>
+                                                    @foreach (var c in categories)
+                                                    {
+                                                        <option value="@c.Id">@c.Name</option>
+                                                    }
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-bold">@L["Amount (₹) *"]</label>
+                                                <label class="font-weight-bold">@L["Amount (₹)"] <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend"><span class="input-group-text">₹</span></div>
                                                     <input type="number" name="Amount" id="modalAmount" step="0.01" min="0.01" class="form-control form-control-lg" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-bold">@L["Expense Date *"]</label>
+                                                <label class="font-weight-bold">@L["Expense Date"] <span class="text-danger">*</span></label>
                                                 <input type="date" name="ExpenseDate" id="modalExpenseDate" class="form-control" required>
                                             </div>
                                         </div>
@@ -206,14 +207,15 @@
                                             <div class="input-group">
                                                 <div class="custom-file">
                                                     <input type="file" name="Receipt" class="custom-file-input" accept=".pdf,.jpg,.jpeg,.png" id="modalReceiptFile">
-                                                    <label class="custom-file-label" for="modalReceiptFile">@L["Choose file (PDF/JPG/PNG)"]</label>
+                                                    <label class="custom-file-label" for="modalReceiptFile" id="modalReceiptLabel">@L["Choose file (PDF/JPG/PNG)"]</label>
                                                 </div>
                                             </div>
+                                            <small id="existingReceiptInfo" class="text-muted d-none"></small>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@L["Cancel"]</button>
-                                        <button type="submit" class="btn btn-danger"><i class="fas fa-save mr-1"></i>@L["Add Expense"]</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i>@L["Cancel"]</button>
+                                        <button type="submit" class="btn btn-danger"><i class="fas fa-save mr-1"></i><span id="expenseSubmitText">@L["Add Expense"]</span></button>
                                     </div>
                                 </form>
                             </div>
@@ -224,17 +226,56 @@
                     <script>
                         function openAddExpenseModal() {
                             // Reset form
-                            document.getElementById('addExpenseForm').reset();
+                            document.getElementById('expenseForm').reset();
+                            document.getElementById('expenseId').value = '0';
+                            document.getElementById('expenseEid').value = '';
+                            document.getElementById('expenseForm').action = '@Url.Action("Create")';
+                            document.getElementById('expenseModalTitle').innerText = '@L["Add Expense"]';
+                            document.getElementById('expenseSubmitText').innerText = '@L["Add Expense"]';
+                            document.getElementById('modalReceiptLabel').innerText = '@L["Choose file (PDF/JPG/PNG)"]';
+                            document.getElementById('existingReceiptInfo').classList.add('d-none');
                             // Set today's date as default
                             document.getElementById('modalExpenseDate').value = new Date().toISOString().split('T')[0];
-                            // Show modal
-                            $('#addExpenseModal').modal('show');
+                            $('#expenseModal').modal('show');
+                        }
+
+                        function openEditExpenseModal(eid) {
+                            // Reset form first
+                            document.getElementById('expenseForm').reset();
+                            document.getElementById('expenseId').value = '0';
+                            document.getElementById('expenseEid').value = eid;
+                            document.getElementById('expenseForm').action = '@Url.Action("Edit")' + '?eid=' + eid;
+                            document.getElementById('expenseModalTitle').innerText = '@L["Edit Expense"]';
+                            document.getElementById('expenseSubmitText').innerText = '@L["Save Changes"]';
+                            document.getElementById('modalReceiptLabel').innerText = '@L["Choose file (PDF/JPG/PNG)"]';
+
+                            // Load expense data via AJAX
+                            $.get('@Url.Action("GetExpense")' + '?eid=' + eid, function(data) {
+                                document.getElementById('expenseId').value = data.id;
+                                document.getElementById('modalTripId').value = data.tripId;
+                                document.getElementById('modalCategory').value = data.categoryId || '';
+                                document.getElementById('modalAmount').value = data.amount;
+                                document.getElementById('modalExpenseDate').value = data.expenseDate;
+                                document.getElementById('modalDescription').value = data.description || '';
+                                document.getElementById('modalVendorName').value = data.vendorName || '';
+                                document.getElementById('modalBillNumber').value = data.billNumber || '';
+
+                                if (data.receiptPath) {
+                                    document.getElementById('existingReceiptInfo').innerHTML = 
+                                        '<i class="fas fa-paperclip mr-1"></i>@L["Existing receipt:"] <a href="' + data.receiptPath + '" target="_blank">@L["View"]</a>';
+                                    document.getElementById('existingReceiptInfo').classList.remove('d-none');
+                                } else {
+                                    document.getElementById('existingReceiptInfo').classList.add('d-none');
+                                }
+                            });
+
+                            $('#expenseModal').modal('show');
                         }
 
                         // File input label update
                         document.getElementById('modalReceiptFile')?.addEventListener('change', function(e) {
                             var fileName = e.target.files[0]?.name || '@L["Choose file (PDF/JPG/PNG)"]';
-                            e.target.nextElementSibling.innerText = fileName;
+                            document.getElementById('modalReceiptLabel').innerText = fileName;
                         });
                     </script>
                     }

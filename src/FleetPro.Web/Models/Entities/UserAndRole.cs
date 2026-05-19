@@ -99,6 +99,7 @@ public class MenuItem : BaseEntity
     public string? Icon { get; set; }                        // e.g. "fas fa-truck"
     public string? Controller { get; set; }
     public string? Action { get; set; }
+    public string? OnClick { get; set; }                     // JavaScript function for modal popups (e.g. "openAddExpenseModal()")
     public int? ParentId { get; set; }
     public MenuItem? Parent { get; set; }
     public ICollection<MenuItem> Children { get; set; } = new List<MenuItem>();

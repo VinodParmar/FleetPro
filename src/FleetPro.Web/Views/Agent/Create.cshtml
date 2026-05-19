@@ -1,0 +1,108 @@
+@* ══════════════════ Views/Agent/Create.cshtml ══════════════════ *@
+@model FleetPro.Models.ViewModels.AgentViewModel
+@{
+    bool isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? L["Edit Agent"].Value : L["Add Agent"].Value;
+}
+
+<div class="content-header"><div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6"><h1 class="m-0">@ViewData["Title"]</h1></div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a asp-action="Index">@L["Agents"]</a></li>
+                <li class="breadcrumb-item active">@ViewData["Title"]</li>
+            </ol>
+        </div>
+    </div>
+</div></div>
+
+<section class="content"><div class="container-fluid">
+    <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-eid="@(isEdit ? Ids.Protect(Model.Id) : null)" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title"><i class="fas fa-user-tie mr-2"></i>@L["Agent Details"]</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Name" class="font-weight-bold">@L["Name"] *</label>
+                        <input asp-for="Name" class="form-control" placeholder="Agent / Broker Name">
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="CompanyName">@L["Company Name"]</label>
+                        <input asp-for="CompanyName" class="form-control" placeholder="Transport Company Name">
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Phone">@L["Phone"]</label>
+                        <input asp-for="Phone" class="form-control" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Email">@L["Email"]</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="agent@email.com">
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label asp-for="Status">@L["Status"]</label>
+                        <select asp-for="Status" asp-items="Html.GetEnumSelectList<FleetPro.Models.Entities.AgentStatus>()" class="form-control"></select>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label asp-for="Address">@L["Address"]</label>
+                        <textarea asp-for="Address" class="form-control" rows="2" placeholder="Office Address"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h3 class="card-title"><i class="fas fa-file-invoice mr-2"></i>@L["Tax Details"]</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label asp-for="GSTNumber">@L["GST Number"]</label>
+                        <input asp-for="GSTNumber" class="form-control text-uppercase" placeholder="22AAAAA0000A1Z5">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="PanNumber">@L["PAN Number"]</label>
+                        <input asp-for="PanNumber" class="form-control text-uppercase" placeholder="AAAAA0000A">
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label asp-for="Notes">@L["Notes"]</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
+                <button type="submit" class="btn btn-primary float-right"><i class="fas fa-save mr-1"></i>@L["Save"]</button>
+            </div>
+        </div>
+
+        @if (ViewBag.Tenants != null)
+        {
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title"><i class="fas fa-building mr-2"></i>@L["Tenant Assignment"]</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="TenantId">@L["Tenant"] *</label>
+                        <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control">
+                            <option value="">— @L["Select Tenant"] —</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        }
+    </form>
+</div></section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

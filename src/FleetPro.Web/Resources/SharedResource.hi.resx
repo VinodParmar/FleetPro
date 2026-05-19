@@ -13,30 +13,49 @@
   <data name="View All Alerts" xml:space="preserve"><value>सभी अलर्ट देखें</value></data>
   <data name="View All Alerts →" xml:space="preserve"><value>सभी अलर्ट देखें →</value></data>
 
-  <!-- ── SIDEBAR ── -->
-  <data name="Companies" xml:space="preserve"><value>कंपनियां</value></data>
-  <data name="Company List" xml:space="preserve"><value>कंपनी सूची</value></data>
-  <data name="Add Company" xml:space="preserve"><value>कंपनी जोड़ें</value></data>
-  <data name="Roles" xml:space="preserve"><value>भूमिकाएं</value></data>
-  <data name="Role List" xml:space="preserve"><value>भूमिका सूची</value></data>
-  <data name="Users" xml:space="preserve"><value>उपयोगकर्ता</value></data>
-  <data name="User List" xml:space="preserve"><value>उपयोगकर्ता सूची</value></data>
-  <data name="Add User" xml:space="preserve"><value>उपयोगकर्ता जोड़ें</value></data>
+  <!-- ── MENU GROUPS ── -->
+  <data name="Operations" xml:space="preserve"><value>संचालन</value></data>
+  <data name="Fleet" xml:space="preserve"><value>वाहन बेड़ा</value></data>
+  <data name="Partners" xml:space="preserve"><value>भागीदार</value></data>
+  <data name="Administration" xml:space="preserve"><value>प्रशासन</value></data>
+
+  <!-- ── SIDEBAR - OPERATIONS ── -->
+  <data name="Trips" xml:space="preserve"><value>यात्राएं</value></data>
+  <data name="New Trip" xml:space="preserve"><value>नई यात्रा</value></data>
+  <data name="Expenses" xml:space="preserve"><value>खर्चे</value></data>
+  <data name="Add Expense" xml:space="preserve"><value>खर्चा जोड़ें</value></data>
+  <data name="Edit Expense" xml:space="preserve"><value>खर्चा संपादित करें</value></data>
+
+  <!-- ── SIDEBAR - FLEET ── -->
   <data name="Trucks" xml:space="preserve"><value>ट्रक</value></data>
-  <data name="Truck List" xml:space="preserve"><value>ट्रक सूची</value></data>
   <data name="Add Truck" xml:space="preserve"><value>ट्रक जोड़ें</value></data>
   <data name="Drivers" xml:space="preserve"><value>चालक</value></data>
-  <data name="Driver List" xml:space="preserve"><value>चालक सूची</value></data>
   <data name="Add Driver" xml:space="preserve"><value>चालक जोड़ें</value></data>
-  <data name="Trips" xml:space="preserve"><value>यात्राएं</value></data>
-  <data name="Trip List" xml:space="preserve"><value>यात्रा सूची</value></data>
-  <data name="New Trip" xml:space="preserve"><value>नई यात्रा</value></data>
-  <data name="Expenses" xml:space="preserve"><value>व्यय</value></data>
-  <data name="Expense List" xml:space="preserve"><value>व्यय सूची</value></data>
-  <data name="Add Expense" xml:space="preserve"><value>व्यय जोड़ें</value></data>
+
+  <!-- ── SIDEBAR - PARTNERS ── -->
+  <data name="Agents" xml:space="preserve"><value>एजेंट</value></data>
+  <data name="Add Agent" xml:space="preserve"><value>एजेंट जोड़ें</value></data>
+  <data name="Edit Agent" xml:space="preserve"><value>एजेंट संपादित करें</value></data>
+
+  <!-- ── SIDEBAR - REPORTS ── -->
   <data name="Reports" xml:space="preserve"><value>रिपोर्ट</value></data>
+  <data name="P&amp;L Summary" xml:space="preserve"><value>लाभ-हानि सारांश</value></data>
   <data name="P&amp;L Report" xml:space="preserve"><value>लाभ-हानि रिपोर्ट</value></data>
+  <data name="Trip Report" xml:space="preserve"><value>यात्रा रिपोर्ट</value></data>
+  <data name="Export to Excel" xml:space="preserve"><value>Excel में निर्यात</value></data>
+  <data name="Export" xml:space="preserve"><value>निर्यात</value></data>
   <data name="Export Trips (Excel)" xml:space="preserve"><value>यात्राएं निर्यात (Excel)</value></data>
+
+  <!-- ── SIDEBAR - ADMINISTRATION ── -->
+  <data name="Companies" xml:space="preserve"><value>कंपनियां</value></data>
+  <data name="Add Company" xml:space="preserve"><value>कंपनी जोड़ें</value></data>
+  <data name="Users" xml:space="preserve"><value>उपयोगकर्ता</value></data>
+  <data name="Add User" xml:space="preserve"><value>उपयोगकर्ता जोड़ें</value></data>
+  <data name="Roles" xml:space="preserve"><value>भूमिकाएं</value></data>
+  <data name="Roles &amp; Permissions" xml:space="preserve"><value>भूमिकाएं और अनुमतियां</value></data>
+  <data name="Manage system users and their roles" xml:space="preserve"><value>सिस्टम उपयोगकर्ता और उनकी भूमिकाएं प्रबंधित करें</value></data>
+  <data name="Manage tenant companies and subscriptions" xml:space="preserve"><value>किरायेदार कंपनियां और सदस्यताएं प्रबंधित करें</value></data>
+  <data name="Manage transport agents and brokers" xml:space="preserve"><value>परिवहन एजेंट और दलाल प्रबंधित करें</value></data>
 
   <!-- ── LOGIN ── -->
   <data name="Multi-tenant Fleet Management System" xml:space="preserve"><value>बहु-किरायेदार वाहन प्रबंधन प्रणाली</value></data>
@@ -157,6 +176,38 @@
   <data name="Expenses by Category" xml:space="preserve"><value>श्रेणी अनुसार व्यय</value></data>
   <data name="Truck Status" xml:space="preserve"><value>ट्रक स्थिति</value></data>
   <data name="Profit" xml:space="preserve"><value>लाभ</value></data>
+
+  <!-- TRIP ENHANCEMENTS -->
+  <data name="Agent Name" xml:space="preserve"><value>एजेंट का नाम</value></data>
+  <data name="Agent" xml:space="preserve"><value>एजेंट</value></data>
+  <data name="Tare Weight" xml:space="preserve"><value>टेयर वजन</value></data>
+  <data name="Net Weight" xml:space="preserve"><value>नेट वजन</value></data>
+  <data name="Gross Weight" xml:space="preserve"><value>ग्रॉस वजन</value></data>
+  <data name="Tare Weight (tons)" xml:space="preserve"><value>टेयर वजन (टन)</value></data>
+  <data name="Net Weight (tons)" xml:space="preserve"><value>नेट वजन (टन)</value></data>
+  <data name="Gross Weight (tons)" xml:space="preserve"><value>ग्रॉस वजन (टन)</value></data>
+  <data name="Auto-calculated" xml:space="preserve"><value>स्वतः गणना</value></data>
+  <data name="Trip Phases" xml:space="preserve"><value>यात्रा चरण</value></data>
+  <data name="Up Phase" xml:space="preserve"><value>अप चरण (जाना)</value></data>
+  <data name="Down Phase" xml:space="preserve"><value>डाउन चरण (वापसी)</value></data>
+  <data name="Start Meter" xml:space="preserve"><value>प्रारंभ मीटर</value></data>
+  <data name="End Meter" xml:space="preserve"><value>अंत मीटर</value></data>
+  <data name="Calculated KM" xml:space="preserve"><value>गणना किए गए KM</value></data>
+  <data name="Payment Ledger" xml:space="preserve"><value>भुगतान खाता</value></data>
+  <data name="Add Payment" xml:space="preserve"><value>भुगतान जोड़ें</value></data>
+  <data name="Payment Type" xml:space="preserve"><value>भुगतान प्रकार</value></data>
+  <data name="Received" xml:space="preserve"><value>प्राप्त</value></data>
+  <data name="Paid" xml:space="preserve"><value>भुगतान</value></data>
+  <data name="Payment Mode" xml:space="preserve"><value>भुगतान मोड</value></data>
+  <data name="Reference #" xml:space="preserve"><value>संदर्भ #</value></data>
+  <data name="Payer/Payee" xml:space="preserve"><value>भुगतानकर्ता/प्राप्तकर्ता</value></data>
+  <data name="Total Received" xml:space="preserve"><value>कुल प्राप्त</value></data>
+  <data name="Total Paid" xml:space="preserve"><value>कुल भुगतान</value></data>
+  <data name="Balance" xml:space="preserve"><value>शेष</value></data>
+  <data name="Authorization Expiry" xml:space="preserve"><value>प्राधिकरण समाप्ति</value></data>
+  <data name="PUC Expiry" xml:space="preserve"><value>PUC समाप्ति</value></data>
+  <data name="National Permit" xml:space="preserve"><value>राष्ट्रीय परमिट</value></data>
+  <data name="Pollution Under Control" xml:space="preserve"><value>प्रदूषण नियंत्रण</value></data>
 
   <!-- ── DASHBOARD ── -->
   <data name="Total Tenants" xml:space="preserve"><value>कुल किरायेदार</value></data>

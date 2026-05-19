@@ -12,12 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/icheck-bootstrap/3.0.1/icheck-bootstrap.min.css">
     <style>
         body { background: linear-gradient(135deg,#1a2980,#26d0ce); min-height:100vh; display:flex; align-items:center; justify-content:center; }
-        .login-box { width:380px; }
+        .login-box { width:400px; }
         .login-logo a { color:#fff; font-size:24px; font-weight:700; text-decoration:none; }
         .login-logo small { display:block; font-size:13px; color:rgba(255,255,255,.75); }
         .login-card-body { border-top: 3px solid #3c8dbc; }
+        .field-validation-error { display: block; width: 100%; margin-top: 0.25rem; }
+        .input-group + .field-validation-error { margin-left: 0; }
     </style>
 </head>
 <body>
@@ -34,15 +37,19 @@
                 <input type="hidden" asp-for="ReturnUrl" />
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-                <div class="input-group mb-3">
-                    <input asp-for="Email" class="form-control" placeholder="Email address" autocomplete="username">
-                    <div class="input-group-append"><span class="input-group-text"><i class="fas fa-envelope"></i></span></div>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input asp-for="Email" class="form-control" placeholder="Email address" autocomplete="username">
+                        <div class="input-group-append"><span class="input-group-text"><i class="fas fa-envelope"></i></span></div>
+                    </div>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
 
-                <div class="input-group mb-3">
-                    <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password">
-                    <div class="input-group-append"><span class="input-group-text"><i class="fas fa-lock"></i></span></div>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password">
+                        <div class="input-group-append"><span class="input-group-text"><i class="fas fa-lock"></i></span></div>
+                    </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
@@ -50,24 +57,24 @@
                     <div class="col-8">
                         <div class="icheck-primary">
                             <input asp-for="RememberMe" type="checkbox" id="remember">
-                            <label for="remember"> @(ViewData["Lang"]?.ToString()=="hi" ? "मुझे याद रखें" : "Remember Me")</label>
+                            <label for="remember">@L["Remember Me"]</label>
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block" style="background:linear-gradient(135deg,#1a2980,#26d0ce);border:none;">
-                    <i class="fas fa-sign-in-alt mr-2"></i>@(ViewData["Lang"]?.ToString()=="hi" ? "साइन इन" : "Sign In")
+                    <i class="fas fa-sign-in-alt mr-2"></i>@L["Sign In"]
                 </button>
             </form>
 
-            <div class="mt-3 p-2 bg-light rounded" style="font-size:12px;">
+            <div class="mt-3 p-2 bg-light rounded" style="font-size:11px;">
                 <strong>Demo Credentials:</strong><br>
-                🔑 superadmin@fleetpro.in / Test@123<br>
-                🔑 ravi@sharmatransport.in / Test@123
+                <span class="text-primary">🔑 vinod@fleetpro.in</span> / Admin@2025!<br>
+                <span class="text-success">🔑 sunil@parmartravels.in</span> / Sunil@2025!
             </div>
         </div>
     </div>
-        <p class="text-center text-white mt-2" style="font-size:11px;opacity:.7;">© @DateTime.Now.Year FleetPro - Designed and Developed by Vinod Parmar</p>
+    <p class="text-center text-white mt-2" style="font-size:11px;opacity:.7;">© @DateTime.Now.Year FleetPro - Designed and Developed by Vinod Parmar</p>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>

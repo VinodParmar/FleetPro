@@ -10,3 +10,5 @@
 /src/FleetPro.Web/appsettings.json
 /README.md
 src/FleetPro.Web/logs/fleetpro*.log
+/src/FleetPro.Web/bin/Release/net10.0
+/src/FleetPro.Web/FleetPro.Web.csproj.user

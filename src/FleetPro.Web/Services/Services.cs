@@ -451,6 +451,69 @@ public class UserService : IUserService
 }
 
 // ═══════════════════════════════════════════════════
+//  AGENT SERVICE
+// ═══════════════════════════════════════════════════
+public interface IAgentService
+{
+    Task<List<Agent>> GetAllAsync();
+    Task<Agent?> GetByIdAsync(int id);
+    Task<Agent> CreateAsync(Agent agent);
+    Task UpdateAsync(Agent agent);
+    Task DeleteAsync(int id);
+}
+
+public class AgentService : IAgentService
+{
+    private readonly AppDbContext _db;
+    private readonly ICurrentTenantService _current;
+
+    public AgentService(AppDbContext db, ICurrentTenantService current)
+    { _db = db; _current = current; }
+
+    private IQueryable<Agent> Query() =>
+        _current.IsSuperAdmin
+            ? _db.Agents.Include(a => a.Tenant)
+            : _db.Agents.Where(a => a.TenantId == _current.TenantId);
+
+    public async Task<List<Agent>> GetAllAsync() =>
+        await Query().OrderBy(a => a.Name).ToListAsync();
+
+    public async Task<Agent?> GetByIdAsync(int id) =>
+        await Query().FirstOrDefaultAsync(a => a.Id == id);
+
+    public async Task<Agent> CreateAsync(Agent agent)
+    {
+        if (agent.TenantId <= 0)
+        {
+            if (_current.IsSuperAdmin)
+                throw new InvalidOperationException("TenantId must be provided for SuperAdmin users.");
+            agent.TenantId = _current.TenantId!.Value;
+        }
+
+        var tenantExists = await _db.Tenants.AnyAsync(t => t.Id == agent.TenantId);
+        if (!tenantExists)
+            throw new InvalidOperationException($"Tenant with ID {agent.TenantId} does not exist.");
+
+        _db.Agents.Add(agent);
+        await _db.SaveChangesAsync();
+        return agent;
+    }
+
+    public async Task UpdateAsync(Agent agent)
+    {
+        agent.UpdatedAt = DateTime.UtcNow;
+        _db.Agents.Update(agent);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var a = await _db.Agents.FindAsync(id);
+        if (a != null) { a.IsDeleted = true; await _db.SaveChangesAsync(); }
+    }
+}
+
+// ═══════════════════════════════════════════════════
 //  TRUCK SERVICE
 // ═══════════════════════════════════════════════════
 public interface ITruckService
@@ -593,6 +656,13 @@ public interface ITripService
     Task UpdateAsync(Trip trip);
     Task DeleteAsync(int id);
     Task<string> GenerateTripNumberAsync();
+    // Phase methods
+    Task<TripPhase> AddPhaseAsync(TripPhase phase);
+    Task UpdatePhaseAsync(TripPhase phase);
+    Task DeletePhaseAsync(int phaseId);
+    // Payment methods
+    Task<TripPayment> AddPaymentAsync(TripPayment payment);
+    Task DeletePaymentAsync(int paymentId);
 }
 
 public class TripService : ITripService
@@ -605,17 +675,24 @@ public class TripService : ITripService
 
     private IQueryable<Trip> Query() =>
         _current.IsSuperAdmin
-            ? _db.Trips.Include(t => t.Truck).Include(t => t.Driver).Include(t => t.Tenant).Include(t => t.Expenses)
-            : _db.Trips.Include(t => t.Truck).Include(t => t.Driver).Include(t => t.Expenses)
+            ? _db.Trips.Include(t => t.Truck).Include(t => t.Driver).Include(t => t.Tenant)
+                .Include(t => t.Expenses).Include(t => t.Phases).Include(t => t.Payments)
+            : _db.Trips.Include(t => t.Truck).Include(t => t.Driver)
+                .Include(t => t.Expenses).Include(t => t.Phases).Include(t => t.Payments)
                 .Where(t => t.TenantId == _current.TenantId);
 
     public async Task<List<Trip>> GetAllAsync(TripStatus? status = null, DateTime? from = null, DateTime? to = null)
     {
         var q = Query();
         if (status.HasValue) q = q.Where(t => t.Status == status);
-        if (from.HasValue) q = q.Where(t => t.StartDate >= from);
-        if (to.HasValue) q = q.Where(t => t.StartDate <= to);
-        return await q.OrderByDescending(t => t.StartDate).ToListAsync();
+
+        // Load trips first, then filter by date in memory (StartDate is computed from Phases)
+        var trips = await q.OrderByDescending(t => t.CreatedAt).ToListAsync();
+
+        if (from.HasValue) trips = trips.Where(t => t.StartDate >= from).ToList();
+        if (to.HasValue) trips = trips.Where(t => t.StartDate <= to).ToList();
+
+        return trips.OrderByDescending(t => t.StartDate).ToList();
     }
 
     public async Task<Trip?> GetByIdAsync(int id) =>
@@ -662,10 +739,86 @@ public class TripService : ITripService
         if (tenantId == null || tenantId <= 0)
             throw new InvalidOperationException("TenantId is required to generate trip number.");
 
-        var count = await _db.Trips
+        // Use MAX to get the highest number, accounting for deleted trips
+        var lastTrip = await _db.Trips
+            .IgnoreQueryFilters()  // Include soft-deleted trips
             .Where(t => t.TenantId == tenantId)
-            .CountAsync();
+            .OrderByDescending(t => t.Id)
+            .Select(t => t.TripNumber)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrEmpty(lastTrip))
+            return "T-1001";
+
+        // Extract number from T-XXXX format
+        var numPart = lastTrip.Replace("T-", "");
+        if (int.TryParse(numPart, out int lastNum))
+            return $"T-{lastNum + 1}";
+
+        // Fallback: count + timestamp to ensure uniqueness
+        var count = await _db.Trips.IgnoreQueryFilters().Where(t => t.TenantId == tenantId).CountAsync();
         return $"T-{1000 + count + 1}";
+    }
+
+    // ── Phase Methods ──
+    public async Task<TripPhase> AddPhaseAsync(TripPhase phase)
+    {
+        var trip = await _db.Trips.FindAsync(phase.TripId);
+        if (trip == null) throw new InvalidOperationException("Trip not found.");
+
+        phase.TenantId = trip.TenantId;
+        _db.TripPhases.Add(phase);
+        await _db.SaveChangesAsync();
+
+        // Update trip total distance
+        await UpdateTripDistanceAsync(phase.TripId);
+        return phase;
+    }
+
+    public async Task UpdatePhaseAsync(TripPhase phase)
+    {
+        phase.UpdatedAt = DateTime.UtcNow;
+        _db.TripPhases.Update(phase);
+        await _db.SaveChangesAsync();
+
+        // Update trip total distance
+        await UpdateTripDistanceAsync(phase.TripId);
+    }
+
+    public async Task DeletePhaseAsync(int phaseId)
+    {
+        var phase = await _db.TripPhases.FindAsync(phaseId);
+        if (phase != null)
+        {
+            phase.IsDeleted = true;
+            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    // Distance is now computed from phases, no need to store
+    private Task UpdateTripDistanceAsync(int tripId) => Task.CompletedTask;
+
+    // ── Payment Methods ──
+    public async Task<TripPayment> AddPaymentAsync(TripPayment payment)
+    {
+        var trip = await _db.Trips.FindAsync(payment.TripId);
+        if (trip == null) throw new InvalidOperationException("Trip not found.");
+
+        payment.TenantId = trip.TenantId;
+        _db.TripPayments.Add(payment);
+        await _db.SaveChangesAsync();
+        return payment;
+    }
+
+    public async Task DeletePaymentAsync(int paymentId)
+    {
+        var payment = await _db.TripPayments.FindAsync(paymentId);
+        if (payment != null)
+        {
+            payment.IsDeleted = true;
+            await _db.SaveChangesAsync();
+        }
     }
 }
 
@@ -937,14 +1090,20 @@ public class DashboardService : IDashboardService
         var truckQ = isSuperAdmin ? _db.Trucks : _db.Trucks.Where(t => t.TenantId == tenantId);
         var driverQ = isSuperAdmin ? _db.Drivers : _db.Drivers.Where(d => d.TenantId == tenantId);
         var tripQ = isSuperAdmin ? _db.Trips.Include(t => t.Expenses).Include(t => t.Truck).Include(t => t.Driver)
+                                           .Include(t => t.Phases).Include(t => t.Payments)
                                  : _db.Trips.Include(t => t.Expenses).Include(t => t.Truck).Include(t => t.Driver)
+                                           .Include(t => t.Phases).Include(t => t.Payments)
                                      .Where(t => t.TenantId == tenantId);
         var alertQ = isSuperAdmin ? _db.Alerts : _db.Alerts.Where(a => a.TenantId == tenantId);
         var expenseQ = isSuperAdmin ? _db.Expenses.Include(e => e.CategoryMaster) 
                                     : _db.Expenses.Include(e => e.CategoryMaster).Where(e => e.TenantId == tenantId);
 
-        var monthlyTrips = await tripQ.Where(t => t.StartDate >= monthStart).ToListAsync();
-        var monthlyRevenue = monthlyTrips.Sum(t => t.Revenue);
+        // Load all trips once (StartDate is computed from Phases, can't filter in DB)
+        var allTripsForChart = await tripQ.ToListAsync();
+
+        // Use CreatedAt for filtering (StartDate is computed/unmapped)
+        var monthlyTrips = allTripsForChart.Where(t => t.CreatedAt >= monthStart).ToList();
+        var monthlyRevenue = monthlyTrips.Sum(t => t.TotalDealAmount);
         var monthlyExpenses = monthlyTrips.Sum(t => t.TotalExpenses);
 
         // Chart data: Last 6 months
@@ -960,14 +1119,14 @@ public class DashboardService : IDashboardService
 
             chartLabels.Add(start.ToString("MMM yyyy"));
 
-            var trips = await tripQ.Where(t => t.StartDate >= start && t.StartDate < end).ToListAsync();
-            revenueData.Add(trips.Sum(t => t.Revenue));
+            // Filter in memory using CreatedAt
+            var trips = allTripsForChart.Where(t => t.CreatedAt >= start && t.CreatedAt < end).ToList();
+            revenueData.Add(trips.Sum(t => t.TotalDealAmount));
             expenseData.Add(trips.Sum(t => t.TotalExpenses));
         }
 
         // Trip status breakdown
-        var allTrips = await tripQ.ToListAsync();
-        var tripStatusData = allTrips.GroupBy(t => t.Status.ToString())
+        var tripStatusData = allTripsForChart.GroupBy(t => t.Status.ToString())
             .ToDictionary(g => g.Key, g => g.Count());
 
         // Truck status breakdown
@@ -994,7 +1153,7 @@ public class DashboardService : IDashboardService
             NetProfit = monthlyRevenue - monthlyExpenses,
             CriticalAlerts = await alertQ.CountAsync(a => a.Severity == AlertSeverity.Critical && !a.IsRead),
             TotalAlerts = await alertQ.CountAsync(a => !a.IsRead),
-            RecentTrips = await tripQ.OrderByDescending(t => t.StartDate).Take(10).ToListAsync(),
+            RecentTrips = allTripsForChart.OrderByDescending(t => t.CreatedAt).Take(10).ToList(),
             UrgentAlerts = await alertQ.Where(a => !a.IsRead)
                 .OrderBy(a => a.DaysRemaining).Take(5).ToListAsync(),
             // Chart data
