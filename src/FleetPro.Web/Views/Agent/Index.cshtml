@@ -124,7 +124,7 @@
 
         if (eid) {
             // Edit mode - fetch agent data
-            $('#modalTitle').text('@L["Edit Agent"]');
+            $('#modalTitle').text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Edit Agent"].Value)));
             $('#agentForm').attr('action', '@Url.Action("Edit")' + '?eid=' + eid);
             $('#agentEid').val(eid);
 
@@ -138,7 +138,7 @@
             });
         } else {
             // Add mode
-            $('#modalTitle').text('@L["Add Agent"]');
+            $('#modalTitle').text(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Add Agent"].Value)));
             $('#agentForm').attr('action', '@Url.Action("Create")');
         }
 

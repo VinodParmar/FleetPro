@@ -93,7 +93,7 @@
             <div class="col-lg-8">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-chart-area mr-2"></i>@L["Revenue vs Expenses"] (Last 6 Months)</h3>
+                        <h3 class="card-title"><i class="fas fa-chart-area mr-2"></i>@L["Revenue vs Expenses"] (@L["Last 6 Months"])</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                         </div>
@@ -284,7 +284,7 @@
                     labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels)),
                     datasets: [
                         {
-                            label: '@L["Revenue"]',
+                            label: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Revenue"].Value)),
                             data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueData)),
                             backgroundColor: 'rgba(40, 167, 69, 0.7)',
                             borderColor: 'rgba(40, 167, 69, 1)',
@@ -293,7 +293,7 @@
                             order: 2
                         },
                         {
-                            label: '@L["Expenses"]',
+                            label: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Expenses"].Value)),
                             data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ExpenseData)),
                             backgroundColor: 'rgba(220, 53, 69, 0.7)',
                             borderColor: 'rgba(220, 53, 69, 1)',
@@ -302,7 +302,7 @@
                             order: 2
                         },
                         {
-                            label: '@L["Net Profit"]',
+                            label: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Net Profit"].Value)),
                             data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueData.Zip(Model.ExpenseData, (r, e) => r - e).ToList())),
                             type: 'line',
                             fill: false,
@@ -340,13 +340,21 @@
                 }
             });
 
+            // Translated names for status enum keys (e.g. InProgress → "In Progress" / "प्रगति में")
+            const statusNames = {
+                Scheduled: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Scheduled"].Value)), InProgress: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["In Progress"].Value)),
+                Completed: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Completed"].Value)), Cancelled: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Cancelled"].Value)),
+                Active: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Active"].Value)), InMaintenance: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Maintenance"].Value)), Inactive: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Inactive"].Value))
+            };
+            const statusLabel = k => statusNames[k] || k;
+
             // 2. Trip Status Doughnut Chart
             const tripStatusCtx = document.getElementById('tripStatusChart').getContext('2d');
             const tripStatusData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TripStatusData));
             new Chart(tripStatusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(tripStatusData),
+                    labels: Object.keys(tripStatusData).map(statusLabel),
                     datasets: [{
                         data: Object.values(tripStatusData),
                         backgroundColor: [colors.success, colors.warning, colors.info, colors.danger, colors.secondary],
@@ -400,7 +408,7 @@
             new Chart(truckStatusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(truckStatusData),
+                    labels: Object.keys(truckStatusData).map(statusLabel),
                     datasets: [{
                         data: Object.values(truckStatusData),
                         backgroundColor: [colors.success, colors.warning, colors.danger, colors.secondary],

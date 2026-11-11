@@ -20,6 +20,7 @@
 <div class="row justify-content-center">
 <div class="col-md-7">
 <form asp-action="@(isCreate ? "Create" : "Edit")" asp-route-eid="@Ids.Protect(Model.Id)" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="ReturnUrl" />
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
     <div class="card">
@@ -90,7 +91,7 @@
             </div>
         </div>
         <div class="card-footer text-right">
-            <a asp-action="Index" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
+            <a href="@(Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : Url.Action("Index"))" class="btn btn-secondary mr-2"><i class="fas fa-times mr-1"></i>@L["Cancel"]</a>
             <button type="submit" class="btn btn-danger"><i class="fas fa-save mr-1"></i>@(isCreate ? L["Add Expense"].Value : L["Save Changes"].Value)</button>
         </div>
     </div>

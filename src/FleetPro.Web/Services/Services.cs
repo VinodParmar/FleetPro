@@ -160,23 +160,55 @@ public interface IAuthService
 public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
+    private readonly ILogger<AuthService> _log;
 
-    public AuthService(AppDbContext db) => _db = db;
+    public AuthService(AppDbContext db, ILogger<AuthService> log) { _db = db; _log = log; }
 
     public async Task<(bool Success, ApplicationUser? User, string Error)> LoginAsync(string email, string password)
     {
-        var user = await _db.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => u.Email == email);
+        _log.LogInformation("[AUTH] Login attempt for: {Email}", email);
+        ApplicationUser? user;
+        try
+        {
+            user = await _db.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "[AUTH] DB query failed for {Email}: {Message}", email, ex.Message);
+            return (false, null, "Database error during login. Please try again.");
+        }
 
-        if (user == null) return (false, null, "Invalid email or password.");
-        if (user.Status == UserStatus.Inactive) return (false, null, "Account is inactive. Contact administrator.");
-        if (user.Status == UserStatus.Locked) return (false, null, "Account is locked. Contact administrator.");
-        if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash)) return (false, null, "Invalid email or password.");
+        if (user == null)
+        {
+            _log.LogWarning("[AUTH] No user found for email: {Email}", email);
+            return (false, null, "Invalid email or password.");
+        }
+
+        _log.LogInformation("[AUTH] User found: Id={Id}, Status={Status}, Roles={Roles}",
+            user.Id, user.Status, string.Join(",", user.UserRoles.Select(ur => ur.Role?.Name ?? "?")));
+
+        if (user.Status == UserStatus.Inactive)
+        {
+            _log.LogWarning("[AUTH] Login blocked — account inactive: {Email}", email);
+            return (false, null, "Account is inactive. Contact administrator.");
+        }
+        if (user.Status == UserStatus.Locked)
+        {
+            _log.LogWarning("[AUTH] Login blocked — account locked: {Email}", email);
+            return (false, null, "Account is locked. Contact administrator.");
+        }
+        if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        {
+            _log.LogWarning("[AUTH] Password mismatch for: {Email}", email);
+            return (false, null, "Invalid email or password.");
+        }
 
         user.LastLoginAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
+        _log.LogInformation("[AUTH] Login SUCCESS for: {Email}", email);
         return (true, user, "");
     }
 
@@ -655,7 +687,7 @@ public interface ITripService
     Task<Trip> CreateAsync(Trip trip);
     Task UpdateAsync(Trip trip);
     Task DeleteAsync(int id);
-    Task<string> GenerateTripNumberAsync();
+    Task<string> GenerateTripNumberAsync(int tenantId);
     // Phase methods
     Task<TripPhase> AddPhaseAsync(TripPhase phase);
     Task UpdatePhaseAsync(TripPhase phase);
@@ -700,21 +732,29 @@ public class TripService : ITripService
 
     public async Task<Trip> CreateAsync(Trip trip)
     {
-        // Ensure TenantId is always set
-        if (trip.TenantId <= 0)
-        {
-            if (_current.IsSuperAdmin)
-                throw new InvalidOperationException("TenantId must be provided for SuperAdmin users.");
+        // A trip always belongs to the company that owns its truck.
+        // This works for SuperAdmin (who has no TenantId) and tenant users alike.
+        var truckTenantId = await _db.Trucks
+            .Where(t => t.Id == trip.TruckId)
+            .Select(t => (int?)t.TenantId)
+            .FirstOrDefaultAsync()
+            ?? throw new InvalidOperationException("Selected truck was not found.");
 
-            trip.TenantId = _current.TenantId!.Value;
-        }
+        var driverTenantId = await _db.Drivers
+            .Where(d => d.Id == trip.DriverId)
+            .Select(d => (int?)d.TenantId)
+            .FirstOrDefaultAsync()
+            ?? throw new InvalidOperationException("Selected driver was not found.");
 
-        // Validate that the tenant exists
-        var tenantExists = await _db.Tenants.AnyAsync(t => t.Id == trip.TenantId);
-        if (!tenantExists)
-            throw new InvalidOperationException($"Tenant with ID {trip.TenantId} does not exist.");
+        if (driverTenantId != truckTenantId)
+            throw new InvalidOperationException("Truck and driver must belong to the same company.");
 
-        trip.TripNumber = await GenerateTripNumberAsync();
+        // Tenant users may only create trips for their own company
+        if (!_current.IsSuperAdmin && truckTenantId != _current.TenantId)
+            throw new InvalidOperationException("You cannot create a trip for another company's truck.");
+
+        trip.TenantId = truckTenantId;
+        trip.TripNumber = await GenerateTripNumberAsync(trip.TenantId);
         _db.Trips.Add(trip);
         await _db.SaveChangesAsync();
         return trip;
@@ -733,10 +773,9 @@ public class TripService : ITripService
         if (t != null) { t.IsDeleted = true; await _db.SaveChangesAsync(); }
     }
 
-    public async Task<string> GenerateTripNumberAsync()
+    public async Task<string> GenerateTripNumberAsync(int tenantId)
     {
-        var tenantId = _current.TenantId;
-        if (tenantId == null || tenantId <= 0)
+        if (tenantId <= 0)
             throw new InvalidOperationException("TenantId is required to generate trip number.");
 
         // Use MAX to get the highest number, accounting for deleted trips

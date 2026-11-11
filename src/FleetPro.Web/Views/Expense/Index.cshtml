@@ -230,9 +230,9 @@
                             document.getElementById('expenseId').value = '0';
                             document.getElementById('expenseEid').value = '';
                             document.getElementById('expenseForm').action = '@Url.Action("Create")';
-                            document.getElementById('expenseModalTitle').innerText = '@L["Add Expense"]';
-                            document.getElementById('expenseSubmitText').innerText = '@L["Add Expense"]';
-                            document.getElementById('modalReceiptLabel').innerText = '@L["Choose file (PDF/JPG/PNG)"]';
+                            document.getElementById('expenseModalTitle').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Add Expense"].Value));
+                            document.getElementById('expenseSubmitText').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Add Expense"].Value));
+                            document.getElementById('modalReceiptLabel').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose file (PDF/JPG/PNG)"].Value));
                             document.getElementById('existingReceiptInfo').classList.add('d-none');
                             // Set today's date as default
                             document.getElementById('modalExpenseDate').value = new Date().toISOString().split('T')[0];
@@ -245,9 +245,9 @@
                             document.getElementById('expenseId').value = '0';
                             document.getElementById('expenseEid').value = eid;
                             document.getElementById('expenseForm').action = '@Url.Action("Edit")' + '?eid=' + eid;
-                            document.getElementById('expenseModalTitle').innerText = '@L["Edit Expense"]';
-                            document.getElementById('expenseSubmitText').innerText = '@L["Save Changes"]';
-                            document.getElementById('modalReceiptLabel').innerText = '@L["Choose file (PDF/JPG/PNG)"]';
+                            document.getElementById('expenseModalTitle').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Edit Expense"].Value));
+                            document.getElementById('expenseSubmitText').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Save Changes"].Value));
+                            document.getElementById('modalReceiptLabel').innerText = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose file (PDF/JPG/PNG)"].Value));
 
                             // Load expense data via AJAX
                             $.get('@Url.Action("GetExpense")' + '?eid=' + eid, function(data) {
@@ -274,7 +274,7 @@
 
                         // File input label update
                         document.getElementById('modalReceiptFile')?.addEventListener('change', function(e) {
-                            var fileName = e.target.files[0]?.name || '@L["Choose file (PDF/JPG/PNG)"]';
+                            var fileName = e.target.files[0]?.name || @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose file (PDF/JPG/PNG)"].Value));
                             document.getElementById('modalReceiptLabel').innerText = fileName;
                         });
                     </script>

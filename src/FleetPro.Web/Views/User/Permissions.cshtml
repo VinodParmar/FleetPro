@@ -235,7 +235,7 @@ function updateModulePermissionStates(module) {
                 b.style.cursor = 'not-allowed';
             });
             pill.style.opacity = '0.6';
-            pill.title = '@L["View permission is denied - other permissions are automatically denied"]';
+            pill.title = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["View permission is denied - other permissions are automatically denied"].Value));
             // Set to deny
             buttons.forEach(function(b) { b.classList.remove('active-grant','active-inherit','active-deny'); });
             buttons[2].classList.add('active-deny'); // Deny button
