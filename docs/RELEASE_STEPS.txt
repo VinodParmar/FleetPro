@@ -1,0 +1,132 @@
+FleetPro - Release Steps
+========================
+
+App      : src/FleetPro.Web (ASP.NET Core MVC, .NET 10, EF Core 9, SQL Server)
+Applies to: every release; "This release" notes at the bottom are for commit 38b3576 (PR #1).
+
+
+1. BEFORE YOU START
+-------------------
+[ ] Code to release is merged into main and pulled:
+        git switch main
+        git pull
+[ ] Note the commit you are releasing (for rollback):
+        git log --oneline -1
+[ ] Builds clean:
+        cd src/FleetPro.Web
+        dotnet build -c Release
+    (If it says "file is locked by FleetPro.Web", stop the running app first.)
+[ ] Manual checks passed on a local copy (there is no test project):
+      - Log in as SuperAdmin   -> create a trip, add an expense, open each menu screen.
+      - Log in as TenantAdmin  -> same, and confirm you only see your own company's data.
+      - Switch language to Hindi (?lang=hi) -> no "&#x..." codes, no English keys.
+[ ] Back up the production database (full backup) before changing anything.
+
+
+2. BUILD THE RELEASE PACKAGE
+----------------------------
+    cd src/FleetPro.Web
+    dotnet publish -c Release -o ..\..\publish
+
+The "publish" folder is what you upload. Do NOT upload:
+  - appsettings.Development.json   (local database settings)
+  - logs\                          (local log files)
+  - wwwroot\uploads\               (local test uploads - would overwrite real files)
+
+
+3. CONFIGURATION ON THE SERVER
+------------------------------
+Never put real passwords in the repository. On the server set them as
+environment variables (IIS: Configuration Editor / web.config <environmentVariables>,
+or the hosting panel), which override appsettings.json:
+
+    ASPNETCORE_ENVIRONMENT                = Production
+    ConnectionStrings__DefaultConnection  = <production connection string>
+
+Check appsettings.json on the server:
+  - AppSettings:DefaultLanguage          "hi" or "en" (language for first-time visitors)
+  - AppSettings:IdleLockTimeoutMinutes   currently 1 minute - raise it (e.g. 15) unless
+                                         a 1-minute screen lock is intended
+  - Storage:UploadPath                   "wwwroot/uploads" - must be writable by the app pool
+  - Storage:MaxFileSizeMB / AllowedExtensions
+
+Folders the app must be able to write to:
+  - wwwroot\uploads\  (receipts, documents, profile images) - keep it between releases
+  - logs\             (Serilog writes logs\fleetpro-YYYYMMDD.log)
+
+
+4. DATABASE
+-----------
+The database is managed by SQL scripts, NOT by EF migrations. Do not run
+"dotnet ef database update" against production.
+
+Scripts are in src/FleetPro.Web/database/ (ignore the older copy in the repo-root database/ folder).
+
+New (empty) database - run in this order:
+  1. FleetPro_Schema.sql
+  2. RolePermissions_Seed.sql
+  3. SeedMenuItems.sql
+
+Existing database:
+  - Run only the upgrade (ALTER) scripts that come with the release, if any.
+    They are written to be safe to run twice.
+  - Permissions and roles are topped up automatically when the app starts (DataSeeder).
+  - Menu items are NOT added automatically to an existing database - if the release adds
+    a screen, run its INSERT from SeedMenuItems.sql.
+
+
+5. DEPLOY
+---------
+[ ] Put the site in maintenance / stop the app pool (IIS: drop app_offline.htm in the site root).
+[ ] Copy the "publish" folder contents over the site folder
+    (keep the server's wwwroot\uploads\ and logs\ as they are).
+[ ] Run the database scripts from step 4, if any.
+[ ] Start the app (remove app_offline.htm / start the app pool).
+
+
+6. CHECK AFTER DEPLOY
+---------------------
+[ ] Open logs\fleetpro-<today>.log and confirm:
+      [DB-CONFIG] Connection string resolved: ...   <- the PRODUCTION server/database
+      [DB-PROBE]  SUCCESS - database is reachable
+      [DB-SEED]   Complete - N users, N tenants
+    If it says "Database not found" or FAILED, check the connection string first.
+[ ] Site opens over https and the login page loads.
+[ ] Log in as SuperAdmin and as a TenantAdmin; open Dashboard, Trucks, Trips, Expenses, Reports.
+[ ] Upload a small receipt on an expense and open it again (proves uploads folder is writable).
+[ ] Switch to Hindi and back to English.
+
+
+7. ROLLBACK
+-----------
+  1. Stop the app.
+  2. Copy back the previous release's files (keep a copy of the old site folder before deploying).
+  3. Only if the release changed the database: restore the backup taken in step 1.
+  4. Start the app and repeat the checks in step 6.
+
+
+THIS RELEASE (38b3576 - PR #1)
+==============================
+Database   : no schema change. No SQL to run. (Trip numbers were already unique per
+             company - UQ_Trips_Number (TenantId, TripNumber).)
+Changes    :
+  - SuperAdmin can create trips (company is taken from the truck).
+  - Saving / editing / deleting an expense returns to the page it was opened from.
+  - Hindi text no longer shows as "&#x..." in charts and pop-ups; more dashboard labels in Hindi.
+  - Startup log shows which database is used (password hidden) and whether it is reachable.
+  - Empty wwwroot\ folder added (uploads need it).
+
+MUST DO BEFORE GOING LIVE:
+  [ ] Login cookie was loosened for local http testing (Program.cs):
+          options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+          options.Cookie.SameSite     = SameSiteMode.Lax;
+      For production set them back to:
+          options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+          options.Cookie.SameSite     = SameSiteMode.Strict;
+      (or apply the loose values only when app.Environment.IsDevelopment()).
+  [ ] Remove the "Demo Credentials" box from Views/Account/Login.cshtml - it shows
+      sample logins and passwords on the public login page.
+  [ ] Change the passwords of the seeded sample users (or delete those users) if
+      the production database was seeded with sample data.
+
+Not part of the app (do not deploy): docs/ (client decks, PDF, video and their build scripts).
