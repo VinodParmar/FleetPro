@@ -571,10 +571,15 @@ public class AccountController : Controller
             TruckId = vm.TruckId,
             DriverId = vm.DriverId,
             Status = vm.Status,
-            Notes = vm.Notes,
-            TenantId = _current.TenantId ?? 0
+            Notes = vm.Notes
+            // TenantId is taken from the selected truck inside TripService.CreateAsync
         };
-        await _svc.CreateAsync(trip);
+        try {
+            await _svc.CreateAsync(trip);
+        } catch (InvalidOperationException ex) {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            await PopDD(); return View(vm);
+        }
 
         TempData["Success"] = $"Trip {trip.TripNumber} created. Now add phases and payments.";
         return RedirectToAction(nameof(Edit), new { eid = EId(trip.Id) });
@@ -701,7 +706,8 @@ public class AccountController : Controller
         Directory.CreateDirectory(dir);
         var fn=$"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         await using(var s=new FileStream(Path.Combine(dir,fn),FileMode.Create)) await file.CopyToAsync(s);
-        _db.TripDocuments.Add(new TripDocument{TripId=tripId,TenantId=_current.TenantId??0,FileName=file.FileName,
+        var tripTenantId=await _db.Trips.Where(t=>t.Id==tripId).Select(t=>t.TenantId).FirstOrDefaultAsync();
+        _db.TripDocuments.Add(new TripDocument{TripId=tripId,TenantId=tripTenantId,FileName=file.FileName,
             FilePath=$"/uploads/trips/{tripId}/{fn}",FileType=Path.GetExtension(file.FileName),
             FileSizeBytes=file.Length,DocumentType=documentType});
         await _db.SaveChangesAsync();
@@ -806,20 +812,37 @@ public class AccountController : Controller
             vendorName=e.VendorName, billNumber=e.BillNumber, receiptPath=e.ReceiptPath });
     }
 
+    // Where to go after Save/Cancel/Delete: the page the user came from, else the expense list
+    private string? RefererUrl() {
+        var r=Request.Headers.Referer.ToString();
+        if (string.IsNullOrEmpty(r) || !Uri.TryCreate(r,UriKind.Absolute,out var u)) return null;
+        var local=u.PathAndQuery;
+        // Don't "return" to the expense form itself
+        return Url.IsLocalUrl(local) && !local.StartsWith("/Expense/Create",StringComparison.OrdinalIgnoreCase)
+            && !local.StartsWith("/Expense/Edit",StringComparison.OrdinalIgnoreCase) ? local : null;
+    }
+    private IActionResult BackTo(string? returnUrl) =>
+        Url.IsLocalUrl(returnUrl) ? LocalRedirect(returnUrl!) : RedirectToAction(nameof(Index));
+
     public async Task<IActionResult> Create(int? tripId) {
         if (CheckPermission("expenses.create") is { } r) return r;
-        await PopE(); return View(new ExpenseViewModel{TripId=tripId??0,ExpenseDate=DateTime.Today});
+        await PopE();
+        return View(new ExpenseViewModel{TripId=tripId??0,ExpenseDate=DateTime.Today,ReturnUrl=RefererUrl()});
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ExpenseViewModel vm) {
         if (CheckPermission("expenses.create") is { } r) return r;
-        if (!ModelState.IsValid){
-            // If from modal, show errors and redirect back
-            TempData["Error"]="Please fill all required fields.";
-            return RedirectToAction(nameof(Index));
+        vm.ReturnUrl ??= RefererUrl();   // modal on Expense/Index has no hidden field
+        if (!ModelState.IsValid){ await PopE(); return View(vm); }
+
+        // Expense belongs to the same company as its trip (works for SuperAdmin too)
+        var tripTenantId=await _db.Trips.Where(t=>t.Id==vm.TripId).Select(t=>(int?)t.TenantId).FirstOrDefaultAsync();
+        if (tripTenantId==null || (!_current.IsSuperAdmin && tripTenantId!=_current.TenantId)) {
+            ModelState.AddModelError(nameof(vm.TripId),"Please select a valid trip.");
+            await PopE(); return View(vm);
         }
         var e=new Expense{TripId=vm.TripId,CategoryId=vm.CategoryId,Amount=vm.Amount,ExpenseDate=vm.ExpenseDate,
-            Description=vm.Description,VendorName=vm.VendorName,BillNumber=vm.BillNumber,TenantId=_current.TenantId??0};
+            Description=vm.Description,VendorName=vm.VendorName,BillNumber=vm.BillNumber,TenantId=tripTenantId.Value};
         if (vm.Receipt is{Length:>0}){
             var dir=Path.Combine(_env.WebRootPath,"uploads","receipts"); Directory.CreateDirectory(dir);
             var fn=$"{Guid.NewGuid()}{Path.GetExtension(vm.Receipt.FileName)}";
@@ -827,7 +850,7 @@ public class AccountController : Controller
             e.ReceiptPath=$"/uploads/receipts/{fn}"; e.HasReceipt=true;
         }
         await _svc.CreateAsync(e); TempData["Success"]="Expense added.";
-        return RedirectToAction(nameof(Index));
+        return BackTo(vm.ReturnUrl);
     }
     public async Task<IActionResult> Edit(string eid) {
         if (CheckPermission("expenses.edit") is { } r) return r;
@@ -836,7 +859,7 @@ public class AccountController : Controller
         await PopE();
         return View("Create",new ExpenseViewModel{Id=e.Id,TripId=e.TripId,CategoryId=e.CategoryId,Amount=e.Amount,
             ExpenseDate=e.ExpenseDate,Description=e.Description,VendorName=e.VendorName,BillNumber=e.BillNumber,
-            ExistingReceiptPath=e.ReceiptPath});
+            ExistingReceiptPath=e.ReceiptPath,ReturnUrl=RefererUrl()});
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string eid, ExpenseViewModel vm) {
@@ -854,14 +877,14 @@ public class AccountController : Controller
             e.ReceiptPath=$"/uploads/receipts/{fn}"; e.HasReceipt=true;
         }
         await _svc.UpdateAsync(e); TempData["Success"]="Expense updated.";
-        return RedirectToAction(nameof(Index));
+        return BackTo(vm.ReturnUrl);
     }
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string eid) {
         if (CheckPermission("expenses.delete") is { } r) return r;
         var id=DId(eid); if(id==0) return NotFound();
         await _svc.DeleteAsync(id); TempData["Success"]="Expense deleted.";
-        return RedirectToAction(nameof(Index));
+        return BackTo(RefererUrl());
     }
     private async Task PopE() {
         var tId=_current.TenantId;

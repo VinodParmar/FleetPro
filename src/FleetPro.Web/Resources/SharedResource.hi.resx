@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -167,8 +167,7 @@
   <data name="No audit logs found." xml:space="preserve"><value>कोई ऑडिट लॉग नहीं मिला।</value></data>
   <data name="Showing" xml:space="preserve"><value>दिखा रहा है</value></data>
   <data name="records" xml:space="preserve"><value>रिकॉर्ड</value></data>
-  <data name="View Details" xml:space="preserve"><value>विवरण देखें</value></data>
-  <data name="Date" xml:space="preserve"><value>दिनांक</value></data>
+  <data name="View Details" xml:space="preserve"><value>विवरण देखें</value></data>  
 
   <!-- DASHBOARD CHARTS -->
   <data name="Revenue vs Expenses" xml:space="preserve"><value>आय बनाम व्यय</value></data>
@@ -324,8 +323,7 @@
   <data name="Export Excel" xml:space="preserve"><value>Excel निर्यात</value></data>
   <data name="Trip Report (Excel)" xml:space="preserve"><value>यात्रा रिपोर्ट (Excel)</value></data>
 
-  <!-- ── EXPENSE ── -->
-  <data name="Edit Expense" xml:space="preserve"><value>व्यय संपादित करें</value></data>
+  <!-- ── EXPENSE ── -->  
   <data name="Expense Details" xml:space="preserve"><value>व्यय विवरण</value></data>
   <data name="Trip *" xml:space="preserve"><value>यात्रा *</value></data>
   <data name="— Select Trip —" xml:space="preserve"><value>— यात्रा चुनें —</value></data>
@@ -460,4 +458,5 @@
   <data name="Expense Report" xml:space="preserve"><value>व्यय रिपोर्ट</value></data>
   <data name="Format" xml:space="preserve"><value>प्रारूप</value></data>
   <data name="Download (Coming Soon)" xml:space="preserve"><value>डाउनलोड (शीघ्र आ रहा है)</value></data>
+  <data name="Last 6 Months" xml:space="preserve"><value>पिछले 6 महीने</value></data>
 </root>

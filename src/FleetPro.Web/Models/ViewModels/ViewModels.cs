@@ -431,6 +431,9 @@ public class ExpenseViewModel
     public IFormFile? Receipt { get; set; }
     public string? ExistingReceiptPath { get; set; }
 
+    // Page to return to after Save/Cancel (e.g. the Trip edit screen)
+    public string? ReturnUrl { get; set; }
+
     // Display
     public string? TripNumber { get; set; }
     public string? TripRoute { get; set; }

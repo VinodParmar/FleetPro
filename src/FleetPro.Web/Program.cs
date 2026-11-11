@@ -36,6 +36,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditSaveChangesInterceptor>();
 
 // EF Core with Audit Interceptor - suppress migration warning
+var rawCs = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+var maskedCs = System.Text.RegularExpressions.Regex.Replace(
+    rawCs, @"(Password|PWD)=[^;]*", "$1=***", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+Log.Information("[DB-CONFIG] Connection string resolved: {ConnectionString}", maskedCs);
+
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseSqlServer(
@@ -56,8 +61,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Lax;
     });
 
 builder.Services.AddAuthorization();
@@ -104,17 +109,27 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        Log.Information("Starting database seeding for: {Database}", db.Database.GetConnectionString());
+        var cs = db.Database.GetConnectionString() ?? "";
+        var masked = System.Text.RegularExpressions.Regex.Replace(
+            cs, @"(Password|PWD)=[^;]*", "$1=***", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        Log.Information("[DB-PROBE] Attempting connection to: {ConnectionString}", masked);
+
+        var canConnect = await db.Database.CanConnectAsync();
+        if (canConnect)
+            Log.Information("[DB-PROBE] SUCCESS — database is reachable");
+        else
+            Log.Error("[DB-PROBE] FAILED — CanConnectAsync returned false, check server/credentials");
+
+        Log.Information("[DB-SEED] Starting database seeding");
         await DataSeeder.SeedAsync(db);
 
-        // Verify seed
         var userCount = await db.Users.CountAsync();
         var tenantCount = await db.Tenants.CountAsync();
-        Log.Information("Database seeded: {Users} users, {Tenants} tenants", userCount, tenantCount);
+        Log.Information("[DB-SEED] Complete — {Users} users, {Tenants} tenants", userCount, tenantCount);
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Database seeding failed: {Message}", ex.Message);
+        Log.Error(ex, "[DB-SEED] Database seeding failed: {Message}", ex.Message);
         throw; // Re-throw to see the error on startup
     }
 }

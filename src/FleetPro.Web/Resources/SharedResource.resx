@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -194,4 +194,5 @@
   <data name="PUC Expiry" xml:space="preserve"><value>PUC Expiry</value></data>
   <data name="National Permit" xml:space="preserve"><value>National Permit</value></data>
   <data name="Pollution Under Control" xml:space="preserve"><value>Pollution Under Control</value></data>
+  <data name="Last 6 Months" xml:space="preserve"><value>Last 6 Months</value></data>
 </root>
